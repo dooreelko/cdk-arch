@@ -1,0 +1,22 @@
+{
+  "name": "cdk-arch-example",
+  "version": "0.1.0",
+  "description": "Example usage of cdk-arch with CDKTF Docker deployment",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "synth": "cdktf synth",
+    "deploy": "cdktf deploy",
+    "destroy": "cdktf destroy"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "cdktf": "^0.20.0",
+    "@cdktf/provider-docker": "^11.0.0",
+    "constructs": "^10.4.5",
+    "cdk-arch": "file:.."
+  }
+}
