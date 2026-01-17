@@ -4,19 +4,23 @@
   "description": "Example usage of cdk-arch with CDKTF Docker deployment",
   "private": true,
   "scripts": {
-    "build": "tsc",
-    "synth": "cdktf synth",
-    "deploy": "cdktf deploy",
-    "destroy": "cdktf destroy"
+    "build": "tsc && tsc -p server/tsconfig.json",
+    "deploy": "npm run build && cdktf deploy --auto-approve",
+    "destroy": "cdktf destroy --auto-approve"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "cdktf": "^0.20.0",
     "@cdktf/provider-docker": "^11.0.0",
+    "@types/express": "^5.0.6",
+    "@types/pg": "^8.16.0",
+    "cdk-arch": "file:..",
+    "cdktf": "^0.20.0",
     "constructs": "^10.4.5",
-    "cdk-arch": "file:.."
+    "express": "^5.2.1",
+    "pg": "^8.17.1",
+    "ts-node": "^10.9.2"
   }
 }

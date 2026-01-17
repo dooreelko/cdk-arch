@@ -1,4 +1,5 @@
-import { Architecture, ApiContainer, Function, JsonStore } from 'cdk-arch';
+import { Architecture, ApiContainer, Function } from 'cdk-arch';
+import { JsonStore } from './json-store';
 
 const arch = new Architecture('hello-world');
 

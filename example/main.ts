@@ -3,21 +3,91 @@ import { Construct } from 'constructs';
 import { DockerProvider } from '@cdktf/provider-docker/lib/provider';
 import { Image } from '@cdktf/provider-docker/lib/image';
 import { Container } from '@cdktf/provider-docker/lib/container';
-import { arch, api } from './architecture';
+import { Network } from '@cdktf/provider-docker/lib/network';
+import { arch, api, jsonStore, helloFunction } from './architecture';
+import { architectureBinding } from 'cdk-arch';
 
 class HelloWorldStack extends TerraformStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    new DockerProvider(this, 'docker', {});
+    new DockerProvider(this, 'docker', {
+      host: `unix://${process.env.XDG_RUNTIME_DIR}/podman/podman.sock`
+    });
 
-    // Use a simple Node.js image for the API
+    // Create network for service communication
+    const appNetwork = new Network(this, 'app-network', {
+      name: 'hello-world-network'
+    });
+
+    // Images
     const nodeImage = new Image(this, 'node-image', {
       name: 'node:20-alpine',
       keepLocally: true
     });
 
-    // Create a container for the API
+    const postgresImage = new Image(this, 'postgres-image', {
+      name: 'postgres:16-alpine',
+      keepLocally: true
+    });
+
+    const exampleDir = __dirname;
+
+    // Postgres container for JsonStore
+    const postgresContainer = new Container(this, 'postgres-container', {
+      name: 'postgres',
+      image: postgresImage.imageId,
+      env: [
+        'POSTGRES_USER=postgres',
+        'POSTGRES_PASSWORD=postgres',
+        'POSTGRES_DB=jsonstore'
+      ],
+      networksAdvanced: [{
+        name: appNetwork.name
+      }],
+      healthcheck: {
+        test: ['CMD-SHELL', 'pg_isready -U postgres'],
+        interval: '5s',
+        timeout: '5s',
+        retries: 5
+      },
+      mustRun: true
+    });
+
+    // Bind JsonStore to its endpoint (will be resolved at runtime via Docker DNS)
+    architectureBinding.bind(jsonStore, { host: 'jsonstore', port: 3001 });
+
+    // JsonStore container
+    const jsonStoreContainer = new Container(this, 'jsonstore-container', {
+      name: 'jsonstore',
+      image: nodeImage.imageId,
+      env: [
+        'PORT=3001',
+        'POSTGRES_HOST=postgres',
+        'POSTGRES_PORT=5432',
+        'POSTGRES_DB=jsonstore',
+        'POSTGRES_USER=postgres',
+        'POSTGRES_PASSWORD=postgres'
+      ],
+      networksAdvanced: [{
+        name: appNetwork.name
+      }],
+      volumes: [{
+        hostPath: `${exampleDir}/server/dist`,
+        containerPath: '/app/dist'
+      }, {
+        hostPath: `${exampleDir}/node_modules`,
+        containerPath: '/app/node_modules'
+      }],
+      workingDir: '/app',
+      command: ['node', 'dist/jsonstore-server.js'],
+      mustRun: true
+    });
+
+    // Bind API to its endpoint
+    architectureBinding.bind(api, { host: 'hello-api', port: 3000 });
+
+    // API container
     const apiContainer = new Container(this, 'api-container', {
       name: 'hello-api',
       image: nodeImage.imageId,
@@ -26,40 +96,28 @@ class HelloWorldStack extends TerraformStack {
         external: 3000
       }],
       env: [
-        `ROUTES=${JSON.stringify(api.listRoutes())}`
+        'PORT=3000',
+        'JSONSTORE_URL=http://jsonstore:3001'
       ],
-      command: [
-        'node', '-e',
-        `
-        const http = require('http');
-        const routes = JSON.parse(process.env.ROUTES);
-
-        const server = http.createServer((req, res) => {
-          const url = new URL(req.url, 'http://localhost');
-
-          // Simple route matching for /v1/api/hello/{name}
-          const match = url.pathname.match(/^\\/v1\\/api\\/hello\\/(.+)$/);
-          if (match) {
-            const name = decodeURIComponent(match[1]);
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ message: 'Hello, ' + name + '!' }));
-          } else {
-            res.writeHead(404, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'Not found' }));
-          }
-        });
-
-        server.listen(3000, () => {
-          console.log('API running on http://localhost:3000');
-          console.log('Routes:', routes);
-        });
-        `
-      ],
+      networksAdvanced: [{
+        name: appNetwork.name
+      }],
+      volumes: [{
+        hostPath: `${exampleDir}/server/dist`,
+        containerPath: '/app/dist'
+      }, {
+        hostPath: `${exampleDir}/node_modules`,
+        containerPath: '/app/node_modules'
+      }],
+      workingDir: '/app',
+      command: ['node', 'dist/api-server.js'],
       mustRun: true
     });
 
-    // Output the architecture definition
+    // Output the architecture definition with bindings
     console.log('Deploying architecture:', arch.synth());
+    console.log('JsonStore endpoint:', architectureBinding.getEndpoint(jsonStore));
+    console.log('API endpoint:', architectureBinding.getEndpoint(api));
   }
 }
 
