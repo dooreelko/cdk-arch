@@ -16,6 +16,7 @@ export interface ServiceEndpoint {
  */
 export class ArchitectureBinding {
   private bindings: Map<Construct, ServiceEndpoint> = new Map();
+  private localComponents: Set<Construct> = new Set();
 
   /**
    * Bind an architectural component to a service endpoint.
@@ -30,6 +31,27 @@ export class ArchitectureBinding {
    */
   getEndpoint(component: Construct): ServiceEndpoint | undefined {
     return this.bindings.get(component);
+  }
+
+  /**
+   * Get all bindings
+   */
+  getAllBindings(): Map<Construct, ServiceEndpoint> {
+    return this.bindings;
+  }
+
+  /**
+   * Mark a component as locally served (not requiring HTTP calls)
+   */
+  setLocal(component: Construct): void {
+    this.localComponents.add(component);
+  }
+
+  /**
+   * Check if a component is served locally
+   */
+  isLocal(component: Construct): boolean {
+    return this.localComponents.has(component);
   }
 
   /**

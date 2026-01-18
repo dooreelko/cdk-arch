@@ -50,6 +50,12 @@ Extend the example to include Postgres and proper service communication between 
 
 - **Database connection retry**: jsonstore-server has retry logic (30 retries, 1s delay) to wait for Postgres to become available, since CDKTF doesn't support health check dependencies like docker-compose.
 
+- **Generic DockerApiServer**: Rather than hand-writing Express routes, DockerApiServer reads the ApiContainer's route definitions and automatically sets up Express routes. This ensures the runtime server matches the architectural specification.
+
+- **StorageAdapter for pluggable storage**: The DockerApiServer accepts an optional StorageAdapter that handles storage operations. This allows different backends (Postgres, in-memory, etc.) without changing the server logic.
+
+- **RemoteClient for cross-service calls**: DockerApiServer creates RemoteClient instances for all bound non-local components. This provides a typed client for making HTTP calls to other services.
+
 ### Decisions Rejected
 
 - **ts-node in containers**: Initially tried running TypeScript directly with ts-node in containers, but path resolution issues made this unreliable. Compiling to JavaScript first is more robust.
@@ -61,14 +67,22 @@ Extend the example to include Postgres and proper service communication between 
 ### Project Structure Changes
 
 ```
+src/                        # Core library
+├── docker-api-server.ts    # DockerApiServer, StorageAdapter, RemoteClient
+├── binding.ts              # ArchitectureBinding for service discovery
+├── api-container.ts        # ApiContainer base class
+├── function.ts             # Function construct
+├── architecture.ts         # Architecture construct
+└── index.ts                # Exports all public API
+
 example/
 ├── src/                    # Source code
 │   ├── json-store.ts       # JsonStore architectural component (example-specific)
 │   ├── architecture.ts     # Architecture definition
 │   └── main.ts             # CDKTF stack with Docker provider
 └── server/                 # Server code (runtime)
-    ├── api-server.ts       # Express API server
-    ├── jsonstore-server.ts # Express JsonStore server with Postgres
+    ├── api-server.ts       # Express API server using DockerApiServer
+    ├── jsonstore-server.ts # Express JsonStore server with Postgres StorageAdapter
     ├── tsconfig.json       # Server-specific TypeScript config
     └── dist/               # Compiled JavaScript
 ```
@@ -80,19 +94,39 @@ example/
 2. **ArchitectureBinding**: A new `ArchitectureBinding` class in the core library provides:
    - `bind(component, endpoint)` - associates an architectural component with a service endpoint
    - `getEndpoint(component)` - retrieves the endpoint for a component
+   - `getAllBindings()` - returns all registered bindings
+   - `setLocal(component)` / `isLocal(component)` - tracks which component is served locally
    - `createHttpWrapper(endpoint, route)` - creates a function that makes HTTP calls to the remote service
 
-3. **Express servers**: Two separate Express servers:
-   - `api-server.ts` - handles `/v1/api/hello/{name}`, calls JsonStore via HTTP to store greetings
-   - `jsonstore-server.ts` - handles `/store/{collection}` and `/get/{collection}`, uses pg client to store in Postgres
+3. **DockerApiServer**: A generic class in the core library that constructs Express servers from ApiContainer definitions:
+   - Takes an initialized and bound `ApiContainer` in its constructor
+   - `createApp(express, storage?)` - creates an Express app with routes from the container's API definitions
+   - `getRemoteClient(component)` - returns a `RemoteClient` for cross-service HTTP calls
+   - Routes are automatically set up based on the container's route definitions
+   - Path parameters (e.g., `{collection}`) are extracted and passed to handlers
+   - POST/PUT body is passed as the last argument
 
-4. **CDKTF Docker deployment** (main.ts):
+4. **StorageAdapter**: Interface for pluggable storage backends:
+   - `store(collection, document)` - stores a document in a collection
+   - `get(collection)` - retrieves all documents from a collection
+   - Used by DockerApiServer to delegate storage operations to concrete implementations (e.g., Postgres)
+
+5. **RemoteClient**: HTTP client for calling remote ApiContainers:
+   - `store(collection, document)` - POST to `/store/{collection}`
+   - `get(collection)` - GET from `/get/{collection}`
+   - `call(method, path, body?)` - generic HTTP call method
+
+6. **Express servers**: Two separate Express servers:
+   - `api-server.ts` - uses DockerApiServer to get RemoteClient for JsonStore, custom route for hello endpoint
+   - `jsonstore-server.ts` - uses DockerApiServer with PostgresStorage adapter for automatic route handling
+
+7. **CDKTF Docker deployment** (main.ts):
    - Creates Docker network for service communication
    - Deploys `postgres` container with health check
    - Deploys `jsonstore` container with volume mounts
    - Deploys `hello-api` container exposed on port 3000
    - All containers on shared network for DNS resolution
 
-5. **npm scripts**:
+8. **npm scripts**:
    - `npm run deploy` - builds TypeScript and runs `cdktf deploy --auto-approve`
    - `npm run destroy` - runs `cdktf destroy --auto-approve`

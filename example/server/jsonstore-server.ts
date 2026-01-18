@@ -1,10 +1,7 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import { Pool } from 'pg';
-
-const app = express();
-app.use(express.json());
-
-const PORT = process.env.PORT || 3001;
+import { DockerApiServer, StorageAdapter, architectureBinding } from 'cdk-arch';
+import { jsonStore } from '../src/architecture';
 
 // Postgres connection
 const pool = new Pool({
@@ -14,6 +11,25 @@ const pool = new Pool({
   user: process.env.POSTGRES_USER || 'postgres',
   password: process.env.POSTGRES_PASSWORD || 'postgres'
 });
+
+// Postgres storage adapter
+const postgresStorage: StorageAdapter = {
+  async store(collection: string, document: any): Promise<{ success: boolean }> {
+    await pool.query(
+      'INSERT INTO documents (collection, data) VALUES ($1, $2)',
+      [collection, JSON.stringify(document)]
+    );
+    return { success: true };
+  },
+
+  async get(collection: string): Promise<any[]> {
+    const result = await pool.query(
+      'SELECT data FROM documents WHERE collection = $1 ORDER BY created_at',
+      [collection]
+    );
+    return result.rows.map(row => row.data);
+  }
+};
 
 // Initialize database table with retry logic
 async function initDb(retries = 30, delay = 1000): Promise<void> {
@@ -42,43 +58,22 @@ async function initDb(retries = 30, delay = 1000): Promise<void> {
   throw new Error('Failed to connect to database after retries');
 }
 
-// Store endpoint - POST /store/{collection}
-app.post('/store/:collection', async (req: Request, res: Response) => {
-  const { collection } = req.params;
-  const document = req.body;
-
-  try {
-    await pool.query(
-      'INSERT INTO documents (collection, data) VALUES ($1, $2)',
-      [collection, JSON.stringify(document)]
-    );
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Error storing document:', error);
-    res.status(500).json({ success: false, error: 'Failed to store document' });
-  }
+// Bind jsonStore to its endpoint
+architectureBinding.bind(jsonStore, {
+  host: 'jsonstore',
+  port: parseInt(process.env.PORT || '3001')
 });
 
-// Get endpoint - GET /get/{collection}
-app.get('/get/:collection', async (req: Request, res: Response) => {
-  const { collection } = req.params;
+// Create server using DockerApiServer with Postgres storage
+const server = new DockerApiServer(jsonStore, { binding: architectureBinding });
+const app = server.createApp(express, postgresStorage);
 
-  try {
-    const result = await pool.query(
-      'SELECT data FROM documents WHERE collection = $1 ORDER BY created_at',
-      [collection]
-    );
-    res.json(result.rows.map(row => row.data));
-  } catch (error) {
-    console.error('Error getting documents:', error);
-    res.status(500).json({ error: 'Failed to get documents' });
-  }
-});
+const PORT = process.env.PORT || 3001;
 
 // Start server after DB init
 initDb().then(() => {
   app.listen(PORT, () => {
-    console.log(`JsonStore server running on http://localhost:${PORT}`);
+    console.log(`JsonStore server running on port ${PORT}`);
   });
 }).catch(err => {
   console.error('Failed to initialize database:', err);
