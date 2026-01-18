@@ -31,7 +31,7 @@ class HelloWorldStack extends TerraformStack {
       keepLocally: true
     });
 
-    const exampleDir = __dirname;
+    const exampleDir = `${__dirname}/..`;
 
     // Postgres container for JsonStore
     const postgresContainer = new Container(this, 'postgres-container', {

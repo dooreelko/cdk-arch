@@ -62,10 +62,11 @@ Extend the example to include Postgres and proper service communication between 
 
 ```
 example/
-├── json-store.ts           # JsonStore architectural component (example-specific)
-├── architecture.ts         # Architecture definition
-├── main.ts                 # CDKTF stack with Docker provider
-└── server/                 # Server code
+├── src/                    # Source code
+│   ├── json-store.ts       # JsonStore architectural component (example-specific)
+│   ├── architecture.ts     # Architecture definition
+│   └── main.ts             # CDKTF stack with Docker provider
+└── server/                 # Server code (runtime)
     ├── api-server.ts       # Express API server
     ├── jsonstore-server.ts # Express JsonStore server with Postgres
     ├── tsconfig.json       # Server-specific TypeScript config
