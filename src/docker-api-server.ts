@@ -117,6 +117,15 @@ export class DockerApiServer {
       console.log(`${this.container.node.id} server running on port ${port}`);
     });
   }
+
+  /**
+   * Create app and start listening in one call.
+   * This is the simplest way to start a server.
+   */
+  start(express: any, port: number, storage?: StorageAdapter): void {
+    this.createApp(express, storage);
+    this.listen(port);
+  }
 }
 
 /**

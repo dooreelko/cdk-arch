@@ -4,8 +4,7 @@ import { DockerProvider } from '@cdktf/provider-docker/lib/provider';
 import { Image } from '@cdktf/provider-docker/lib/image';
 import { Container } from '@cdktf/provider-docker/lib/container';
 import { Network } from '@cdktf/provider-docker/lib/network';
-import { arch, api, jsonStore, helloFunction } from './architecture';
-import { architectureBinding } from 'cdk-arch';
+import * as path from 'path';
 
 class HelloWorldStack extends TerraformStack {
   constructor(scope: Construct, id: string) {
@@ -20,10 +19,14 @@ class HelloWorldStack extends TerraformStack {
       name: 'hello-world-network'
     });
 
-    // Images
-    const nodeImage = new Image(this, 'node-image', {
-      name: 'node:20-alpine',
-      keepLocally: true
+    // Build the app image from workspace root
+    const workspaceRoot = path.resolve(__dirname, '../..');
+    const appImage = new Image(this, 'app-image', {
+      name: 'cdk-arch-app:latest',
+      buildAttribute: {
+        context: workspaceRoot,
+        dockerfile: 'Dockerfile'
+      }
     });
 
     const postgresImage = new Image(this, 'postgres-image', {
@@ -31,10 +34,8 @@ class HelloWorldStack extends TerraformStack {
       keepLocally: true
     });
 
-    const exampleDir = `${__dirname}/..`;
-
     // Postgres container for JsonStore
-    const postgresContainer = new Container(this, 'postgres-container', {
+    new Container(this, 'postgres-container', {
       name: 'postgres',
       image: postgresImage.imageId,
       env: [
@@ -54,13 +55,10 @@ class HelloWorldStack extends TerraformStack {
       mustRun: true
     });
 
-    // Bind JsonStore to its endpoint (will be resolved at runtime via Docker DNS)
-    architectureBinding.bind(jsonStore, { host: 'jsonstore', port: 3001 });
-
     // JsonStore container
-    const jsonStoreContainer = new Container(this, 'jsonstore-container', {
+    new Container(this, 'jsonstore-container', {
       name: 'jsonstore',
-      image: nodeImage.imageId,
+      image: appImage.imageId,
       env: [
         'PORT=3001',
         'POSTGRES_HOST=postgres',
@@ -72,52 +70,29 @@ class HelloWorldStack extends TerraformStack {
       networksAdvanced: [{
         name: appNetwork.name
       }],
-      volumes: [{
-        hostPath: `${exampleDir}/server/dist`,
-        containerPath: '/app/dist'
-      }, {
-        hostPath: `${exampleDir}/node_modules`,
-        containerPath: '/app/node_modules'
-      }],
-      workingDir: '/app',
-      command: ['node', 'dist/jsonstore-server.js'],
+      command: ['node', 'server/dist/server/jsonstore-server.js'],
       mustRun: true
     });
 
-    // Bind API to its endpoint
-    architectureBinding.bind(api, { host: 'hello-api', port: 3000 });
-
     // API container
-    const apiContainer = new Container(this, 'api-container', {
+    new Container(this, 'api-container', {
       name: 'hello-api',
-      image: nodeImage.imageId,
+      image: appImage.imageId,
       ports: [{
         internal: 3000,
         external: 3000
       }],
       env: [
         'PORT=3000',
-        'JSONSTORE_URL=http://jsonstore:3001'
+        'JSONSTORE_HOST=jsonstore',
+        'JSONSTORE_PORT=3001'
       ],
       networksAdvanced: [{
         name: appNetwork.name
       }],
-      volumes: [{
-        hostPath: `${exampleDir}/server/dist`,
-        containerPath: '/app/dist'
-      }, {
-        hostPath: `${exampleDir}/node_modules`,
-        containerPath: '/app/node_modules'
-      }],
-      workingDir: '/app',
-      command: ['node', 'dist/api-server.js'],
+      command: ['node', 'server/dist/server/api-server.js'],
       mustRun: true
     });
-
-    // Output the architecture definition with bindings
-    console.log('Deploying architecture:', arch.synth());
-    console.log('JsonStore endpoint:', architectureBinding.getEndpoint(jsonStore));
-    console.log('API endpoint:', architectureBinding.getEndpoint(api));
   }
 }
 

@@ -3,7 +3,7 @@ import { Pool } from 'pg';
 import { DockerApiServer, StorageAdapter, architectureBinding } from 'cdk-arch';
 import { jsonStore } from '../src/architecture';
 
-// Postgres connection
+// Postgres storage adapter
 const pool = new Pool({
   host: process.env.POSTGRES_HOST || 'postgres',
   port: parseInt(process.env.POSTGRES_PORT || '5432'),
@@ -12,7 +12,6 @@ const pool = new Pool({
   password: process.env.POSTGRES_PASSWORD || 'postgres'
 });
 
-// Postgres storage adapter
 const postgresStorage: StorageAdapter = {
   async store(collection: string, document: any): Promise<{ success: boolean }> {
     await pool.query(
@@ -31,7 +30,7 @@ const postgresStorage: StorageAdapter = {
   }
 };
 
-// Initialize database table with retry logic
+// Initialize database with retry
 async function initDb(retries = 30, delay = 1000): Promise<void> {
   for (let i = 0; i < retries; i++) {
     try {
@@ -55,27 +54,17 @@ async function initDb(retries = 30, delay = 1000): Promise<void> {
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
-  throw new Error('Failed to connect to database after retries');
+  throw new Error('Failed to connect to database');
 }
 
-// Bind jsonStore to its endpoint
-architectureBinding.bind(jsonStore, {
-  host: 'jsonstore',
-  port: parseInt(process.env.PORT || '3001')
-});
+// Bind and start
+const PORT = parseInt(process.env.PORT || '3001');
+architectureBinding.bind(jsonStore, { host: 'jsonstore', port: PORT });
 
-// Create server using DockerApiServer with Postgres storage
-const server = new DockerApiServer(jsonStore, { binding: architectureBinding });
-const app = server.createApp(express, postgresStorage);
-
-const PORT = process.env.PORT || 3001;
-
-// Start server after DB init
 initDb().then(() => {
-  app.listen(PORT, () => {
-    console.log(`JsonStore server running on port ${PORT}`);
-  });
+  const server = new DockerApiServer(jsonStore, { binding: architectureBinding });
+  server.start(express, PORT, postgresStorage);
 }).catch(err => {
-  console.error('Failed to initialize database:', err);
+  console.error('Failed to initialize:', err);
   process.exit(1);
 });

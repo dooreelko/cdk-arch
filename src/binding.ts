@@ -27,6 +27,18 @@ export class ArchitectureBinding {
   }
 
   /**
+   * Bind a component from environment variables.
+   * Looks for {PREFIX}_HOST and {PREFIX}_PORT environment variables.
+   */
+  bindFromEnv(component: ApiContainer, envPrefix: string): void {
+    const host = process.env[`${envPrefix}_HOST`];
+    const port = process.env[`${envPrefix}_PORT`];
+    if (host && port) {
+      this.bind(component, { host, port: parseInt(port) });
+    }
+  }
+
+  /**
    * Get the endpoint for a bound component
    */
   getEndpoint(component: Construct): ServiceEndpoint | undefined {
@@ -52,6 +64,33 @@ export class ArchitectureBinding {
    */
   isLocal(component: Construct): boolean {
     return this.localComponents.has(component);
+  }
+
+  /**
+   * Check if a component should use HTTP (bound but not local)
+   */
+  isRemote(component: Construct): boolean {
+    return this.bindings.has(component) && !this.localComponents.has(component);
+  }
+
+  /**
+   * Enable remote mode for an ApiContainer.
+   * This patches the container's route-based methods to make HTTP calls
+   * instead of invoking functions directly.
+   */
+  enableRemote(container: ApiContainer): void {
+    const endpoint = this.getEndpoint(container);
+    if (!endpoint) {
+      throw new Error(`Cannot enable remote mode: ${container.node.id} is not bound to an endpoint`);
+    }
+
+    // Patch each route's corresponding method on the container
+    for (const [route, fn] of Object.entries(container.routes)) {
+      const httpHandler = this.createHttpWrapper(endpoint, route);
+
+      // Replace the function's invoke method to use HTTP
+      fn.invoke = httpHandler;
+    }
   }
 
   /**
