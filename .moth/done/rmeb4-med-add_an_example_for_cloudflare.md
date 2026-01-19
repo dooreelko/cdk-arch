@@ -82,5 +82,21 @@ Requires `CLOUDFLARE_ACCOUNT_ID` environment variable.
 ### Package Dependencies Added
 
 - `@cdktf/provider-cloudflare`: Cloudflare CDKTF provider
+- `@cdktf/provider-null`: For enabling workers.dev subdomain via local-exec
 - `@cloudflare/workers-types`: TypeScript types for Workers
 - `esbuild`: Bundling Workers for deployment
+
+### Environment Variables Required
+
+- `CLOUDFLARE_ACCOUNT_ID`: Cloudflare account ID
+- `CLOUDFLARE_SUBDOMAIN`: Your workers.dev subdomain (e.g., `my-account`)
+- `CLOUDFLARE_API_TOKEN`: API token (auto-retrieved from wrangler in deploy script)
+
+### Enabling workers.dev Subdomain
+
+The Cloudflare Terraform provider doesn't have a native resource for enabling workers.dev subdomains. This is handled via a `null_resource` with `local-exec` provisioner that calls the Cloudflare API:
+
+```
+POST /accounts/{account_id}/workers/scripts/{script_name}/subdomain
+{"enabled": true}
+```
