@@ -1,22 +1,22 @@
-FROM oven/bun:1-alpine
+FROM docker.io/oven/bun:1-alpine
 
-WORKDIR /app
+WORKDIR /app/cdk-arch
 
 # Copy everything needed
 COPY package.json bun.lock* ./
 COPY tsconfig.json ./
 COPY src ./src
-COPY example/package.json ./example/
-COPY example/tsconfig.json ./example/
-COPY example/src ./example/src
-
 # Install root dependencies
-RUN bun install --production
+RUN bun install && bun link --production
+RUN bun run build
+
+WORKDIR /app/example
+COPY example/package.json ./
+COPY example/tsconfig.json ./
+COPY example/src ./src
 
 # Install example dependencies (file: reference resolves to parent)
-WORKDIR /app/example
-RUN bun install --production
+RUN bun install --production 
+RUN bun link --production cdk-arch
 
-WORKDIR /app/example
-
-CMD ["bun", "run", "src/docker/entrypoints/api-server.ts"]
+CMD ["echo", "I UP"]

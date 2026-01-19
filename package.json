@@ -4,6 +4,10 @@
   "description": "CDK Architecture primitives for event-driven solution architectures",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "src",
+    "dist"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "jest",
