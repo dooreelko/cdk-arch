@@ -10,14 +10,15 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
+    "typescript": "^5.0.0",
+    "cdktf": "^0.20.0",
+    "cdktf-cli": "0.21.0",
     "@cdktf/provider-docker": "^11.0.0",
     "@types/express": "^5.0.6",
-    "@types/pg": "^8.16.0",
+    "@types/pg": "^8.16.0"
+  },
+  "dependencies": {
     "cdk-arch": "file:..",
-    "cdktf": "^0.20.0",
     "constructs": "^10.4.5",
     "express": "^5.2.1",
     "pg": "^8.17.1"
