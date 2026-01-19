@@ -1,7 +1,8 @@
 import express from 'express';
 import { Pool } from 'pg';
-import { DockerApiServer, StorageAdapter, architectureBinding } from 'cdk-arch';
-import { jsonStore } from '../src/architecture';
+import { architectureBinding } from 'cdk-arch';
+import { DockerApiServer, StorageAdapter } from './docker-api-server';
+import { jsonStore } from '../architecture';
 
 // Postgres storage adapter
 const pool = new Pool({

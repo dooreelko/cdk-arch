@@ -1,34 +1,31 @@
-FROM node:20-alpine
+FROM oven/bun:1-alpine
 
 WORKDIR /app
 
-# Copy package files first for better caching
-COPY package*.json ./
-COPY example/package*.json ./example/
+# Copy root package and install
+COPY package.json bun.lock* ./
+RUN bun install
 
-# Install root dependencies
-RUN npm install
-
-# Copy source code
+# Copy and build library source
 COPY tsconfig.json ./
 COPY src ./src
+RUN bun run build
 
-# Build the library
-RUN npm run build
+# Link the library globally
+RUN bun link
 
-# Install example dependencies (uses local cdk-arch)
+# Copy example package
+COPY example/package.json ./example/
+
+# Install example dependencies and link cdk-arch
 WORKDIR /app/example
-RUN npm install
+RUN bun install && bun link cdk-arch
 
-# Copy example source
+# Copy example source (includes docker servers)
 COPY example/tsconfig.json ./
 COPY example/src ./src
-COPY example/server ./server
-
-# Build example and server
-RUN npm run build
 
 WORKDIR /app/example
 
-# Default command (overridden by container)
-CMD ["node", "server/dist/api-server.js"]
+# Default command
+CMD ["bun", "run", "src/docker/api-server.ts"]

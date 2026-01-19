@@ -1,7 +1,4 @@
-import { ApiContainer } from './api-container';
-import { ArchitectureBinding, ServiceEndpoint, architectureBinding } from './binding';
-import { Construct } from 'constructs';
-import { Function } from './function';
+import { ApiContainer, ArchitectureBinding, ServiceEndpoint, architectureBinding, Function } from 'cdk-arch';
 
 export interface DockerApiServerConfig {
   binding?: ArchitectureBinding;

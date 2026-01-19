@@ -3,4 +3,3 @@ export { Architecture, ArchitectureDefinition, ComponentDefinition } from './arc
 export { Function, FunctionHandler } from './function';
 export { ApiContainer, ApiRoutes } from './api-container';
 export { ArchitectureBinding, ServiceEndpoint, architectureBinding } from './binding';
-export { DockerApiServer, DockerApiServerConfig, StorageAdapter, RemoteClient } from './docker-api-server';
