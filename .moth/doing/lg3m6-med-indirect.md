@@ -38,7 +38,9 @@ Extend the example to include Postgres and proper service communication between 
 
 - **Express for servers**: Both api-server and jsonstore-server use Express for HTTP handling. This provides a clean, well-known API for routing and middleware.
 
-- **Compiled JavaScript in containers**: The TypeScript server files are compiled to JavaScript and mounted into containers. This avoids needing ts-node in the container and reduces complexity.
+- **Bun runtime with TypeScript**: Containers use Bun which runs TypeScript directly. The cdk-arch library is built to dist/ for proper module resolution, then linked via `bun link`.
+
+- **bun link for local dependencies**: Using `bun link` instead of `file:..` in package.json avoids recursive symlink issues where bun would endlessly nest the example directory inside node_modules/cdk-arch/example/node_modules/cdk-arch/...
 
 - **SELinux volume labels**: For Podman on Fedora, volumes need the `:z` suffix to allow container access due to SELinux.
 
@@ -50,17 +52,19 @@ Extend the example to include Postgres and proper service communication between 
 
 - **Database connection retry**: jsonstore-server has retry logic (30 retries, 1s delay) to wait for Postgres to become available, since CDKTF doesn't support health check dependencies like docker-compose.
 
-- **Generic DockerApiServer**: Rather than hand-writing Express routes, DockerApiServer reads the ApiContainer's route definitions and automatically sets up Express routes. This ensures the runtime server matches the architectural specification.
+- **DockerApiServer is example-specific**: DockerApiServer lives in the example directory, not the core library. It's one possible implementation for serving an ApiContainer via Express.
 
-- **StorageAdapter for pluggable storage**: The DockerApiServer accepts an optional StorageAdapter that handles storage operations. This allows different backends (Postgres, in-memory, etc.) without changing the server logic.
+- **TBDFunction for interface contracts**: TBDFunction allows defining API contracts (routes) without implementations. The actual implementation is provided via overloads at runtime. This separates architecture definition from deployment-specific implementation.
 
-- **RemoteClient for cross-service calls**: DockerApiServer creates RemoteClient instances for all bound non-local components. This provides a typed client for making HTTP calls to other services.
+- **httpHandler for remote function calls**: The httpHandler helper creates function handlers that make HTTP calls to remote services. This allows the same architectural code to work whether the function is local or remote.
 
 ### Decisions Rejected
 
-- **ts-node in containers**: Initially tried running TypeScript directly with ts-node in containers, but path resolution issues made this unreliable. Compiling to JavaScript first is more robust.
+- **ts-node in containers**: Initially tried ts-node, but path resolution issues made it unreliable. Switched to Bun which handles TypeScript natively.
 
 - **docker-compose**: Initially used docker-compose/podman-compose, but switched to CDKTF for consistency with the architecture-as-code approach.
+
+- **file:.. dependency in Docker**: Using `"cdk-arch": "file:.."` in package.json causes bun to create recursive symlinks when the parent package contains the example directory. This results in infinitely nested paths like `node_modules/cdk-arch/example/node_modules/cdk-arch/...`. Using `bun link` avoids this issue.
 
 ## Implementation Details
 
@@ -68,65 +72,75 @@ Extend the example to include Postgres and proper service communication between 
 
 ```
 src/                        # Core library
-├── docker-api-server.ts    # DockerApiServer, StorageAdapter, RemoteClient
 ├── binding.ts              # ArchitectureBinding for service discovery
 ├── api-container.ts        # ApiContainer base class
-├── function.ts             # Function construct
+├── function.ts             # Function construct (includes TBDFunction)
 ├── architecture.ts         # Architecture construct
 └── index.ts                # Exports all public API
 
 example/
 ├── src/                    # Source code
-│   ├── json-store.ts       # JsonStore architectural component (example-specific)
-│   ├── architecture.ts     # Architecture definition
-│   └── main.ts             # CDKTF stack with Docker provider
-└── server/                 # Server code (runtime)
-    ├── api-server.ts       # Express API server using DockerApiServer
-    ├── jsonstore-server.ts # Express JsonStore server with Postgres StorageAdapter
-    ├── tsconfig.json       # Server-specific TypeScript config
-    └── dist/               # Compiled JavaScript
+│   ├── json-store.ts       # JsonStore with TBDFunction placeholders
+│   ├── architecture.ts     # Architecture definition (api, jsonStore, helloFunction)
+│   ├── main.ts             # Entry point that calls synth_terraform()
+│   └── docker/             # Docker-specific code
+│       ├── Dockerfile      # Multi-stage build with bun link
+│       ├── terraform.ts    # CDKTF stack with Docker provider
+│       ├── docker-api-server.ts  # Express server from ApiContainer routes
+│       ├── http-handler.ts # HTTP wrapper for remote function calls
+│       └── entrypoints/    # Container entry points
+│           ├── api-server.ts       # API container entrypoint
+│           └── jsonstore-server.ts # JsonStore container with Postgres
+├── e2e.sh                  # End-to-end test script
+└── package.json            # Example dependencies
 ```
 
 ### How It Works
 
-1. **JsonStore extends ApiContainer**: In the example, `JsonStore` extends `ApiContainer` from the core library and registers `POST /store/{collection}` and `GET /get/{collection}` as routes with corresponding Function handlers.
+1. **TBDFunction for placeholders**: `TBDFunction` is a Function that throws an error if invoked without an overload. JsonStore uses TBDFunction for store/get operations - these must be overloaded with actual implementations before use.
 
-2. **ArchitectureBinding**: A new `ArchitectureBinding` class in the core library provides:
-   - `bind(component, endpoint)` - associates an architectural component with a service endpoint
+2. **Function overloading via ArchitectureBinding**: The `bind()` method accepts an `overloads` option that provides implementations for TBDFunction placeholders:
+   ```typescript
+   architectureBinding.bind(jsonStore, {
+     host: 'jsonstore', port: 3001,
+     overloads: {
+       storeFunction: postgresStore,
+       getFunction: postgresGet
+     }
+   });
+   ```
+
+3. **ArchitectureBinding**: Core library class for service discovery:
+   - `bind(component, options)` - associates component with endpoint and applies function overloads
    - `getEndpoint(component)` - retrieves the endpoint for a component
-   - `getAllBindings()` - returns all registered bindings
    - `setLocal(component)` / `isLocal(component)` - tracks which component is served locally
-   - `createHttpWrapper(endpoint, route)` - creates a function that makes HTTP calls to the remote service
 
-3. **DockerApiServer**: A generic class in the core library that constructs Express servers from ApiContainer definitions:
-   - Takes an initialized and bound `ApiContainer` in its constructor
-   - `createApp(express, storage?)` - creates an Express app with routes from the container's API definitions
-   - `getRemoteClient(component)` - returns a `RemoteClient` for cross-service HTTP calls
-   - Routes are automatically set up based on the container's route definitions
-   - Path parameters (e.g., `{collection}`) are extracted and passed to handlers
-   - POST/PUT body is passed as the last argument
+4. **DockerApiServer**: Example-specific class that constructs Express servers from ApiContainer routes:
+   - Reads route definitions from ApiContainer
+   - Automatically sets up Express routes with parameter extraction
+   - Invokes the Function's `invoke()` method (which uses overload if set)
 
-4. **StorageAdapter**: Interface for pluggable storage backends:
-   - `store(collection, document)` - stores a document in a collection
-   - `get(collection)` - retrieves all documents from a collection
-   - Used by DockerApiServer to delegate storage operations to concrete implementations (e.g., Postgres)
+5. **httpHandler for remote calls**: When a service needs to call another service, httpHandler creates a function that makes HTTP calls:
+   ```typescript
+   overloads: {
+     storeFunction: httpHandler(jsonStoreEndpoint, 'POST /store/{collection}'),
+     getFunction: httpHandler(jsonStoreEndpoint, 'GET /get/{collection}')
+   }
+   ```
 
-5. **RemoteClient**: HTTP client for calling remote ApiContainers:
-   - `store(collection, document)` - POST to `/store/{collection}`
-   - `get(collection)` - GET from `/get/{collection}`
-   - `call(method, path, body?)` - generic HTTP call method
+6. **Container entrypoints**: Each container has its own entrypoint that:
+   - Binds architectural components to endpoints
+   - Provides overloads (local implementations or HTTP wrappers)
+   - Creates and starts a DockerApiServer
 
-6. **Express servers**: Two separate Express servers:
-   - `api-server.ts` - uses DockerApiServer to get RemoteClient for JsonStore, custom route for hello endpoint
-   - `jsonstore-server.ts` - uses DockerApiServer with PostgresStorage adapter for automatic route handling
-
-7. **CDKTF Docker deployment** (main.ts):
+7. **CDKTF Docker deployment** (terraform.ts):
    - Creates Docker network for service communication
-   - Deploys `postgres` container with health check
-   - Deploys `jsonstore` container with volume mounts
-   - Deploys `hello-api` container exposed on port 3000
+   - Builds app image from Dockerfile
+   - Deploys postgres, jsonstore, and hello-api containers
    - All containers on shared network for DNS resolution
 
-8. **npm scripts**:
-   - `npm run deploy` - builds TypeScript and runs `cdktf deploy --auto-approve`
-   - `npm run destroy` - runs `cdktf destroy --auto-approve`
+8. **e2e.sh test script**:
+   - Deploys the stack with `npm run deploy`
+   - Tests API endpoint returns correct response
+   - Verifies data was stored in Postgres
+   - Cleans up with `npm run destroy`
