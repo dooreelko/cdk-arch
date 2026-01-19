@@ -3,6 +3,8 @@ set -exuo pipefail
 
 cd "$(dirname "$0")"
 
+systemctl --user start podman.socket
+
 echo "=== E2E Test ==="
 
 echo "Deploying..."

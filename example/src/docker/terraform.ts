@@ -97,7 +97,7 @@ class HelloWorldStack extends TerraformStack {
   }
 }
 
-export const synth_terraform = () => {
+export const synth_local_docker = () => {
   const app = new App();
   new HelloWorldStack(app, 'hello-world');
   app.synth();
