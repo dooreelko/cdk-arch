@@ -59,11 +59,23 @@ class CloudflareStack extends TerraformStack {
     });
 
     new TerraformOutput(this, 'kv-namespace-id', {
-      value: kvNamespace.id
+      value: kvNamespace.id,
+      description: 'KV namespace ID for JsonStore'
     });
 
     new TerraformOutput(this, 'api-worker-name', {
-      value: 'hello-world-api'
+      value: 'hello-world-api',
+      description: 'API Worker name'
+    });
+
+    new TerraformOutput(this, 'api-endpoint', {
+      value: 'https://hello-world-api.<subdomain>.workers.dev/v1/api/hello/{name}',
+      description: 'API endpoint (replace <subdomain> with your Cloudflare subdomain)'
+    });
+
+    new TerraformOutput(this, 'example-curl', {
+      value: 'curl https://hello-world-api.<subdomain>.workers.dev/v1/api/hello/world',
+      description: 'Example curl command (replace <subdomain> with your Cloudflare subdomain)'
     });
   }
 }

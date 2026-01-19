@@ -7,7 +7,7 @@
     "build": "tsc",
     "build:cloudflare": "npm run build && node scripts/bundle-workers.js",
     "deploy": "npm run build && cdktf deploy --auto-approve",
-    "deploy:cloudflare": "PLATFORM=cloudflare npm run build:cloudflare && CLOUDFLARE_API_TOKEN=$(npx wrangler auth token --json | jq -r .token) cdktf deploy --auto-approve",
+    "deploy:cloudflare": "PLATFORM=cloudflare npm run build:cloudflare && PLATFORM=cloudflare  CLOUDFLARE_API_TOKEN=$(npx wrangler auth token --json | jq -r .token) cdktf deploy --auto-approve",
     "destroy": "CLOUDFLARE_API_TOKEN=$(npx wrangler auth token --json | jq -r .token) cdktf destroy --auto-approve"
   },
   "devDependencies": {

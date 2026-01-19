@@ -1,4 +1,4 @@
-import { App, TerraformStack } from 'cdktf';
+import { App, TerraformStack, TerraformOutput } from 'cdktf';
 import { Construct } from 'constructs';
 import { DockerProvider } from '@cdktf/provider-docker/lib/provider';
 import { Image } from '@cdktf/provider-docker/lib/image';
@@ -93,6 +93,16 @@ class HelloWorldStack extends TerraformStack {
       }],
       command: ['bun', 'run', 'src/docker/entrypoints/api-server.ts'],
       mustRun: true
+    });
+
+    new TerraformOutput(this, 'api-endpoint', {
+      value: 'http://localhost:3000/v1/api/hello/{name}',
+      description: 'API endpoint for the hello service'
+    });
+
+    new TerraformOutput(this, 'example-curl', {
+      value: 'curl http://localhost:3000/v1/api/hello/world',
+      description: 'Example curl command to test the API'
     });
   }
 }
