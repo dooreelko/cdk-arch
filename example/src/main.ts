@@ -70,7 +70,7 @@ class HelloWorldStack extends TerraformStack {
       networksAdvanced: [{
         name: appNetwork.name
       }],
-      command: ['bun', 'run', 'src/docker/jsonstore-server.ts'],
+      command: ['bun', 'run', 'src/docker/entrypoints/jsonstore-server.ts'],
       mustRun: true
     });
 
@@ -90,7 +90,7 @@ class HelloWorldStack extends TerraformStack {
       networksAdvanced: [{
         name: appNetwork.name
       }],
-      command: ['bun', 'run', 'src/docker/api-server.ts'],
+      command: ['bun', 'run', 'src/docker/entrypoints/api-server.ts'],
       mustRun: true
     });
   }

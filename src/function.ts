@@ -22,8 +22,24 @@ export class Function extends Construct {
     this._overload = handler;
   }
 
+  hasOverload(): boolean {
+    return this._overload !== undefined;
+  }
+
   public invoke(...args: any[]): any {
     const fn = this._overload ?? this.handler;
     return fn(...args);
+  }
+}
+
+/**
+ * A placeholder function that must be overloaded before use.
+ * Use this when defining an API contract without providing an implementation.
+ */
+export class TBDFunction extends Function {
+  constructor(scope: Construct, id: string) {
+    super(scope, id, () => {
+      throw new Error(`Function '${id}' is not implemented. Provide an overload before invoking.`);
+    });
   }
 }

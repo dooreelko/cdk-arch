@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Function } from './function';
+import { Function, TBDFunction } from './function';
 
 export interface ApiRoutes {
   [path: string]: Function;
@@ -16,15 +16,24 @@ export class ApiContainer extends Construct {
     this.routes = routes;
   }
 
-  public addRoute(path: string, handler: Function): void {
+  addRoute(path: string, handler: Function): void {
     this.routes[path] = handler;
   }
 
-  public getRoute(path: string): Function | undefined {
+  getRoute(path: string): Function | undefined {
     return this.routes[path];
   }
 
-  public listRoutes(): string[] {
+  listRoutes(): string[] {
     return Object.keys(this.routes);
+  }
+
+  /**
+   * Returns a list of TBDFunctions that have not been overloaded.
+   * Use this to validate that all required implementations are provided.
+   */
+  validateOverloads(): Function[] {
+    return Object.values(this.routes)
+      .filter(fn => fn instanceof TBDFunction && !fn.hasOverload());
   }
 }

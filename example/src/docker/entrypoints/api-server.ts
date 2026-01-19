@@ -1,8 +1,8 @@
 import express from 'express';
 import { architectureBinding } from 'cdk-arch';
-import { DockerApiServer } from './docker-api-server';
-import { httpHandler } from './http-handler';
-import { api, jsonStore } from '../architecture';
+import { DockerApiServer } from '../docker-api-server';
+import { httpHandler } from '../http-handler';
+import { api, jsonStore } from '../../architecture';
 
 const PORT = parseInt(process.env.PORT || '3000');
 
