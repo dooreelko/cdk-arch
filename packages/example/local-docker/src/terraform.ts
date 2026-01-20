@@ -20,7 +20,7 @@ class HelloWorldStack extends TerraformStack {
     });
 
     // Build the app image from workspace root
-    const workspaceRoot = path.resolve(__dirname, '../../..');
+    const workspaceRoot = path.resolve(__dirname, '../../../..');
     const dockerFile = path.join(__dirname, 'Dockerfile')
     const appImage = new Image(this, 'app-image', {
       name: 'cdk-arch-app:latest',
@@ -71,7 +71,7 @@ class HelloWorldStack extends TerraformStack {
       networksAdvanced: [{
         name: appNetwork.name
       }],
-      command: ['bun', 'run', 'src/docker/entrypoints/jsonstore-server.ts'],
+      command: ['bun', 'run', 'packages/example/local-docker/src/entrypoints/jsonstore-server.ts'],
       mustRun: true
     });
 
@@ -91,7 +91,7 @@ class HelloWorldStack extends TerraformStack {
       networksAdvanced: [{
         name: appNetwork.name
       }],
-      command: ['bun', 'run', 'src/docker/entrypoints/api-server.ts'],
+      command: ['bun', 'run', 'packages/example/local-docker/src/entrypoints/api-server.ts'],
       mustRun: true
     });
 

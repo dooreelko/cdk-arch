@@ -1,0 +1,27 @@
+{
+  "name": "local-docker",
+  "version": "0.1.0",
+  "description": "Local Docker deployment for hello-world architecture",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "deploy": "npm run build && cdktf deploy --auto-approve",
+    "destroy": "cdktf destroy --auto-approve"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/express": "^5.0.6",
+    "@types/pg": "^8.16.0",
+    "typescript": "^5.0.0",
+    "cdktf": "^0.20.0",
+    "cdktf-cli": "^0.20.0",
+    "@cdktf/provider-docker": "^11.0.0"
+  },
+  "dependencies": {
+    "cdk-arch": "*",
+    "architecture": "*",
+    "constructs": "^10.4.5",
+    "express": "^5.2.1",
+    "pg": "^8.17.1"
+  }
+}

@@ -2,8 +2,8 @@ const esbuild = require('esbuild');
 const path = require('path');
 
 const workers = [
-  { entry: 'src/cloudflare/entrypoints/api-worker.ts', out: 'api-worker.js' },
-  { entry: 'src/cloudflare/entrypoints/jsonstore-worker.ts', out: 'jsonstore-worker.js' }
+  { entry: 'src/entrypoints/api-worker.ts', out: 'api-worker.js' },
+  { entry: 'src/entrypoints/jsonstore-worker.ts', out: 'jsonstore-worker.js' }
 ];
 
 async function bundle() {

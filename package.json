@@ -1,29 +1,14 @@
 {
-  "name": "cdk-arch",
-  "version": "0.1.0",
-  "description": "CDK Architecture primitives for event-driven solution architectures",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "src",
-    "dist"
+  "name": "cdk-arch-workspace",
+  "private": true,
+  "workspaces": [
+    "packages/cdk-arch",
+    "packages/example/architecture",
+    "packages/example/local-docker",
+    "packages/example/cloudflare"
   ],
   "scripts": {
-    "build": "tsc",
-    "test": "jest",
-    "clean": "rm -rf dist"
-  },
-  "keywords": [
-    "cdk",
-    "architecture",
-    "cdktf"
-  ],
-  "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "constructs": "^10.4.5"
+    "build": "npm run build --workspaces",
+    "clean": "npm run clean --workspaces --if-present"
   }
 }

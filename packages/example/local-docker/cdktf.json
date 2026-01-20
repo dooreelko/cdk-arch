@@ -1,7 +1,7 @@
 {
   "language": "typescript",
   "app": "npx ts-node src/main.ts",
-  "projectId": "cdk-arch-example",
+  "projectId": "local-docker",
   "sendCrashReports": false,
   "terraformProviders": [],
   "terraformModules": [],

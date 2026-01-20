@@ -30,7 +30,7 @@ class CloudflareStack extends TerraformStack {
     });
 
     // Bundled worker scripts paths (read at Terraform apply time via file() function)
-    const distDir = path.resolve(__dirname, '../../dist/cloudflare');
+    const distDir = path.resolve(__dirname, '../dist/cloudflare');
     const jsonStoreWorkerPath = path.join(distDir, 'jsonstore-worker.js');
     const apiWorkerPath = path.join(distDir, 'api-worker.js');
 
