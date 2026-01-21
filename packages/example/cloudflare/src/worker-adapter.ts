@@ -1,43 +1,16 @@
-/**
- * Minimal runtime for Cloudflare Workers.
- * Does not depend on constructs or Node.js modules.
- */
+import { ApiContainer, Function, FunctionHandler } from 'cdk-arch';
 
-export type FunctionHandler = (...args: any[]) => any;
-
-export interface RouteDefinition {
+interface RouteMatch {
   method: string;
-  path: string;
-  params: string[];
   pattern: RegExp;
-  handler: FunctionHandler;
+  params: string[];
+  fn: Function;
 }
 
 /**
- * Simple function wrapper with overload support.
+ * Parse a route string like "GET /v1/api/hello/{name}" into components.
  */
-export class WorkerFunction {
-  private _handler: FunctionHandler;
-  private _overload?: FunctionHandler;
-
-  constructor(handler: FunctionHandler) {
-    this._handler = handler;
-  }
-
-  overload(handler: FunctionHandler): void {
-    this._overload = handler;
-  }
-
-  invoke(...args: any[]): any {
-    const fn = this._overload ?? this._handler;
-    return fn(...args);
-  }
-}
-
-/**
- * Parse a route string into components.
- */
-function parseRoute(route: string): { method: string; path: string; params: string[]; pattern: RegExp } {
+function parseRoute(route: string, fn: Function): RouteMatch {
   const parts = route.split(' ');
   const method = parts.length === 2 ? parts[0] : 'GET';
   const path = parts.length === 2 ? parts[1] : parts[0];
@@ -46,29 +19,25 @@ function parseRoute(route: string): { method: string; path: string; params: stri
 
   return {
     method,
-    path,
+    pattern: new RegExp(`^${regexPath}$`),
     params,
-    pattern: new RegExp(`^${regexPath}$`)
+    fn
   };
 }
 
 /**
- * Worker-compatible request handler.
+ * Create a Cloudflare Worker fetch handler from an ApiContainer.
  */
-export class WorkerRouter {
-  private routes: RouteDefinition[] = [];
+export function createWorkerHandler(container: ApiContainer): (request: Request) => Promise<Response> {
+  const routes = Object.entries(container.routes)
+    .map(([route, fn]) => parseRoute(route, fn as Function));
 
-  addRoute(route: string, handler: FunctionHandler): void {
-    const { method, path, params, pattern } = parseRoute(route);
-    this.routes.push({ method, path, params, pattern, handler });
-  }
-
-  async handle(request: Request): Promise<Response> {
+  return async (request: Request): Promise<Response> => {
     const url = new URL(request.url);
     const method = request.method;
     const path = url.pathname;
 
-    for (const route of this.routes) {
+    for (const route of routes) {
       if (route.method !== method) continue;
 
       const match = path.match(route.pattern);
@@ -81,7 +50,7 @@ export class WorkerRouter {
           : [];
         const args = [...pathArgs, ...bodyArg];
 
-        const result = await route.handler(...args);
+        const result = await route.fn.invoke(...args);
         return new Response(JSON.stringify(result), {
           headers: { 'Content-Type': 'application/json' }
         });
@@ -98,16 +67,16 @@ export class WorkerRouter {
       JSON.stringify({ error: 'Not found' }),
       { status: 404, headers: { 'Content-Type': 'application/json' } }
     );
-  }
+  };
 }
 
 /**
  * Create a handler that calls another Worker via service binding.
  */
-export const serviceBindingHandler = (
+export function serviceBindingHandler(
   getBinding: () => { fetch: typeof fetch },
   route: string
-): FunctionHandler => {
+): FunctionHandler {
   return async (...args: any[]) => {
     const [method, path] = route.split(' ');
     const pathParams = path.match(/\{(\w+)\}/g) || [];
@@ -129,4 +98,4 @@ export const serviceBindingHandler = (
     const response = await binding.fetch(url, options);
     return response.json();
   };
-};
+}

@@ -12,10 +12,17 @@ have crypto polyfill: https://developers.cloudflare.com/workers/runtime-apis/nod
 ## Decisions
 
 ### Runtime code placement
-- **Worker runtime (WorkerRouter, WorkerFunction, serviceBindingHandler)**: Keep in packages/example/cloudflare, not in cdk-arch
+- **Worker adapter (createWorkerHandler, serviceBindingHandler)**: Keep in packages/example/cloudflare as minimal adapter
 - **Docker runtime (DockerApiServer, httpHandler)**: Keep in packages/example/local-docker, not in cdk-arch
 
 The goal is minimal runtime packages - deployment-specific code stays with its deployment package.
+
+### Cloudflare uses cdk-arch
+Cloudflare workers now use cdk-arch directly:
+- Import `architectureBinding` from cdk-arch to set up overloads
+- Import architecture components (`api`, `jsonStore`) from architecture package
+- Use `worker-adapter.ts` for minimal Worker-specific code (createWorkerHandler, serviceBindingHandler)
+- Cloudflare Workers support Node.js crypto API via polyfill: https://developers.cloudflare.com/workers/runtime-apis/nodejs/crypto/
 
 ## Target Structure
 
@@ -59,7 +66,7 @@ packages/
         ├── src/
         │   ├── main.ts (terraform synth)
         │   ├── terraform.ts
-        │   ├── worker-runtime.ts
+        │   ├── worker-adapter.ts (minimal Worker adapter using cdk-arch)
         │   └── entrypoints/
         │       ├── api-worker.ts
         │       └── jsonstore-worker.ts
