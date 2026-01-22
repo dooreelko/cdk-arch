@@ -10,11 +10,16 @@ const helloFunction = new Function(arch, 'hello-handler', (name: string) => {
   return `Hello, ${name}!`;
 });
 
+const hellosFunction = new Function(arch, 'hellos-handler', () => {
+  return jsonStore.get('greeted');
+});
+
 const api = new ApiContainer(arch, 'api', {
-  '/v1/api/hello/{name}': helloFunction
+  '/v1/api/hello/{name}': helloFunction,
+  'GET /v1/api/hellos': hellosFunction
 });
 
 console.log('Architecture definition:');
 console.log(JSON.stringify(arch.synth(), null, 2));
 
-export { arch, api, jsonStore, helloFunction };
+export { arch, api, jsonStore, helloFunction, hellosFunction };

@@ -43,7 +43,9 @@ class CloudflareStack extends TerraformStack {
         name: 'JSONSTORE_KV',
         namespaceId: kvNamespace.id
       }],
-      module: true
+      module: true,
+      compatibilityDate: '2024-09-23',
+      compatibilityFlags: ['nodejs_compat']
     });
 
     // API Worker with service binding to JsonStore

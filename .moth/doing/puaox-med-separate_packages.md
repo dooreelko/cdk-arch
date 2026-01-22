@@ -72,6 +72,7 @@ packages/
         │       └── jsonstore-worker.ts
         ├── scripts/
         │   └── bundle-workers.js
+        ├── e2e.sh
         ├── package.json
         ├── cdktf.json
         └── tsconfig.json
@@ -104,4 +105,15 @@ packages/
 1. cdk-arch (no deps on other local packages)
 2. architecture (depends on cdk-arch)
 3. local-docker, cloudflare (depend on cdk-arch, architecture)
+
+### API endpoints:
+- `GET /v1/api/hello/{name}` - Greets the given name and stores the greeting
+- `GET /v1/api/hellos` - Returns all stored greetings (name and timestamp)
+
+### E2E testing:
+Both deployments have `e2e.sh` scripts that:
+1. Deploy the stack
+2. Call `/v1/api/hello/E2ETest` to create a greeting
+3. Call `/v1/api/hellos` to verify the greeting was stored
+4. Clean up by destroying the stack
 

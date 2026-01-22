@@ -13,26 +13,26 @@ npm run deploy
 echo "Waiting for services to start..."
 sleep 5
 
-echo "Testing API..."
+echo "Testing hello API..."
 RESPONSE=$(curl -s http://localhost:3000/v1/api/hello/E2ETest)
 echo "Response: $RESPONSE"
 
 if [[ "$RESPONSE" == *"Hello, E2ETest"* ]]; then
-  echo "API test passed"
+  echo "Hello API test passed"
 else
-  echo "API test failed"
+  echo "Hello API test failed"
   npm run destroy
   exit 1
 fi
 
-echo "Verifying data in Postgres..."
-DATA=$(podman exec postgres psql -U postgres -d jsonstore -t -c "SELECT data FROM documents WHERE collection = 'greeted' ORDER BY created_at DESC LIMIT 1;")
-echo "Stored data: $DATA"
+echo "Testing hellos API..."
+HELLOS=$(curl -s http://localhost:3000/v1/api/hellos)
+echo "Hellos response: $HELLOS"
 
-if [[ "$DATA" == *"E2ETest"* ]]; then
-  echo "Database test passed"
+if [[ "$HELLOS" == *"E2ETest"* ]]; then
+  echo "Hellos API test passed"
 else
-  echo "Database test failed"
+  echo "Hellos API test failed"
   npm run destroy
   exit 1
 fi
