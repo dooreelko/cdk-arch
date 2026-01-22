@@ -57,7 +57,9 @@ class CloudflareStack extends TerraformStack {
         name: 'JSONSTORE',
         service: jsonStoreWorker.name
       }],
-      module: true
+      module: true,
+      compatibilityDate: '2024-09-23',
+      compatibilityFlags: ['nodejs_compat']
     });
 
     // Enable workers.dev subdomain for API Worker

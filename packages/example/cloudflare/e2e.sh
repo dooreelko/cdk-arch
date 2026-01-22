@@ -14,11 +14,24 @@ if [ -z "${CLOUDFLARE_SUBDOMAIN:-}" ]; then
 fi
 
 API_BASE_URL="https://hello-world-api.${CLOUDFLARE_SUBDOMAIN}.workers.dev"
+LOGFILE="/tmp/e2e-terraform.log"
+
+cleanup() {
+  echo "Cleaning up..."
+  npm run destroy >> "$LOGFILE" 2>&1 || true
+}
+
+fail() {
+  echo "=== Last 50 lines of terraform output ==="
+  tail -50 "$LOGFILE"
+  # cleanup
+  exit 1
+}
 
 echo "=== Cloudflare E2E Test ==="
 
 echo "Deploying..."
-npm run deploy
+npm run deploy > "$LOGFILE" 2>&1 || fail
 
 echo "Waiting for workers to be available..."
 sleep 10
@@ -31,8 +44,7 @@ if [[ "$RESPONSE" == *"Hello, E2ETest"* ]]; then
   echo "Hello API test passed"
 else
   echo "Hello API test failed"
-  npm run destroy
-  exit 1
+  fail
 fi
 
 echo "Testing hellos API..."
@@ -43,11 +55,10 @@ if [[ "$HELLOS" == *"E2ETest"* ]]; then
   echo "Hellos API test passed"
 else
   echo "Hellos API test failed"
-  npm run destroy
-  exit 1
+  fail
 fi
 
-echo "Cleaning up..."
-npm run destroy
+cleanup
+rm -f "$LOGFILE"
 
 echo "=== Cloudflare E2E Test Passed ==="
