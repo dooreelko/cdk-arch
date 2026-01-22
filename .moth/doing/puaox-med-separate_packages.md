@@ -95,11 +95,21 @@ packages/
 - Local package references via workspace protocol (`"cdk-arch": "*"`)
 
 ### Version constraints:
-- cdktf: ^0.20.0 (required by provider packages)
+- cdktf: ^0.20.0
 - cdktf-cli: ^0.20.0
 - @cdktf/provider-docker: ^11.0.0
-- @cdktf/provider-cloudflare: ^11.0.0
-- @cdktf/provider-null: ^10.0.0 (requires cdktf ^0.20.0)
+- @cdktf/provider-cloudflare: ^5.14.0 (v5 API with Worker, WorkerVersion, WorkersDeployment)
+
+### Cloudflare Terraform resources (v5 API):
+Uses the new v5 resource model:
+- `Worker` - worker metadata with observability and subdomain settings
+- `WorkerVersion` - versioned code with modules and bindings
+- `WorkersDeployment` - deploys a version with percentage-based strategy
+
+Dependency ordering for proper destroy:
+- apiWorker depends on jsonStoreWorker (API destroyed first)
+- jsonStoreWorker depends on kvNamespace (worker destroyed before namespace)
+- apiVersion depends on jsonStoreDeployment (service binding requires deployed target)
 
 ### Build order (handled by npm workspaces):
 1. cdk-arch (no deps on other local packages)
@@ -112,8 +122,9 @@ packages/
 
 ### E2E testing:
 Both deployments have `e2e.sh` scripts that:
-1. Deploy the stack
+1. Deploy the stack (terraform output redirected to `/tmp/e2e-terraform.log`)
 2. Call `/v1/api/hello/E2ETest` to create a greeting
 3. Call `/v1/api/hellos` to verify the greeting was stored
 4. Clean up by destroying the stack
+5. On failure: print last 50 lines of terraform log
 

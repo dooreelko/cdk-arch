@@ -14,16 +14,17 @@ if [ -z "${CLOUDFLARE_SUBDOMAIN:-}" ]; then
 fi
 
 API_BASE_URL="https://hello-world-api.${CLOUDFLARE_SUBDOMAIN}.workers.dev"
-LOGFILE="/tmp/e2e-terraform.log"
+# LOGFILE="/tmp/e2e-terraform.log"
 
 cleanup() {
   echo "Cleaning up..."
-  npm run destroy >> "$LOGFILE" 2>&1 || true
+  npm run destroy # >> "$LOGFILE" 2>&1 || true
 }
 
 fail() {
-  echo "=== Last 50 lines of terraform output ==="
-  tail -50 "$LOGFILE"
+  # echo "=== Last 50 lines of terraform output ==="
+  # tail -50 "$LOGFILE"
+
   # cleanup
   exit 1
 }
@@ -31,7 +32,7 @@ fail() {
 echo "=== Cloudflare E2E Test ==="
 
 echo "Deploying..."
-npm run deploy > "$LOGFILE" 2>&1 || fail
+npm run deploy # > "$LOGFILE" 2>&1 || fail
 
 echo "Waiting for workers to be available..."
 sleep 10

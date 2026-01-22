@@ -1,10 +1,10 @@
-import { App, TerraformStack, TerraformOutput, Fn } from 'cdktf';
+import { App, TerraformStack, TerraformOutput } from 'cdktf';
 import { Construct } from 'constructs';
 import { CloudflareProvider } from '@cdktf/provider-cloudflare/lib/provider';
 import { WorkersKvNamespace } from '@cdktf/provider-cloudflare/lib/workers-kv-namespace';
-import { WorkersScript } from '@cdktf/provider-cloudflare/lib/workers-script';
-import { NullProvider } from '@cdktf/provider-null/lib/provider';
-import { Resource as NullResource } from '@cdktf/provider-null/lib/resource';
+import { Worker } from '@cdktf/provider-cloudflare/lib/worker';
+import { WorkerVersion } from '@cdktf/provider-cloudflare/lib/worker-version';
+import { WorkersDeployment } from '@cdktf/provider-cloudflare/lib/workers-deployment';
 import * as path from 'path';
 
 class CloudflareStack extends TerraformStack {
@@ -29,52 +29,101 @@ class CloudflareStack extends TerraformStack {
       title: 'hello-world-jsonstore'
     });
 
-    // Bundled worker scripts paths (read at Terraform apply time via file() function)
+    // Bundled worker scripts paths
     const distDir = path.resolve(__dirname, '../dist/cloudflare');
     const jsonStoreWorkerPath = path.join(distDir, 'jsonstore-worker.js');
     const apiWorkerPath = path.join(distDir, 'api-worker.js');
 
-    // JsonStore Worker with KV binding
-    const jsonStoreWorker = new WorkersScript(this, 'jsonstore-worker', {
+    // JsonStore Worker (depends on kvNamespace for proper destroy ordering)
+    const jsonStoreWorker = new Worker(this, 'jsonstore-worker', {
       accountId,
       name: 'hello-world-jsonstore',
-      content: Fn.file(jsonStoreWorkerPath),
-      kvNamespaceBinding: [{
+      observability: {
+        enabled: true,
+        logs: {
+          enabled: true,
+          invocationLogs: true
+        }
+      },
+      subdomain: {
+        enabled: true
+      },
+      dependsOn: [kvNamespace]
+    });
+
+    const jsonStoreVersion = new WorkerVersion(this, 'jsonstore-version', {
+      accountId,
+      workerId: jsonStoreWorker.id,
+      mainModule: 'index.js',
+      modules: [{
+        name: 'index.js',
+        contentFile: jsonStoreWorkerPath,
+        contentType: 'application/javascript+module'
+      }],
+      bindings: [{
+        type: 'kv_namespace',
         name: 'JSONSTORE_KV',
         namespaceId: kvNamespace.id
       }],
-      module: true,
       compatibilityDate: '2024-09-23',
       compatibilityFlags: ['nodejs_compat']
     });
 
-    // API Worker with service binding to JsonStore
-    const apiWorker = new WorkersScript(this, 'api-worker', {
+    const jsonStoreDeployment = new WorkersDeployment(this, 'jsonstore-deployment', {
+      accountId,
+      scriptName: jsonStoreWorker.name,
+      strategy: 'percentage',
+      versions: [{
+        versionId: jsonStoreVersion.id,
+        percentage: 100
+      }]
+    });
+
+    // API Worker (depends on jsonStoreWorker for proper destroy ordering)
+    const apiWorker = new Worker(this, 'api-worker', {
       accountId,
       name: 'hello-world-api',
-      content: Fn.file(apiWorkerPath),
-      serviceBinding: [{
+      observability: {
+        enabled: true,
+        logs: {
+          enabled: true,
+          invocationLogs: true
+        }
+      },
+      subdomain: {
+        enabled: true
+      },
+      dependsOn: [jsonStoreWorker]
+    });
+
+    const apiVersion = new WorkerVersion(this, 'api-version', {
+      accountId,
+      workerId: apiWorker.id,
+      mainModule: 'index.js',
+      modules: [{
+        name: 'index.js',
+        contentFile: apiWorkerPath,
+        contentType: 'application/javascript+module'
+      }],
+      bindings: [{
+        type: 'service',
         name: 'JSONSTORE',
         service: jsonStoreWorker.name
       }],
-      module: true,
       compatibilityDate: '2024-09-23',
-      compatibilityFlags: ['nodejs_compat']
+      compatibilityFlags: ['nodejs_compat'],
+      dependsOn: [jsonStoreDeployment]
     });
 
-    // Enable workers.dev subdomain for API Worker
-    new NullProvider(this, 'null', {});
-    const enableSubdomain = new NullResource(this, 'enable-api-subdomain', {
-      triggers: {
-        worker_id: apiWorker.id
-      }
+    new WorkersDeployment(this, 'api-deployment', {
+      accountId,
+      scriptName: apiWorker.name,
+      strategy: 'percentage',
+      versions: [{
+        versionId: apiVersion.id,
+        percentage: 100
+      }]
     });
-    enableSubdomain.addOverride('provisioner.local-exec.command',
-      `curl -s -X POST "https://api.cloudflare.com/client/v4/accounts/${accountId}/workers/scripts/hello-world-api/subdomain" ` +
-      `-H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" ` +
-      `-H "Content-Type: application/json" ` +
-      `--data '{"enabled":true}'`
-    );
 
     new TerraformOutput(this, 'kv-namespace-id', {
       value: kvNamespace.id,
@@ -82,7 +131,7 @@ class CloudflareStack extends TerraformStack {
     });
 
     new TerraformOutput(this, 'api-worker-name', {
-      value: 'hello-world-api',
+      value: apiWorker.name,
       description: 'API Worker name'
     });
 

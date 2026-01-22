@@ -32,6 +32,7 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     currentEnv = env;
     try {
+      console.log({what: 'api rq', ...request});
       return await handleRequest(request);
     } finally {
       currentEnv = null;
