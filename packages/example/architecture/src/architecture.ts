@@ -9,9 +9,9 @@ const arch = new Architecture('hello-world');
 
 const jsonStore = new JsonStore(arch, 'greeted-store');
 
-const helloFunction = new Function(arch, 'hello-handler', (name: string) => {
+const helloFunction = new Function(arch, 'hello-handler', async (name: string) => {
   trace('helloing', {name});
-  const res = jsonStore.store('greeted', { when: Date.now(), name });
+  const res = await jsonStore.store('greeted', { when: Date.now(), name });
   trace('stored', {res});
   return `Hello, ${name}!`;
 });
@@ -23,7 +23,7 @@ const hellosFunction = new Function(arch, 'hellos-handler', () => {
 });
 
 const api = new ApiContainer(arch, 'api', {
-  '/v1/api/hello/{name}': helloFunction,
+  'GET /v1/api/hello/{name}': helloFunction,
   'GET /v1/api/hellos': hellosFunction
 });
 

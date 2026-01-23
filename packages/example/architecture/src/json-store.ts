@@ -15,15 +15,15 @@ export class JsonStore extends ApiContainer {
     this.storeFunction = new TBDFunction(this, 'store-handler');
     this.getFunction = new TBDFunction(this, 'get-handler');
 
-    this.addRoute('POST /store/{collection}', this.storeFunction);
-    this.addRoute('GET /get/{collection}', this.getFunction);
+    this.addRoute('POST /v1/api/store/{collection}', this.storeFunction);
+    this.addRoute('GET /v1/api/get/{collection}', this.getFunction);
   }
 
-  store(collection: string, document: any): { success: boolean } {
+  store(collection: string, document: any): Promise<{ success: boolean }> {
     return this.storeFunction.invoke(collection, document);
   }
 
-  get(collection: string): any[] {
+  get(collection: string): Promise<any[]> {
     return this.getFunction.invoke(collection);
   }
 }

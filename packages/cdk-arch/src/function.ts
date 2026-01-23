@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 
-export type FunctionHandler = (...args: any[]) => any;
+export type FunctionHandler = (...args: any[]) => Promise<any>;
 
 /**
  * Represents a serverless function or handler in the architecture
@@ -26,9 +26,9 @@ export class Function extends Construct {
     return this._overload !== undefined;
   }
 
-  public invoke(...args: any[]): any {
+  public invoke(...args: any[]): Promise<any> {
     const fn = this._overload ?? this.handler;
-    return fn(...args);
+    return Promise.resolve(fn(...args));
   }
 }
 
@@ -39,7 +39,7 @@ export class Function extends Construct {
 export class TBDFunction extends Function {
   constructor(scope: Construct, id: string) {
     super(scope, id, () => {
-      throw new Error(`Function '${id}' is not implemented. Provide an overload before invoking.`);
+      return Promise.reject(new Error(`Function '${id}' is not implemented. Provide an overload before invoking.`));
     });
   }
 }

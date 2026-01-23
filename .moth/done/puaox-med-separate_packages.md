@@ -128,3 +128,6 @@ Both deployments have `e2e.sh` scripts that:
 4. Clean up by destroying the stack
 5. On failure: print last 50 lines of terraform log
 
+### FunctionHandler always returns Promise
+`FunctionHandler` type changed to always return `Promise<any>`. This prevents silent failures when async operations (like service binding calls) are not awaited. The `invoke()` method wraps results with `Promise.resolve()` to ensure consistent behavior. Callers must now await results, and TypeScript will flag missing awaits as type errors.
+

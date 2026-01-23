@@ -92,12 +92,12 @@ export function serviceBindingHandler(
 
     const url = pathParams.reduce(
       (u, param, i) => args[i] !== undefined ? u.replace(param, encodeURIComponent(String(args[i]))) : u,
-      `https://hello-world-jsonstore.sascha-fedorenko.workers.dev${path}`
+      `https://example.com${path}`
     );
 
     const options: RequestInit = {
       method: method || 'GET',
-      headers: { 'Content-Type': 'application/json', 'host': 'hello-world-jsonstore.sascha-fedorenko.workers.dev', 'accept': '*/*' },
+      headers: { 'Content-Type': 'application/json' },
       ...((method === 'POST' || method === 'PUT') && args.length > pathParams.length
         ? { body: JSON.stringify(args[pathParams.length]) }
         : {})
@@ -106,12 +106,7 @@ export function serviceBindingHandler(
     const binding = getBinding();
     log('will do remote call', {path, url, options, 'has_fetch': !!binding.fetch, fetch: binding.fetch.toString()});
     try {
-      const response = await binding.fetch(new Request(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(args[pathParams.length])
-      }));
-      // const response = await binding.fetch(url, options);
+      const response = await binding.fetch(url, options);
       log('did remote call', {ok: response.ok, status: response.status, stext: response.statusText, response});
       return response.json();
     } catch (error) {
