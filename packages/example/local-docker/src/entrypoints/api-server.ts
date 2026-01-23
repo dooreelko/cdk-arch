@@ -18,8 +18,8 @@ const jsonStoreEndpoint = {
 architectureBinding.bind(jsonStore, {
   ...jsonStoreEndpoint,
   overloads: {
-    storeFunction: httpHandler(jsonStoreEndpoint, 'POST /store/{collection}'),
-    getFunction: httpHandler(jsonStoreEndpoint, 'GET /get/{collection}')
+    store: httpHandler(jsonStoreEndpoint, jsonStore, 'store'),
+    get: httpHandler(jsonStoreEndpoint, jsonStore, 'get')
   }
 });
 

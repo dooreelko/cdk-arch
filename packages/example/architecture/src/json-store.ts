@@ -17,8 +17,8 @@ export class JsonStore<TDoc = any> extends ApiContainer {
     this.storeFunction = new TBDFunction(this, 'store-handler');
     this.getFunction = new TBDFunction(this, 'get-handler');
 
-    this.addRoute('POST /v1/api/store/{collection}', this.storeFunction);
-    this.addRoute('GET /v1/api/get/{collection}', this.getFunction);
+    this.addRoute('store', 'POST /v1/api/store/{collection}', this.storeFunction);
+    this.addRoute('get', 'GET /v1/api/get/{collection}', this.getFunction);
   }
 
   store(collection: string, document: TDoc): Promise<{ success: boolean }> {

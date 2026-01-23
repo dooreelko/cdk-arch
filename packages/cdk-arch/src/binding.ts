@@ -32,13 +32,21 @@ export class ArchitectureBinding {
   /**
    * Bind an architectural component to a service endpoint.
    * Optionally override function implementations with the overloads option.
+   * Overload keys must be route names registered via addRoute.
    */
   bind(component: ApiContainer, options: BindOptions): void {
     this.bindings.set(component, { host: options.host, port: options.port });
 
-    Object.entries(options.overloads ?? {})
-      .filter(([name]) => (component as any)[name] instanceof Function)
-      .forEach(([name, handler]) => (component as any)[name].overload(handler));
+    Object.entries(options.overloads ?? {}).forEach(([name, handler]) => {
+      const route = component.getRouteByName(name);
+      if (!route) {
+        throw new Error(`Route '${name}' not found in component '${component.node.id}'`);
+      }
+      if (!(route.handler instanceof Function)) {
+        throw new Error(`Route '${name}' handler is not a Function`);
+      }
+      route.handler.overload(handler);
+    });
   }
 
   /**

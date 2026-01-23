@@ -64,8 +64,8 @@ architectureBinding.bind(jsonStore, {
   host: 'jsonstore',
   port: PORT,
   overloads: {
-    storeFunction: postgresStore,
-    getFunction: postgresGet
+    store: postgresStore,
+    get: postgresGet
   }
 });
 
