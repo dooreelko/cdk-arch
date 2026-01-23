@@ -2,3 +2,4 @@ node_modules
 dist
 *tfstate*
 cdktf.out
+fo0

@@ -1,0 +1,8 @@
+name = "hello-world-jsonstore"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+main = "./dist/cloudflare/jsonstore-worker.js"
+
+[[kv_namespaces]]
+binding = "JSONSTORE_KV"
+id = "46e4678d80e84743b195ff005564a049"

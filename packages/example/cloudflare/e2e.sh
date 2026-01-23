@@ -60,6 +60,6 @@ else
 fi
 
 cleanup
-rm -f "$LOGFILE"
+# rm -f "$LOGFILE"
 
 echo "=== Cloudflare E2E Test Passed ==="

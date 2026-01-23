@@ -1,5 +1,5 @@
 import { architectureBinding } from 'cdk-arch';
-import { api, jsonStore } from 'architecture';
+import { api, jsonStore, log } from 'architecture';
 import { createWorkerHandler, serviceBindingHandler } from '../worker-adapter';
 
 interface Env {
@@ -32,7 +32,7 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     currentEnv = env;
     try {
-      console.log({what: 'api rq', ...request});
+      // log('api rq', {request});
       return await handleRequest(request);
     } finally {
       currentEnv = null;

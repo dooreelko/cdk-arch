@@ -1,3 +1,4 @@
+import { log, err } from 'architecture';
 import { ApiContainer, Function, FunctionHandler } from 'cdk-arch';
 
 interface RouteMatch {
@@ -33,6 +34,7 @@ export function createWorkerHandler(container: ApiContainer): (request: Request)
     .map(([route, fn]) => parseRoute(route, fn as Function));
 
   return async (request: Request): Promise<Response> => {
+    // log('worker start', {request});
     const url = new URL(request.url);
     const method = request.method;
     const path = url.pathname;
@@ -43,6 +45,8 @@ export function createWorkerHandler(container: ApiContainer): (request: Request)
       const match = path.match(route.pattern);
       if (!match) continue;
 
+      // log('worker route', {route});
+
       try {
         const pathArgs = route.params.map((_, i) => decodeURIComponent(match[i + 1]));
         const bodyArg = (method === 'POST' || method === 'PUT')
@@ -50,18 +54,23 @@ export function createWorkerHandler(container: ApiContainer): (request: Request)
           : [];
         const args = [...pathArgs, ...bodyArg];
 
+        log('worker invoke', {route, args});
         const result = await route.fn.invoke(...args);
+
+        log('worker result', {result});
         return new Response(JSON.stringify(result), {
           headers: { 'Content-Type': 'application/json' }
         });
       } catch (error: any) {
-        console.error(`Error handling ${route.method} ${path}:`, error);
+        err(`Error handling ${route.method} ${path}:`, {error});
         return new Response(
           JSON.stringify({ error: error.message || 'Internal server error' }),
           { status: 500, headers: { 'Content-Type': 'application/json' } }
         );
       }
     }
+
+    err('worker FAIL. NO ROUTE.', {path, routes});
 
     return new Response(
       JSON.stringify({ error: 'Not found' }),
@@ -83,19 +92,32 @@ export function serviceBindingHandler(
 
     const url = pathParams.reduce(
       (u, param, i) => args[i] !== undefined ? u.replace(param, encodeURIComponent(String(args[i]))) : u,
-      `https://internal${path}`
+      `https://hello-world-jsonstore.sascha-fedorenko.workers.dev${path}`
     );
 
     const options: RequestInit = {
       method: method || 'GET',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'host': 'hello-world-jsonstore.sascha-fedorenko.workers.dev', 'accept': '*/*' },
       ...((method === 'POST' || method === 'PUT') && args.length > pathParams.length
         ? { body: JSON.stringify(args[pathParams.length]) }
         : {})
     };
 
     const binding = getBinding();
-    const response = await binding.fetch(url, options);
-    return response.json();
+    log('will do remote call', {path, url, options, 'has_fetch': !!binding.fetch, fetch: binding.fetch.toString()});
+    try {
+      const response = await binding.fetch(new Request(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(args[pathParams.length])
+      }));
+      // const response = await binding.fetch(url, options);
+      log('did remote call', {ok: response.ok, status: response.status, stext: response.statusText, response});
+      return response.json();
+    } catch (error) {
+      err('remote call failed', {error});
+      throw error;
+    }
   };
 }
+

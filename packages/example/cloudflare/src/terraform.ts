@@ -87,6 +87,7 @@ class CloudflareStack extends TerraformStack {
         enabled: true,
         logs: {
           enabled: true,
+          headSamplingRate: 1,
           invocationLogs: true
         }
       },
