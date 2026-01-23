@@ -1,16 +1,21 @@
 {
-  "name": "cdk-arch",
-  "version": "0.1.0",
+  "name": "@arinoto/cdk-arch",
+  "version": "0.1.4",
   "description": "CDK Architecture primitives for event-driven solution architectures",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "src",
     "dist"
   ],
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "prepublish": "cp ../../IDEA.md ./README.md"
   },
   "keywords": [
     "cdk",

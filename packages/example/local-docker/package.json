@@ -22,7 +22,7 @@
     "esbuild": "^0.20.0"
   },
   "dependencies": {
-    "cdk-arch": "*",
+    "@arinoto/cdk-arch": "*",
     "architecture": "*",
     "constructs": "^10.4.5",
     "express": "^5.2.1",

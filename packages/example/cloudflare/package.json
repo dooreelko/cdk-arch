@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "architecture": "*",
-    "cdk-arch": "*",
+    "@arinoto/cdk-arch": "*",
     "constructs": "^10.4.5"
   }
 }
