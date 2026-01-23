@@ -7,7 +7,9 @@
     "build": "tsc",
     "build:docker": "npm run build && node scripts/bundle-servers.js",
     "deploy": "npm run build:docker && cdktf deploy --auto-approve",
-    "destroy": "cdktf destroy --auto-approve"
+    "destroy": "cdktf destroy --auto-approve",
+    "e2e": "./e2e.sh",
+    "clean": "rm -rf dist"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",

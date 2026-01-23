@@ -5,6 +5,7 @@
     "lib": ["ES2020"],
     "types": ["node", "@cloudflare/workers-types"],
     "declaration": true,
+    "declarationMap": true,
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,

@@ -14,11 +14,11 @@ architectureBinding.bind(jsonStore, {
   host: 'jsonstore',
   port: 0, // Not used for service bindings
   overloads: {
-    storeFunction: serviceBindingHandler(
+    store: serviceBindingHandler(
       () => currentEnv!.JSONSTORE,
       'POST /store/{collection}'
     ),
-    getFunction: serviceBindingHandler(
+    get: serviceBindingHandler(
       () => currentEnv!.JSONSTORE,
       'GET /get/{collection}'
     )

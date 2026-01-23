@@ -29,7 +29,7 @@ echo "=== Cloudflare E2E Test ==="
 
 echo "Deploying..."
 (cd ../.. && npm run clean && npm run build)
-npm run deploy # > "$LOGFILE" 2>&1 || fail
+npm run deploy 
 
 echo "Waiting for workers to be available..."
 sleep 10

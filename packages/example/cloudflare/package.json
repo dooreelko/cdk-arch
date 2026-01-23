@@ -7,7 +7,9 @@
     "build": "tsc",
     "build:workers": "npm run build && node scripts/bundle-workers.js",
     "deploy": "npm run build:workers && CLOUDFLARE_API_TOKEN=$(npx --yes wrangler auth token --json | jq -r .token) cdktf deploy --auto-approve",
-    "destroy": "CLOUDFLARE_API_TOKEN=$(npx --yes wrangler auth token --json | jq -r .token) cdktf destroy --auto-approve"
+    "destroy": "CLOUDFLARE_API_TOKEN=$(npx --yes wrangler auth token --json | jq -r .token) cdktf destroy --auto-approve",
+    "e2e": "./e2e.sh",
+    "clean": "rm -rf dist"
   },
   "devDependencies": {
     "@cdktf/provider-cloudflare": "^13.9.1",

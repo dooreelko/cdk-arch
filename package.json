@@ -9,6 +9,10 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces",
-    "clean": "npm run clean --workspaces --if-present"
+    "clean": "npm run clean --workspaces --if-present",
+    "e2e": "npm run e2e --workspaces --if-present"
+  },
+  "devDependencies": {
+    "lerna": "^9.0.3"
   }
 }

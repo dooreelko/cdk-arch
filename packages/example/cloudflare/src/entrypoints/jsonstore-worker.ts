@@ -40,8 +40,8 @@ architectureBinding.bind(jsonStore, {
   host: 'jsonstore',
   port: 0,
   overloads: {
-    storeFunction: kvStore,
-    getFunction: kvGet
+    store: kvStore,
+    get: kvGet
   }
 });
 

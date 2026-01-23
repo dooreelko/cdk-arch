@@ -3,16 +3,12 @@ set -exuo pipefail
 
 cd "$(dirname "$0")"
 
-LOGFILE="/tmp/e2e-terraform.log"
-
 cleanup() {
   echo "Cleaning up..."
-  npm run destroy >> "$LOGFILE" 2>&1 || true
+  npm run destroy 
 }
 
 fail() {
-  echo "=== Last 50 lines of terraform output ==="
-  tail -50 "$LOGFILE"
   cleanup
   exit 1
 }
@@ -22,7 +18,9 @@ systemctl --user start podman.socket
 echo "=== E2E Test ==="
 
 echo "Deploying..."
-npm run deploy > "$LOGFILE" 2>&1 || fail
+(cd ../.. && npm run clean && npm run build)
+
+npm run deploy || fail
 
 echo "Waiting for services to start..."
 sleep 5
@@ -50,6 +48,5 @@ else
 fi
 
 cleanup
-rm -f "$LOGFILE"
 
 echo "=== E2E Test Passed ==="
