@@ -5,9 +5,14 @@ const trace = (what: string, args: any) => {}; //console.log({message: what, lev
 const log = (what: string, args: any) => console.log({message: what, level: 'info', extra: args});
 const err = (what: string, args: any) => console.log({message: what, level: 'error', extra: args});
 
+interface Greeting {
+  when: number;
+  name: string;
+}
+
 const arch = new Architecture('hello-world');
 
-const jsonStore = new JsonStore(arch, 'greeted-store');
+const jsonStore = new JsonStore<Greeting>(arch, 'greeted-store');
 
 const helloFunction = new Function(arch, 'hello-handler', async (name: string) => {
   trace('helloing', {name});
@@ -31,3 +36,4 @@ console.log('Architecture definition:');
 console.log(JSON.stringify(arch.synth(), null, 2));
 
 export { arch, api, jsonStore, helloFunction, hellosFunction, trace, log, err };
+export type { Greeting };
