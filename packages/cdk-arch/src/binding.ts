@@ -38,7 +38,7 @@ export class ArchitectureBinding {
     this.bindings.set(component, { host: options.host, port: options.port });
 
     Object.entries(options.overloads ?? {}).forEach(([name, handler]) => {
-      const route = component.getRouteByName(name);
+      const route = component.getRoute(name);
       if (!route) {
         throw new Error(`Route '${name}' not found in component '${component.node.id}'`);
       }

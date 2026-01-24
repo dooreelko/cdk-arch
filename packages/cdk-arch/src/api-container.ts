@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { Function, TBDFunction } from './function';
 
 export interface ApiRoutes {
-  [path: string]: Function;
+  [name: string]: RouteEntry;
 }
 
 export interface RouteEntry {
@@ -16,7 +16,6 @@ export interface RouteEntry {
  */
 export class ApiContainer extends Construct {
   public readonly routes: ApiRoutes;
-  private namedRoutes: Map<string, RouteEntry> = new Map();
 
   constructor(scope: Construct, id: string, routes: ApiRoutes = {}) {
     super(scope, id);
@@ -24,24 +23,19 @@ export class ApiContainer extends Construct {
   }
 
   addRoute(name: string, path: string, handler: Function): void {
-    this.routes[path] = handler;
-    this.namedRoutes.set(name, { name, path, handler });
+    this.routes[name] = { name, path, handler };
   }
 
-  getRoute(path: string): Function | undefined {
-    return this.routes[path];
+  getRoute(name: string): RouteEntry {
+    const entry = this.routes[name];
+    if (!entry) {
+      throw new Error(`Route '${name}' not found in container '${this.node.id}'`);
+    }
+    return entry;
   }
 
-  getRouteByName(name: string): RouteEntry | undefined {
-    return this.namedRoutes.get(name);
-  }
-
-  listRoutes(): string[] {
+  listRoutes() : string[] {
     return Object.keys(this.routes);
-  }
-
-  listNamedRoutes(): RouteEntry[] {
-    return Array.from(this.namedRoutes.values());
   }
 
   /**
@@ -50,6 +44,7 @@ export class ApiContainer extends Construct {
    */
   validateOverloads(): Function[] {
     return Object.values(this.routes)
+      .map(entry => entry.handler)
       .filter(fn => fn instanceof TBDFunction && !fn.hasOverload());
   }
 }

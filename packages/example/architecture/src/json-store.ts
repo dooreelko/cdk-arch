@@ -1,4 +1,4 @@
-import { Construct, ApiContainer, TBDFunction } from 'cdk-arch';
+import { Construct, ApiContainer, TBDFunction } from '@arinoto/cdk-arch';
 
 /**
  * Represents a JSON document store in the architecture.

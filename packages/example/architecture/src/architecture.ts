@@ -1,4 +1,4 @@
-import { Architecture, ApiContainer, Function } from 'cdk-arch';
+import { Architecture, ApiContainer, Function } from '@arinoto/cdk-arch';
 import { JsonStore } from './json-store';
 
 const trace = (what: string, args: any) => {}; //console.log({message: what, level: 'trace', extra: args});
@@ -28,8 +28,8 @@ const hellosFunction = new Function(arch, 'hellos-handler', () => {
 });
 
 const api = new ApiContainer(arch, 'api', {
-  'GET /v1/api/hello/{name}': helloFunction,
-  'GET /v1/api/hellos': hellosFunction
+  hello: { name: 'hello', path: 'GET /v1/api/hello/{name}', handler: helloFunction },
+  hellos: { name: 'hellos', path: 'GET /v1/api/hellos', handler: hellosFunction }
 });
 
 console.log('Architecture definition:');

@@ -1,6 +1,6 @@
 import express from 'express';
 import { Pool } from 'pg';
-import { architectureBinding } from 'cdk-arch';
+import { architectureBinding } from '@arinoto/cdk-arch';
 import { DockerApiServer } from '../docker-api-server';
 import { jsonStore } from 'architecture';
 

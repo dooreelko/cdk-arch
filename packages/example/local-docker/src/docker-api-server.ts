@@ -1,4 +1,4 @@
-import { ApiContainer, ArchitectureBinding, architectureBinding, Function } from 'cdk-arch';
+import { ApiContainer, ArchitectureBinding, architectureBinding, Function } from '@arinoto/cdk-arch';
 
 export interface DockerApiServerConfig {
   binding?: ArchitectureBinding;
@@ -24,8 +24,8 @@ export class DockerApiServer {
     this.app = express();
     this.app.use(express.json());
 
-    Object.entries(this.container.routes)
-      .forEach(([route, fn]) => this.setupRoute(route, fn as Function));
+    Object.values(this.container.routes)
+      .forEach((entry) => this.setupRoute(entry.path, entry.handler));
 
     return this.app;
   }

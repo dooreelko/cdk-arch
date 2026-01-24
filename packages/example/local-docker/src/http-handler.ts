@@ -1,4 +1,4 @@
-import { ApiContainer, FunctionHandler, ServiceEndpoint } from 'cdk-arch';
+import { ApiContainer, FunctionHandler, ServiceEndpoint } from '@arinoto/cdk-arch';
 
 /**
  * Create an HTTP handler for a route by name.
@@ -9,7 +9,7 @@ export const httpHandler = (
   container: ApiContainer,
   routeName: string
 ): FunctionHandler => {
-  const route = container.getRouteByName(routeName);
+  const route = container.getRoute(routeName);
   if (!route) {
     throw new Error(`Route '${routeName}' not found in container '${container.node.id}'`);
   }

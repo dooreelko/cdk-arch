@@ -1,4 +1,4 @@
-import { architectureBinding } from 'cdk-arch';
+import { architectureBinding } from '@arinoto/cdk-arch';
 import { api, jsonStore, log } from 'architecture';
 import { createWorkerHandler, serviceBindingHandler } from '../worker-adapter';
 
