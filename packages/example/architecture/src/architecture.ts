@@ -28,8 +28,8 @@ const hellosFunction = new Function(arch, 'hellos-handler', () => {
 });
 
 const api = new ApiContainer(arch, 'api', {
-  hello: { name: 'hello', path: 'GET /v1/api/hello/{name}', handler: helloFunction },
-  hellos: { name: 'hellos', path: 'GET /v1/api/hellos', handler: hellosFunction }
+  hello: { path: 'GET /v1/api/hello/{name}', handler: helloFunction },
+  hellos: { path: 'GET /v1/api/hellos', handler: hellosFunction }
 });
 
 console.log('Architecture definition:');

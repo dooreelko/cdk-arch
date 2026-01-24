@@ -6,7 +6,6 @@ export interface ApiRoutes {
 }
 
 export interface RouteEntry {
-  name: string;
   path: string;
   handler: Function;
 }
@@ -23,7 +22,7 @@ export class ApiContainer extends Construct {
   }
 
   addRoute(name: string, path: string, handler: Function): void {
-    this.routes[name] = { name, path, handler };
+    this.routes[name] = { path, handler };
   }
 
   getRoute(name: string): RouteEntry {
