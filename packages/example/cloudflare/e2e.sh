@@ -17,7 +17,9 @@ API_BASE_URL="https://hello-world-api.${CLOUDFLARE_SUBDOMAIN}.workers.dev"
 
 cleanup() {
   echo "Cleaning up..."
-  npm run destroy # >> "$LOGFILE" 2>&1 || true
+
+  LOGFILE=$(mktemp)
+  npm run destroy > "$LOGFILE" 2>&1 || ( echo "Error destroying" && tail "$LOGFILE" && echo "See full log in $LOGFILE")
 }
 
 fail() {

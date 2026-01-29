@@ -12,8 +12,5 @@
     "clean": "npm run clean --workspaces --if-present",
     "e2e": "npm run e2e --workspaces --if-present"
   },
-  "devDependencies": {
-    "lerna": "^9.0.3"
-  },
   "version": "0.1.0"
 }

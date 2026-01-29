@@ -5,7 +5,8 @@ cd "$(dirname "$0")"
 
 cleanup() {
   echo "Cleaning up..."
-  npm run destroy 
+  LOGFILE=$(mktemp)
+  npm run destroy > "$LOGFILE" 2>&1 || ( echo "Error destroying" && tail "$LOGFILE" && echo "See full log in $LOGFILE")
 }
 
 fail() {
