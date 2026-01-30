@@ -37,8 +37,7 @@ const kvGet = async (collection: string): Promise<any[]> => {
 
 // Bind jsonStore with KV overloads
 architectureBinding.bind(jsonStore, {
-  host: 'jsonstore',
-  port: 0,
+  baseUrl: 'jsonstore',
   overloads: {
     store: kvStore,
     get: kvGet
@@ -55,7 +54,7 @@ export default {
     try {
       return await handleRequest(request);
     } finally {
-      // currentEnv = null;
+      currentEnv = null;
     }
   }
 };

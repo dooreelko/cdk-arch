@@ -1,4 +1,6 @@
-import { ApiContainer, FunctionHandler, ServiceEndpoint } from '@arinoto/cdk-arch';
+import { ApiContainer } from './api-container';
+import { FunctionHandler } from './function';
+import { ServiceEndpoint } from './binding';
 
 /**
  * Create an HTTP handler for a route by name.
@@ -7,7 +9,8 @@ import { ApiContainer, FunctionHandler, ServiceEndpoint } from '@arinoto/cdk-arc
 export const httpHandler = (
   endpoint: ServiceEndpoint,
   container: ApiContainer,
-  routeName: string
+  routeName: string,
+  fetcher: () => { fetch: typeof fetch } = () => ({fetch})
 ): FunctionHandler => {
   const route = container.getRoute(routeName);
   if (!route) {
@@ -20,7 +23,7 @@ export const httpHandler = (
   return async (...args: any[]) => {
     const url = pathParams.reduce(
       (u, param, i) => args[i] !== undefined ? u.replace(param, encodeURIComponent(String(args[i]))) : u,
-      `http://${endpoint.host}:${endpoint.port}${path}`
+      `${endpoint.baseUrl}${path}`
     );
 
     const options: RequestInit = {
@@ -31,7 +34,13 @@ export const httpHandler = (
         : {})
     };
 
-    const response = await fetch(url, options);
+    console.log('HTTP handler. Will fetch', {url, options});
+    const response = await fetcher().fetch(url, options);
+
+    if (!response.ok) {
+      throw new Error(`Remote call to ${url} with ${JSON.stringify(options)} failed: ${JSON.stringify(response)}`);
+    }
+
     return response.json();
   };
 };

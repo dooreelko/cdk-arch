@@ -6,8 +6,7 @@ import { Function, FunctionHandler } from './function';
  * Service discovery configuration for runtime
  */
 export interface ServiceEndpoint {
-  host: string;
-  port: number;
+  baseUrl: string;
 }
 
 /**
@@ -35,7 +34,7 @@ export class ArchitectureBinding {
    * Overload keys must be route names registered via addRoute.
    */
   bind(component: ApiContainer, options: BindOptions): void {
-    this.bindings.set(component, { host: options.host, port: options.port });
+    this.bindings.set(component, { baseUrl: options.baseUrl });
 
     Object.entries(options.overloads ?? {}).forEach(([name, handler]) => {
       const route = component.getRoute(name);
@@ -47,18 +46,6 @@ export class ArchitectureBinding {
       }
       route.handler.overload(handler);
     });
-  }
-
-  /**
-   * Bind a component from environment variables.
-   * Looks for {PREFIX}_HOST and {PREFIX}_PORT environment variables.
-   */
-  bindFromEnv(component: ApiContainer, envPrefix: string, overloads?: Record<string, FunctionHandler>): void {
-    const host = process.env[`${envPrefix}_HOST`];
-    const port = process.env[`${envPrefix}_PORT`];
-    if (host && port) {
-      this.bind(component, { host, port: parseInt(port), overloads });
-    }
   }
 
   getEndpoint(component: Construct): ServiceEndpoint | undefined {

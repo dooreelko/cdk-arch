@@ -21,7 +21,8 @@ async function bundle() {
       platform: 'node',
       target: 'node20',
       minify: false,
-      sourcemap: false,
+      sourcemap: 'inline',
+      keepNames: true,
       mainFields: ['module', 'main'],
       external: ['pg-native']
     });

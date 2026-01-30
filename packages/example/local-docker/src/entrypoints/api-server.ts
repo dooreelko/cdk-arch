@@ -1,18 +1,16 @@
 import express from 'express';
-import { architectureBinding } from '@arinoto/cdk-arch';
+import { architectureBinding, httpHandler } from '@arinoto/cdk-arch';
 import { DockerApiServer } from '../docker-api-server';
-import { httpHandler } from '../http-handler';
 import { api, jsonStore } from 'architecture';
 
 const PORT = parseInt(process.env.PORT || '3000');
 
 // Bind api locally
-architectureBinding.bind(api, { host: 'hello-api', port: PORT });
+architectureBinding.bind(api, { baseUrl: `hello-api:${PORT}` });
 
 // Bind jsonStore with HTTP overloads for remote calls
 const jsonStoreEndpoint = {
-  host: process.env.JSONSTORE_HOST || 'jsonstore',
-  port: parseInt(process.env.JSONSTORE_PORT || '3001')
+  baseUrl: `http://${process.env.JSONSTORE_HOST || 'jsonstore'}:${parseInt(process.env.JSONSTORE_PORT || '3001')}`
 };
 
 architectureBinding.bind(jsonStore, {

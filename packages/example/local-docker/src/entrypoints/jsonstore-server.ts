@@ -61,8 +61,7 @@ const postgresGet = async (collection: string): Promise<any[]> => {
 const PORT = parseInt(process.env.PORT || '3001');
 
 architectureBinding.bind(jsonStore, {
-  host: 'jsonstore',
-  port: PORT,
+  baseUrl: `jsonstore:${PORT}`,
   overloads: {
     store: postgresStore,
     get: postgresGet

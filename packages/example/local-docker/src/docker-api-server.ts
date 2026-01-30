@@ -32,13 +32,14 @@ export class DockerApiServer {
 
   private setupRoute(route: string, fn: Function): void {
     const { method, expressPath, params } = this.parseRoute(route);
-
     this.app[method.toLowerCase()](expressPath, async (req: any, res: any) => {
       try {
         const pathArgs = params.map(p => req.params[p]);
         const args = (method === 'POST' || method === 'PUT')
-          ? [...pathArgs, req.body]
-          : pathArgs;
+        ? [...pathArgs, req.body]
+        : pathArgs;
+        
+        console.log('Will invoke', {method, expressPath, params, args});
 
         const result = await fn.invoke(...args);
         res.json(result);

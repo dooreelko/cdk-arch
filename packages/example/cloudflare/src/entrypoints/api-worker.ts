@@ -1,6 +1,6 @@
-import { architectureBinding } from '@arinoto/cdk-arch';
+import { architectureBinding, httpHandler } from '@arinoto/cdk-arch';
 import { api, jsonStore, log } from 'architecture';
-import { createWorkerHandler, serviceBindingHandler } from '../worker-adapter';
+import { createWorkerHandler } from '../worker-adapter';
 
 interface Env {
   JSONSTORE: { fetch: typeof fetch };
@@ -11,16 +11,19 @@ let currentEnv: Env | null = null;
 
 // Set up service binding overloads for jsonStore
 architectureBinding.bind(jsonStore, {
-  host: 'jsonstore',
-  port: 0, // Not used for service bindings
+  baseUrl: 'jsonstore',
   overloads: {
-    store: serviceBindingHandler(
-      () => currentEnv!.JSONSTORE,
-      'POST /store/{collection}'
+    store: httpHandler(
+      { baseUrl: 'https://example.com'},
+      jsonStore,
+      'store',
+      () => currentEnv!.JSONSTORE
     ),
-    get: serviceBindingHandler(
-      () => currentEnv!.JSONSTORE,
-      'GET /get/{collection}'
+    get: httpHandler(
+      { baseUrl: 'https://example.com'},
+      jsonStore,
+      'get',
+      () => currentEnv!.JSONSTORE
     )
   }
 });

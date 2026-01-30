@@ -23,11 +23,12 @@ class HelloWorldStack extends TerraformStack {
     const bundleDir = path.resolve(__dirname, '../dist/docker');
     const dockerFile = path.join(__dirname, 'Dockerfile');
     const appImage = new Image(this, 'app-image', {
-      name: 'cdk-arch-app:latest',
+      name: `cdk-arch-app:${new Date().getTime()}`,
       buildAttribute: {
         context: bundleDir,
         dockerfile: dockerFile
-      }
+      },
+      forceRemove: true
     });
 
     const postgresImage = new Image(this, 'postgres-image', {

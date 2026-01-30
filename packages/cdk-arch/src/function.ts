@@ -39,8 +39,6 @@ export class Function<TArgs extends any[] = any[], TReturn = any> extends Constr
  */
 export class TBDFunction<TArgs extends any[] = any[], TReturn = any> extends Function<TArgs, TReturn> {
   constructor(scope: Construct, id: string) {
-    super(scope, id, (() => {
-      return Promise.reject(new Error(`Function '${id}' is not implemented. Provide an overload before invoking.`));
-    }) as FunctionHandler<TArgs, TReturn>);
+    super(scope, id, (() => Promise.reject(new Error(`Function '${id}' is not implemented. Provide an overload before invoking.`))) as FunctionHandler<TArgs, TReturn>);
   }
 }

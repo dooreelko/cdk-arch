@@ -3,9 +3,7 @@
   "private": true,
   "workspaces": [
     "packages/cdk-arch",
-    "packages/example/architecture",
-    "packages/example/local-docker",
-    "packages/example/cloudflare"
+    "packages/example/*"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
