@@ -12,7 +12,7 @@
     "e2e": "./e2e.sh"
   },
   "dependencies": {
-    "@arinoto/cdk-arch": "0.3.0",
+    "@arinoto/cdk-arch": "*",
     "architecture": "0.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
