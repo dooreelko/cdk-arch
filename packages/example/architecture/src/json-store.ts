@@ -12,7 +12,7 @@ export class JsonStore<TDoc = any> extends ApiContainer {
   public readonly getFunction: TBDFunction<[string], TDoc[]>;
 
   constructor(scope: Construct, id: string) {
-    super(scope, id, {});
+    super(scope, id);
 
     this.storeFunction = new TBDFunction(this, 'store-handler');
     this.getFunction = new TBDFunction(this, 'get-handler');

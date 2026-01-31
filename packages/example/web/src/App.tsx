@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import * as architecture from 'architecture'
-import { architectureBinding, httpHandler } from '@arinoto/cdk-arch'
+import { createHttpBindings } from '@arinoto/cdk-arch'
 
 const api = architecture.api;
 const endpoint = { baseUrl: 'http://localhost:3000' };
 
-architectureBinding.bind(api, {
-  ...endpoint,
-  overloads: {
-    hello: httpHandler(endpoint, api, 'hello'),
-    hellos: httpHandler(endpoint, api, 'hellos')
-  }
-})
+const apiClient = createHttpBindings(endpoint, api, ['hello', 'hellos']);
 
 interface HelloEntry {
   name: string;
@@ -33,7 +27,7 @@ export default function App() {
     try {
       setLoading(true)
       setError(null)
-      const result = await api.getRoute('hellos').handler.invoke()
+      const result = await apiClient.hellos()
       setHellos(result || [])
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch hellos')
@@ -50,7 +44,7 @@ export default function App() {
     try {
       setLoading(true)
       setError(null)
-      const result = await api.getRoute('hello').handler.invoke(name)
+      const result = await apiClient.hello(name)
       console.log('Hello result:', result)
       // Refresh the list
       await fetchHellos()

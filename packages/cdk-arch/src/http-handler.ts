@@ -2,6 +2,8 @@ import { ApiContainer } from './api-container';
 import { FunctionHandler } from './function';
 import { ServiceEndpoint } from './binding';
 
+export type Fetcher = () => { fetch: typeof fetch };
+
 /**
  * Create an HTTP handler for a route by name.
  * Looks up the route path from the container's registry.
@@ -10,7 +12,7 @@ export const httpHandler = (
   endpoint: ServiceEndpoint,
   container: ApiContainer,
   routeName: string,
-  fetcher: () => { fetch: typeof fetch } = () => ({fetch})
+  fetcher: Fetcher = () => ({fetch})
 ): FunctionHandler => {
   const route = container.getRoute(routeName);
   if (!route) {
@@ -43,4 +45,29 @@ export const httpHandler = (
 
     return response.json();
   };
+};
+
+/**
+ * Create HTTP bindings for multiple routes as a callable client.
+ * Returns an object where each route name maps to an async function
+ * that makes HTTP calls to the remote endpoint.
+ *
+ * @example
+ * const client = createHttpBindings(endpoint, api, ['hello', 'hellos']);
+ * await client.hello('John');  // Makes HTTP call
+ * await client.hellos();       // Makes HTTP call
+ */
+export const createHttpBindings = <T extends string>(
+  endpoint: ServiceEndpoint,
+  container: ApiContainer,
+  routeNames: T[],
+  fetcher: Fetcher = () => ({fetch})
+): Record<T, FunctionHandler> => {
+  return routeNames.reduce(
+    (acc, name) => {
+      acc[name] = httpHandler(endpoint, container, name, fetcher);
+      return acc;
+    },
+    {} as Record<T, FunctionHandler>
+  );
 };

@@ -3,4 +3,4 @@ export { Architecture, ArchitectureDefinition, ComponentDefinition } from './arc
 export { Function, TBDFunction, FunctionHandler } from './function';
 export { ApiContainer, ApiRoutes, RouteEntry } from './api-container';
 export { ArchitectureBinding, ServiceEndpoint, architectureBinding } from './binding';
-export { httpHandler } from './http-handler';
+export { httpHandler, createHttpBindings, Fetcher } from './http-handler';
