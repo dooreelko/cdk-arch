@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { ApiContainer } from './api-container';
+import { ApiContainer, ApiRoutes } from './api-container';
 import { Function, FunctionHandler } from './function';
 
 /**
@@ -33,7 +33,7 @@ export class ArchitectureBinding {
    * Optionally override function implementations with the overloads option.
    * Overload keys must be route names registered via addRoute.
    */
-  bind(component: ApiContainer, options: BindOptions): void {
+  bind<TRoutes extends ApiRoutes>(component: ApiContainer<TRoutes>, options: BindOptions): void {
     this.bindings.set(component, { baseUrl: options.baseUrl });
 
     Object.entries(options.overloads ?? {}).forEach(([name, handler]) => {

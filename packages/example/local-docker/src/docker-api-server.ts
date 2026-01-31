@@ -1,4 +1,4 @@
-import { ApiContainer, ArchitectureBinding, architectureBinding, Function } from '@arinoto/cdk-arch';
+import { ApiContainer, ApiRoutes, ArchitectureBinding, architectureBinding, Function } from '@arinoto/cdk-arch';
 
 export interface DockerApiServerConfig {
   binding?: ArchitectureBinding;
@@ -9,12 +9,12 @@ export interface DockerApiServerConfig {
  * Handles routing and parameter extraction. Function implementations
  * are provided via binding overloads.
  */
-export class DockerApiServer {
-  private container: ApiContainer;
+export class DockerApiServer<TRoutes extends ApiRoutes = ApiRoutes> {
+  private container: ApiContainer<TRoutes>;
   private binding: ArchitectureBinding;
   private app: any;
 
-  constructor(container: ApiContainer, config: DockerApiServerConfig = {}) {
+  constructor(container: ApiContainer<TRoutes>, config: DockerApiServerConfig = {}) {
     this.container = container;
     this.binding = config.binding || architectureBinding;
     this.binding.setLocal(container);

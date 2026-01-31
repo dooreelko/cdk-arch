@@ -1,4 +1,4 @@
-import { ApiContainer } from './api-container';
+import { ApiContainer, ApiRoutes, RouteHandlers } from './api-container';
 import { FunctionHandler } from './function';
 import { ServiceEndpoint } from './binding';
 
@@ -8,21 +8,21 @@ export type Fetcher = () => { fetch: typeof fetch };
  * Create an HTTP handler for a route by name.
  * Looks up the route path from the container's registry.
  */
-export const httpHandler = (
+export const httpHandler = <
+  TRoutes extends ApiRoutes,
+  K extends keyof TRoutes & string
+>(
   endpoint: ServiceEndpoint,
-  container: ApiContainer,
-  routeName: string,
+  container: ApiContainer<TRoutes>,
+  routeName: K,
   fetcher: Fetcher = () => ({fetch})
-): FunctionHandler => {
+): RouteHandlers<TRoutes>[K] => {
   const route = container.getRoute(routeName);
-  if (!route) {
-    throw new Error(`Route '${routeName}' not found in container '${container.node.id}'`);
-  }
 
   const [method, path] = route.path.split(' ');
   const pathParams = path.match(/\{(\w+)\}/g) || [];
 
-  return async (...args: any[]) => {
+  const handler = async (...args: any[]) => {
     const url = pathParams.reduce(
       (u, param, i) => args[i] !== undefined ? u.replace(param, encodeURIComponent(String(args[i]))) : u,
       `${endpoint.baseUrl}${path}`
@@ -45,29 +45,44 @@ export const httpHandler = (
 
     return response.json();
   };
+
+  return handler as RouteHandlers<TRoutes>[K];
 };
 
 /**
  * Create HTTP bindings for multiple routes as a callable client.
- * Returns an object where each route name maps to an async function
- * that makes HTTP calls to the remote endpoint.
+ * Returns a strongly-typed object where each route name maps to an async function
+ * with the same signature as the original handler.
+ *
+ * @typeParam TRoutes - The routes type from the ApiContainer
+ * @typeParam K - The subset of route names to include in the client
  *
  * @example
+ * ```typescript
+ * const api = new ApiContainer(arch, 'api', {
+ *   hello: { path: 'GET /v1/api/hello/{name}', handler: helloFunction },
+ *   hellos: { path: 'GET /v1/api/hellos', handler: hellosFunction }
+ * });
+ *
  * const client = createHttpBindings(endpoint, api, ['hello', 'hellos']);
- * await client.hello('John');  // Makes HTTP call
- * await client.hellos();       // Makes HTTP call
+ * await client.hello('John');  // (name: string) => Promise<string>
+ * await client.hellos();       // () => Promise<Greeting[]>
+ * ```
  */
-export const createHttpBindings = <T extends string>(
+export const createHttpBindings = <
+  TRoutes extends ApiRoutes,
+  K extends keyof TRoutes & string
+>(
   endpoint: ServiceEndpoint,
-  container: ApiContainer,
-  routeNames: T[],
+  container: ApiContainer<TRoutes>,
+  routeNames: readonly K[],
   fetcher: Fetcher = () => ({fetch})
-): Record<T, FunctionHandler> => {
+): Pick<RouteHandlers<TRoutes>, K> => {
   return routeNames.reduce(
     (acc, name) => {
       acc[name] = httpHandler(endpoint, container, name, fetcher);
       return acc;
     },
-    {} as Record<T, FunctionHandler>
+    {} as Pick<RouteHandlers<TRoutes>, K>
   );
 };

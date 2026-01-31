@@ -1,5 +1,5 @@
 import { log, err } from 'architecture';
-import { ApiContainer, Function, FunctionHandler } from '@arinoto/cdk-arch';
+import { ApiContainer, ApiRoutes, Function, FunctionHandler } from '@arinoto/cdk-arch';
 
 interface RouteMatch {
   method: string;
@@ -29,7 +29,7 @@ function parseRoute(route: string, fn: Function): RouteMatch {
 /**
  * Create a Cloudflare Worker fetch handler from an ApiContainer.
  */
-export function createWorkerHandler(container: ApiContainer): (request: Request) => Promise<Response> {
+export function createWorkerHandler<TRoutes extends ApiRoutes>(container: ApiContainer<TRoutes>): (request: Request) => Promise<Response> {
   const routes = Object.values(container.routes)
     .map((entry) => parseRoute(entry.path, entry.handler));
 
