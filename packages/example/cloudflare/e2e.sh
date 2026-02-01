@@ -58,6 +58,18 @@ else
   fail
 fi
 
+echo "Testing ctx API..."
+CTX=$(curl -s "${API_BASE_URL}/v1/api/ctx")
+echo "Ctx response: $CTX"
+
+if [[ "$CTX" == *"/v1/api/ctx"* ]]; then
+  echo "ctx API test passed"
+else
+  echo "ctx API test failed"
+  fail
+fi
+
+
 cleanup
 
 echo "=== Cloudflare E2E Test Passed ==="

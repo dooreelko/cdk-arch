@@ -55,7 +55,7 @@ export function createWorkerHandler<TRoutes extends ApiRoutes>(container: ApiCon
         const args = [...pathArgs, ...bodyArg];
 
         log('worker invoke', {route, args});
-        const result = await route.fn.invoke(...args);
+        const result = await route.fn.invokeWithRuntimeContext(args, {request: {url: request.url}});
 
         log('worker result', {result});
         return new Response(JSON.stringify(result), {

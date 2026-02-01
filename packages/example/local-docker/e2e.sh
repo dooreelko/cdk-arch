@@ -1,5 +1,9 @@
 #!/bin/bash
-set -exuo pipefail
+set -euo pipefail
+
+if [ -n "${DEBUG:-}" ]; then
+  set -x
+fi
 
 cd "$(dirname "$0")"
 
@@ -10,6 +14,12 @@ cleanup() {
 }
 
 fail() {
+  echo "JSON Store Container logs ================="
+  podman logs jsonstore
+
+  echo "API Container logs ================="
+  podman logs hello-api
+
   cleanup
   exit 1
 }
@@ -45,6 +55,17 @@ if [[ "$HELLOS" == *"E2ETest"* ]]; then
   echo "Hellos API test passed"
 else
   echo "Hellos API test failed"
+  fail
+fi
+
+echo "Testing ctx API..."
+CTX=$(curl -s http://localhost:3000/v1/api/ctx)
+echo "Ctx response: $CTX"
+
+if [[ "$CTX" == *"/v1/api/ctx"* ]]; then
+  echo "ctx API test passed"
+else
+  echo "ctx API test failed"
   fail
 fi
 

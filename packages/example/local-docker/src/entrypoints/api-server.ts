@@ -22,4 +22,9 @@ architectureBinding.bind(jsonStore, {
 
 // Create and start server
 const server = new DockerApiServer(api, { binding: architectureBinding });
-server.start(express, PORT);
+
+server.start(PORT);
+function mov(epress: typeof express) {
+  throw new Error('Function not implemented.');
+}
+

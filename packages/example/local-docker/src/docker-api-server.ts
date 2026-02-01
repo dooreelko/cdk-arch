@@ -1,3 +1,4 @@
+import express, { Express, Request, Response } from 'express'; 
 import { ApiContainer, ApiRoutes, ArchitectureBinding, architectureBinding, Function } from '@arinoto/cdk-arch';
 
 export interface DockerApiServerConfig {
@@ -12,7 +13,7 @@ export interface DockerApiServerConfig {
 export class DockerApiServer<TRoutes extends ApiRoutes = ApiRoutes> {
   private container: ApiContainer<TRoutes>;
   private binding: ArchitectureBinding;
-  private app: any;
+  private app: Express & Record<string, any>;
 
   constructor(container: ApiContainer<TRoutes>, config: DockerApiServerConfig = {}) {
     this.container = container;
@@ -20,7 +21,7 @@ export class DockerApiServer<TRoutes extends ApiRoutes = ApiRoutes> {
     this.binding.setLocal(container);
   }
 
-  createApp(express: any): any {
+  createApp(): any {
     this.app = express();
     this.app.use(express.json());
 
@@ -32,20 +33,20 @@ export class DockerApiServer<TRoutes extends ApiRoutes = ApiRoutes> {
 
   private setupRoute(route: string, fn: Function): void {
     const { method, expressPath, params } = this.parseRoute(route);
-    this.app[method.toLowerCase()](expressPath, async (req: any, res: any) => {
+    this.app[method.toLowerCase()](expressPath, async (request: Request, response: Response) => {
       try {
-        const pathArgs = params.map(p => req.params[p]);
+        const pathArgs = params.map(p => request.params[p]);
         const args = (method === 'POST' || method === 'PUT')
-        ? [...pathArgs, req.body]
+        ? [...pathArgs, request.body]
         : pathArgs;
-        
+
         console.log('Will invoke', {method, expressPath, params, args});
 
-        const result = await fn.invoke(...args);
-        res.json(result);
+        const result = await fn.invokeWithRuntimeContext(args, {request: {url: request.url}});
+        response.json(result);
       } catch (error: any) {
         console.error(`Error handling ${route}:`, error);
-        res.status(500).json({ error: error.message || 'Internal server error' });
+        response.status(500).json({ error: error.message || 'Internal server error' });
       }
     });
   }
@@ -68,8 +69,8 @@ export class DockerApiServer<TRoutes extends ApiRoutes = ApiRoutes> {
     });
   }
 
-  start(express: any, port: number): void {
-    this.createApp(express);
+  start(port: number): void {
+    this.createApp();
     this.listen(port);
   }
 }

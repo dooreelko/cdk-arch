@@ -1,2 +1,3 @@
-export { arch, api, jsonStore, helloFunction, hellosFunction, trace, log, err } from './architecture';
+export { arch, api, jsonStore } from './architecture';
+export { trace, log, err } from './log';
 export { JsonStore } from './json-store';

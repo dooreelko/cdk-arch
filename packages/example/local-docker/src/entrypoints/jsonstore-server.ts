@@ -1,4 +1,3 @@
-import express from 'express';
 import { Pool } from 'pg';
 import { architectureBinding } from '@arinoto/cdk-arch';
 import { DockerApiServer } from '../docker-api-server';
@@ -71,7 +70,7 @@ architectureBinding.bind(jsonStore, {
 // Start server after DB init
 initDb().then(() => {
   const server = new DockerApiServer(jsonStore, { binding: architectureBinding });
-  server.start(express, PORT);
+  server.start(PORT);
 }).catch(err => {
   console.error('Failed to initialize:', err);
   process.exit(1);
