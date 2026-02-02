@@ -1,6 +1,6 @@
 import { Architecture, ApiContainer, Function, FunctionRuntimeContextMarker } from '@arinoto/cdk-arch';
 import { JsonStore } from './json-store';
-import { trace } from './log';
+import { DemoRequest, extractContext } from './runtime-context';
 
 export interface Greeting {
   when: number;
@@ -12,38 +12,17 @@ export const arch = new Architecture('hello-world');
 export const jsonStore = new JsonStore<Greeting>(arch, 'greeted-store');
 
 const helloFunction = new Function(arch, 'hello-handler', async (name: string) => {
-  trace('helloing', {name});
   const res = await jsonStore.store('greeted', { when: Date.now(), name });
-  trace('stored', {res});
   return `Hello, ${name}!`;
 });
 
 const hellosFunction = new Function(arch, 'hellos-handler', () => {
   const res = jsonStore.get('greeted');
-  trace('get all', {res});
   return res;
 });
 
-const extractContext = <TCast>(that: any) => {
-  if (!that) {
-    throw new Error('Context is null or underfined');
-  }
-
-  if (!that.runtimeContext) {
-    throw new Error('Context is missing runtimeContext marker');
-  }
-
-  return that as TCast;
-};
-
-type DemoRequest = {
-  request: {
-    url: string
-  }
-};
-
 /*
-If you define your handler as a function instead of an arrow one, the runtime can
+Define the handler as a `function ()` instead of an arrow one, then the runtime can
 pass an arbitrary execution context. In this example a subset of express Request is expected
 
 See Function.invokeWithRuntimeContext and example/local-docker/DockerApiServer.setupRoute

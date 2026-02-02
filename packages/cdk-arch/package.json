@@ -1,7 +1,12 @@
 {
   "name": "@arinoto/cdk-arch",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "CDK Architecture primitives for event-driven solution architectures",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dooreelko/cdk-arch.git",
+    "directory": "packages/cdk-arch"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "module": "dist/index.js",
