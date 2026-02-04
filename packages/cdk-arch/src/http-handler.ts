@@ -32,7 +32,7 @@ export const httpHandler = <
       method: method || 'GET',
       headers: { 'Content-Type': 'application/json' },
       ...((method === 'POST' || method === 'PUT') && args.length > pathParams.length
-        ? { body: JSON.stringify(args[pathParams.length]) }
+        ? { body: JSON.stringify(args.slice(pathParams.length)) }
         : {})
     };
 

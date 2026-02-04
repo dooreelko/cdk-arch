@@ -1,12 +1,17 @@
 # CDK architecture primitives for API-first event driven solutions
 
-What if the architecture of your solution was directly reflected in your code?
+What if the architecture of your solution was directly reflected in your code? 
+
 What if you could define business logic without tying it to a specific infrastructure approach?
+
 What if you could trivially swap infrastructure components and vendors without sacrificing capabilities?
+
 What if the API consumers would use the same interface definitions as the API themselves?
+
 What if your code could effortlessly and automatically present itself as C4's system, container and deployment diagrams?
 
-This JavaScript library attempts to address exactly that with just one assumption — a robust and scalable architecture must be based on messaging (API) and events.
+This JavaScript library attempts to address exactly that with just one assumption — an event-driven approach is key to a robust and scalable architecture.
+And all it takes is a couple of hundreds of lines of code, infrastructure as code and good old runtime dependency injection.
 
 Let's have a look at a simple service-based hello world where a user can send a greeting (that will be saved for posterity) and receives a greeting back.
 
