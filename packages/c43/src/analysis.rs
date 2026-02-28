@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
-use crate::extract::{extract_from_file, BindCall, ConstructInstance, ImportInfo, ReExport};
+use crate::extract::{extract_from_file, BindCall, ConstructInstance, ImportInfo, ReExport, RouteEntry};
 use crate::scan::{find_node_projects, find_ts_files};
 
 /// All extracted data for a single node project
@@ -9,6 +9,7 @@ pub struct ProjectData {
     pub name: String,
     pub path: String,
     pub constructs: Vec<ConstructInstance>,
+    pub routes: Vec<(String, Vec<RouteEntry>)>,
     pub binds: Vec<BindCall>,
     pub imports: Vec<ImportInfo>,
     pub exported_names: Vec<String>,
@@ -37,22 +38,7 @@ pub fn scan_projects(root: &Path) -> Vec<ProjectData> {
             continue;
         }
 
-        let ts_files = find_ts_files(pkg_path);
-
-        let mut constructs = Vec::new();
-        let mut binds = Vec::new();
-        let mut imports = Vec::new();
-        let mut exported_names = Vec::new();
-        let mut reexports = Vec::new();
-
-        for file in &ts_files {
-            let extracts = extract_from_file(file);
-            constructs.extend(extracts.constructs);
-            binds.extend(extracts.binds);
-            imports.extend(extracts.imports);
-            exported_names.extend(extracts.exported_names);
-            reexports.extend(extracts.reexports);
-        }
+        let mut pd = scan_directory(pkg_path);
 
         let rel_path = pkg_path
             .strip_prefix(root)
@@ -60,22 +46,55 @@ pub fn scan_projects(root: &Path) -> Vec<ProjectData> {
             .to_string_lossy()
             .to_string();
 
-        result.push(ProjectData {
-            name: name.clone(),
-            path: if rel_path.is_empty() {
-                ".".to_string()
-            } else {
-                rel_path
-            },
-            constructs,
-            binds,
-            imports,
-            exported_names,
-            reexports,
-        });
+        pd.name = name.clone();
+        pd.path = if rel_path.is_empty() {
+            ".".to_string()
+        } else {
+            rel_path
+        };
+
+        result.push(pd);
     }
 
     result
+}
+
+/// Extract all data from TypeScript files in a single directory.
+pub fn scan_directory(dir: &Path) -> ProjectData {
+    let ts_files = find_ts_files(dir);
+
+    let mut constructs = Vec::new();
+    let mut routes = Vec::new();
+    let mut binds = Vec::new();
+    let mut imports = Vec::new();
+    let mut exported_names = Vec::new();
+    let mut reexports = Vec::new();
+
+    for file in &ts_files {
+        let extracts = extract_from_file(file);
+        constructs.extend(extracts.constructs);
+        routes.extend(extracts.routes);
+        binds.extend(extracts.binds);
+        imports.extend(extracts.imports);
+        exported_names.extend(extracts.exported_names);
+        reexports.extend(extracts.reexports);
+    }
+
+    let name = dir
+        .file_name()
+        .map(|n| n.to_string_lossy().to_string())
+        .unwrap_or_default();
+
+    ProjectData {
+        name,
+        path: dir.to_string_lossy().to_string(),
+        constructs,
+        routes,
+        binds,
+        imports,
+        exported_names,
+        reexports,
+    }
 }
 
 /// Build a map of package_name -> { var_name -> construct_type }

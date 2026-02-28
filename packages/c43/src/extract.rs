@@ -16,7 +16,9 @@ pub struct ConstructInstance {
 /// A route entry: { path: 'GET /v1/api/hello/{name}', handler: someVar }
 #[derive(Debug, Clone)]
 pub struct RouteEntry {
+    #[allow(dead_code)]
     pub name: String,
+    #[allow(dead_code)]
     pub path: String,
     pub handler_var: String,
 }
@@ -35,6 +37,7 @@ pub struct BindCall {
 pub struct ImportInfo {
     pub local_name: String,
     pub source: String,
+    #[allow(dead_code)]
     pub imported_name: Option<String>,
 }
 

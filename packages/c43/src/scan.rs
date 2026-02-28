@@ -21,58 +21,6 @@ pub fn find_ts_files(dir: &Path) -> Vec<PathBuf> {
         .collect()
 }
 
-pub fn find_workspace_packages(root: &Path) -> Vec<(String, PathBuf)> {
-    let pkg_path = root.join("package.json");
-    let content = match std::fs::read_to_string(&pkg_path) {
-        Ok(c) => c,
-        Err(_) => return Vec::new(),
-    };
-
-    let json: serde_json::Value = match serde_json::from_str(&content) {
-        Ok(v) => v,
-        Err(_) => return Vec::new(),
-    };
-
-    let workspaces = match json.get("workspaces").and_then(|w| w.as_array()) {
-        Some(w) => w,
-        None => return Vec::new(),
-    };
-
-    let mut packages = Vec::new();
-    for ws in workspaces {
-        let pattern = match ws.as_str() {
-            Some(p) => p,
-            None => continue,
-        };
-        // Handle glob patterns like "packages/example/*"
-        let glob_pattern = root.join(pattern);
-        let glob_str = glob_pattern.to_string_lossy();
-        if glob_str.contains('*') {
-            // Simple glob: expand directories matching pattern
-            let base = glob_str.split('*').next().unwrap_or("");
-            let base_path = Path::new(base);
-            if base_path.is_dir() {
-                if let Ok(entries) = std::fs::read_dir(base_path) {
-                    for entry in entries.flatten() {
-                        let path = entry.path();
-                        if path.is_dir() && path.join("package.json").exists() {
-                            let name = read_package_name(&path);
-                            packages.push((name, path));
-                        }
-                    }
-                }
-            }
-        } else {
-            let path = root.join(pattern);
-            if path.is_dir() && path.join("package.json").exists() {
-                let name = read_package_name(&path);
-                packages.push((name, path));
-            }
-        }
-    }
-    packages
-}
-
 pub fn find_node_projects(root: &Path) -> Vec<(String, PathBuf)> {
     WalkDir::new(root)
         .into_iter()

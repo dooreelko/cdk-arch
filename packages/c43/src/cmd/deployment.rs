@@ -1,8 +1,9 @@
+use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
-use crate::extract::{extract_from_file, BindCall, ConstructInstance};
+use crate::analysis::scan_directory;
+use crate::extract::ConstructInstance;
 use crate::model::{C4Document, NodeAttributes};
-use crate::scan::find_ts_files;
 
 pub fn run(arch_path: &Path, infra_path: &Path) -> C4Document {
     let mut doc = C4Document::new();
@@ -14,42 +15,23 @@ pub fn run(arch_path: &Path, infra_path: &Path) -> C4Document {
         .canonicalize()
         .unwrap_or_else(|_| infra_path.to_path_buf());
 
-    // Extract constructs from architecture
-    let arch_files = find_ts_files(&arch_path);
-    let mut arch_constructs: Vec<ConstructInstance> = Vec::new();
-    for file in &arch_files {
-        let extracts = extract_from_file(file);
-        arch_constructs.extend(extracts.constructs);
-    }
-
-    // Build var_name -> construct for arch
-    let arch_var_map: std::collections::HashMap<String, &ConstructInstance> = arch_constructs
-        .iter()
-        .filter_map(|c| c.var_name.as_ref().map(|v| (v.clone(), c)))
-        .collect();
-
-    // Extract binds from infra
-    let infra_files = find_ts_files(&infra_path);
-    let mut all_binds: Vec<BindCall> = Vec::new();
-    let mut infra_imports: Vec<(String, String)> = Vec::new();
-
-    for file in &infra_files {
-        let extracts = extract_from_file(file);
-        all_binds.extend(extracts.binds);
-        for import in &extracts.imports {
-            infra_imports.push((import.local_name.clone(), import.source.clone()));
-        }
-    }
+    let arch_data = scan_directory(&arch_path);
+    let infra_data = scan_directory(&infra_path);
 
     let arch_str = arch_path.to_str().unwrap_or("");
 
-    // For each bind call, resolve the component and create deployment nodes
-    let mut seen_endpoints = std::collections::HashSet::new();
-    let mut seen_components = std::collections::HashSet::new();
+    // Build var_name -> construct for arch
+    let arch_var_map: HashMap<&str, &ConstructInstance> = arch_data
+        .constructs
+        .iter()
+        .filter_map(|c| c.var_name.as_deref().map(|v| (v, c)))
+        .collect();
 
-    for bind in &all_binds {
-        // Try to resolve the component var to an architecture construct
-        let component = arch_var_map.get(&bind.component_var);
+    let mut seen_endpoints = HashSet::new();
+    let mut seen_components = HashSet::new();
+
+    for bind in &infra_data.binds {
+        let component = arch_var_map.get(bind.component_var.as_str());
 
         let component_id = component
             .map(|c| c.id.clone())
@@ -59,7 +41,6 @@ pub fn run(arch_path: &Path, infra_path: &Path) -> C4Document {
             .map(|c| c.class_name.clone())
             .unwrap_or_else(|| "Unknown".to_string());
 
-        // Add the component node (deduplicated)
         if seen_components.insert(component_id.clone()) {
             let attrs = match component {
                 Some(c) => {
@@ -82,7 +63,6 @@ pub fn run(arch_path: &Path, infra_path: &Path) -> C4Document {
             doc.add_node(&component_id, &component_id, &component_type, attrs);
         }
 
-        // Create a deployment endpoint node from baseUrl
         if let Some(base_url) = &bind.base_url {
             let endpoint_id = base_url.clone();
             if seen_endpoints.insert(endpoint_id.clone()) {
@@ -95,7 +75,6 @@ pub fn run(arch_path: &Path, infra_path: &Path) -> C4Document {
             doc.add_relation(&component_id, "deployed on", &endpoint_id);
         }
 
-        // Add overload relations
         for key in &bind.overload_keys {
             doc.add_relation(&component_id, "binds", key);
         }
