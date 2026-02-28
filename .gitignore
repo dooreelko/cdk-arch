@@ -4,3 +4,4 @@ dist
 cdktf.out
 fo0
 .gemini
+.direnv
