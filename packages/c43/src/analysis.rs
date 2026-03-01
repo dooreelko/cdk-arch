@@ -4,6 +4,15 @@ use std::path::Path;
 use crate::extract::{extract_from_file, BindCall, ConstructInstance, ImportInfo, ReExport, RouteEntry};
 use crate::scan::{find_node_projects, find_ts_files};
 
+/// Metadata from package.json relevant for classification
+#[derive(Default)]
+pub struct PackageMeta {
+    pub dependencies: Vec<String>,
+    pub dev_dependencies: Vec<String>,
+    pub has_index_html: bool,
+    pub has_web_config: bool,
+}
+
 /// All extracted data for a single node project
 pub struct ProjectData {
     pub name: String,
@@ -14,6 +23,7 @@ pub struct ProjectData {
     pub imports: Vec<ImportInfo>,
     pub exported_names: Vec<String>,
     pub reexports: Vec<ReExport>,
+    pub meta: PackageMeta,
 }
 
 /// A resolved consumer relationship: this project imports construct X from package Y
@@ -85,6 +95,8 @@ pub fn scan_directory(dir: &Path) -> ProjectData {
         .map(|n| n.to_string_lossy().to_string())
         .unwrap_or_default();
 
+    let meta = read_package_meta(dir);
+
     ProjectData {
         name,
         path: dir.to_string_lossy().to_string(),
@@ -94,6 +106,50 @@ pub fn scan_directory(dir: &Path) -> ProjectData {
         imports,
         exported_names,
         reexports,
+        meta,
+    }
+}
+
+fn read_package_meta(dir: &Path) -> PackageMeta {
+    let pkg_path = dir.join("package.json");
+    let json = std::fs::read_to_string(&pkg_path)
+        .ok()
+        .and_then(|c| serde_json::from_str::<serde_json::Value>(&c).ok());
+
+    let json = match json {
+        Some(v) => v,
+        None => return PackageMeta::default(),
+    };
+
+    let dep_names = |key: &str| -> Vec<String> {
+        json.get(key)
+            .and_then(|d| d.as_object())
+            .map(|obj| obj.keys().cloned().collect())
+            .unwrap_or_default()
+    };
+
+    let dependencies = dep_names("dependencies");
+    let dev_dependencies = dep_names("devDependencies");
+
+    // Check for web files: index.html in common locations
+    let has_index_html = ["index.html", "public/index.html", "src/index.html"]
+        .iter()
+        .any(|p| dir.join(p).exists());
+
+    // Check for web build configs
+    let has_web_config = ["vite.config", "webpack.config", "next.config"]
+        .iter()
+        .any(|prefix| {
+            ["ts", "js", "mjs", "cjs"]
+                .iter()
+                .any(|ext| dir.join(format!("{}.{}", prefix, ext)).exists())
+        });
+
+    PackageMeta {
+        dependencies,
+        dev_dependencies,
+        has_index_html,
+        has_web_config,
     }
 }
 
