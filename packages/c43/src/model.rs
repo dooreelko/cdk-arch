@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use serde::Serialize;
 
 #[derive(Debug, Clone, Serialize)]
@@ -30,6 +32,10 @@ pub struct Relation {
 pub struct C4Document {
     pub nodes: Vec<Node>,
     pub relations: Vec<Relation>,
+    #[serde(skip)]
+    seen_nodes: HashSet<String>,
+    #[serde(skip)]
+    seen_relations: HashSet<(String, String, String)>,
 }
 
 impl C4Document {
@@ -37,24 +43,31 @@ impl C4Document {
         Self {
             nodes: Vec::new(),
             relations: Vec::new(),
+            seen_nodes: HashSet::new(),
+            seen_relations: HashSet::new(),
         }
     }
 
     pub fn add_node(&mut self, uid: &str, name: &str, node_type: &str, attributes: NodeAttributes) {
-        self.nodes.push(Node {
-            uid: uid.to_string(),
-            name: name.to_string(),
-            node_type: node_type.to_lowercase(),
-            attributes,
-        });
+        if self.seen_nodes.insert(uid.to_string()) {
+            self.nodes.push(Node {
+                uid: uid.to_string(),
+                name: name.to_string(),
+                node_type: node_type.to_lowercase(),
+                attributes,
+            });
+        }
     }
 
     pub fn add_relation(&mut self, start: &str, is: &str, end: &str) {
-        self.relations.push(Relation {
-            start: start.to_string(),
-            is: is.to_string(),
-            end: end.to_string(),
-        });
+        let key = (start.to_string(), is.to_string(), end.to_string());
+        if self.seen_relations.insert(key) {
+            self.relations.push(Relation {
+                start: start.to_string(),
+                is: is.to_string(),
+                end: end.to_string(),
+            });
+        }
     }
 
     pub fn to_json(&self) -> String {

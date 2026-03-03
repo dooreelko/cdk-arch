@@ -6,7 +6,9 @@ use crate::extract::ConstructInstance;
 use crate::model::{C4Document, NodeAttributes};
 
 pub fn run(root: &Path) -> C4Document {
-    let mut doc = C4Document::new();
+    // Start with the full system-level document (Backend, Frontend, Client nodes + relations)
+    let mut doc = super::system::run(root);
+
     let root = root.canonicalize().unwrap_or_else(|_| root.to_path_buf());
     let root_str = root.to_str().unwrap_or("");
 
@@ -36,23 +38,22 @@ pub fn run(root: &Path) -> C4Document {
         .copied()
         .collect();
 
-    for (pkg_name, arch) in &architectures {
-        let rel_file = rel_path(&arch.file, root_str);
-        doc.add_node(&arch.id, &arch.id, "Architecture", NodeAttributes {
-            project: Some(pkg_name.to_string()),
-            file: Some(rel_file),
-            variable: arch.var_name.clone(),
-        });
-
+    for (_, arch) in &architectures {
         let arch_var = match &arch.var_name {
             Some(v) => v.as_str(),
             None => continue,
         };
 
-        // Find direct children: constructs scoped to this architecture
+        // Find direct container children: constructs scoped to this architecture,
+        // excluding individual Function instances (which belong in the component diagram)
         let children: Vec<(&str, &ConstructInstance)> = all_constructs
             .iter()
-            .filter(|(_, c)| c.scope_var.as_deref() == Some(arch_var) && c.class_name != "Architecture")
+            .filter(|(_, c)| {
+                c.scope_var.as_deref() == Some(arch_var)
+                    && c.class_name != "Architecture"
+                    && c.class_name != "Function"
+                    && c.class_name != "TBDFunction"
+            })
             .copied()
             .collect();
 
@@ -65,12 +66,26 @@ pub fn run(root: &Path) -> C4Document {
             });
             doc.add_relation(&arch.id, "contains", &child.id);
 
-            // Link ApiContainer routes to handlers
+            // Link routes to container-level handlers only (not Function instances).
+            // For Function handlers, derive container-to-container "uses" relations
+            // from the variables the handler calls methods on.
             for (container_id, routes) in &all_routes {
                 if container_id == &child.id {
                     for route in routes {
                         if let Some((_, handler)) = var_to_construct.get(route.handler_var.as_str()) {
-                            doc.add_relation(&child.id, "routes to", &handler.id);
+                            if handler.class_name != "Function" && handler.class_name != "TBDFunction" {
+                                doc.add_relation(&child.id, "routes to", &handler.id);
+                            } else {
+                                for called_var in &handler.called_vars {
+                                    if let Some((_, called)) = var_to_construct.get(called_var.as_str()) {
+                                        if called.id != child.id
+                                            && children.iter().any(|(_, c)| c.id == called.id)
+                                        {
+                                            doc.add_relation(&child.id, "uses", &called.id);
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

@@ -11,6 +11,8 @@ pub struct ConstructInstance {
     pub scope_var: Option<String>,
     pub var_name: Option<String>,
     pub file: String,
+    /// Variables used as objects in method calls within the handler body (Function only)
+    pub called_vars: Vec<String>,
 }
 
 /// A route entry: { path: 'GET /v1/api/hello/{name}', handler: someVar }
@@ -330,6 +332,7 @@ fn extract_new_expr(expr: &Expr, file: &str) -> Option<ConstructInstance> {
             scope_var: None,
             var_name: None,
             file: file.to_string(),
+            called_vars: vec![],
         });
     }
 
@@ -338,12 +341,19 @@ fn extract_new_expr(expr: &Expr, file: &str) -> Option<ConstructInstance> {
         let scope_var = expr_to_ident_name(&args[0].expr);
         let id = expr_to_string(&args[1].expr);
         if let Some(id) = id {
+            // For Function (not TBDFunction), extract variables called in the handler body
+            let called_vars = if class_name == "Function" && args.len() >= 3 {
+                collect_handler_called_vars(&args[2].expr)
+            } else {
+                vec![]
+            };
             return Some(ConstructInstance {
                 class_name,
                 id,
                 scope_var,
                 var_name: None,
                 file: file.to_string(),
+                called_vars,
             });
         }
     }
@@ -512,6 +522,106 @@ fn extract_object_keys(expr: &Expr) -> Vec<String> {
             Vec::new()
         }
         _ => Vec::new(),
+    }
+}
+
+/// Collect all identifier names used as the object of a method call within a function body.
+/// Walks arrow functions and regular function expressions passed as handler args.
+fn collect_handler_called_vars(expr: &Expr) -> Vec<String> {
+    let mut vars = Vec::new();
+    match expr {
+        Expr::Arrow(arrow) => match arrow.body.as_ref() {
+            BlockStmtOrExpr::BlockStmt(block) => {
+                block.stmts.iter().for_each(|s| collect_calls_in_stmt(s, &mut vars));
+            }
+            BlockStmtOrExpr::Expr(e) => collect_calls_in_expr(e, &mut vars),
+        },
+        Expr::Fn(fn_expr) => {
+            if let Some(body) = &fn_expr.function.body {
+                body.stmts.iter().for_each(|s| collect_calls_in_stmt(s, &mut vars));
+            }
+        }
+        _ => {}
+    }
+    vars.sort();
+    vars.dedup();
+    vars
+}
+
+fn collect_calls_in_expr(expr: &Expr, vars: &mut Vec<String>) {
+    match expr {
+        Expr::Call(call) => {
+            if let Callee::Expr(callee) = &call.callee {
+                if let Expr::Member(member) = callee.as_ref() {
+                    if let Expr::Ident(id) = member.obj.as_ref() {
+                        let name = id.sym.to_string();
+                        if name != "this" {
+                            vars.push(name);
+                        }
+                    }
+                    collect_calls_in_expr(&member.obj, vars);
+                } else {
+                    collect_calls_in_expr(callee, vars);
+                }
+            }
+            call.args.iter().for_each(|a| collect_calls_in_expr(&a.expr, vars));
+        }
+        Expr::Await(a) => collect_calls_in_expr(&a.arg, vars),
+        Expr::Paren(p) => collect_calls_in_expr(&p.expr, vars),
+        Expr::TsAs(t) => collect_calls_in_expr(&t.expr, vars),
+        Expr::TsNonNull(t) => collect_calls_in_expr(&t.expr, vars),
+        Expr::Assign(a) => collect_calls_in_expr(&a.right, vars),
+        Expr::Bin(b) => {
+            collect_calls_in_expr(&b.left, vars);
+            collect_calls_in_expr(&b.right, vars);
+        }
+        Expr::Cond(c) => {
+            collect_calls_in_expr(&c.test, vars);
+            collect_calls_in_expr(&c.cons, vars);
+            collect_calls_in_expr(&c.alt, vars);
+        }
+        Expr::Seq(s) => s.exprs.iter().for_each(|e| collect_calls_in_expr(e, vars)),
+        Expr::Unary(u) => collect_calls_in_expr(&u.arg, vars),
+        _ => {}
+    }
+}
+
+fn collect_calls_in_stmt(stmt: &Stmt, vars: &mut Vec<String>) {
+    match stmt {
+        Stmt::Expr(e) => collect_calls_in_expr(&e.expr, vars),
+        Stmt::Return(r) => {
+            if let Some(arg) = &r.arg {
+                collect_calls_in_expr(arg, vars);
+            }
+        }
+        Stmt::Decl(d) => {
+            if let Decl::Var(var_decl) = d {
+                for declarator in &var_decl.decls {
+                    if let Some(init) = &declarator.init {
+                        collect_calls_in_expr(init, vars);
+                    }
+                }
+            }
+        }
+        Stmt::Block(b) => b.stmts.iter().for_each(|s| collect_calls_in_stmt(s, vars)),
+        Stmt::If(i) => {
+            collect_calls_in_expr(&i.test, vars);
+            collect_calls_in_stmt(&i.cons, vars);
+            if let Some(alt) = &i.alt {
+                collect_calls_in_stmt(alt, vars);
+            }
+        }
+        Stmt::Try(t) => {
+            t.block.stmts.iter().for_each(|s| collect_calls_in_stmt(s, vars));
+            if let Some(handler) = &t.handler {
+                handler.body.stmts.iter().for_each(|s| collect_calls_in_stmt(s, vars));
+            }
+            if let Some(finalizer) = &t.finalizer {
+                finalizer.stmts.iter().for_each(|s| collect_calls_in_stmt(s, vars));
+            }
+        }
+        Stmt::Throw(t) => collect_calls_in_expr(&t.arg, vars),
+        _ => {}
     }
 }
 
