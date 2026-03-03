@@ -1,4 +1,5 @@
 mod analysis;
+mod ascii;
 mod cmd;
 mod extract;
 mod model;
@@ -12,6 +13,9 @@ use clap::{Parser, Subcommand};
 #[derive(Parser)]
 #[command(name = "c43", about = "C4 model extractor for cdk-arch TypeScript projects")]
 struct Cli {
+    /// Output as ASCII tree instead of JSON
+    #[arg(long, global = true)]
+    ascii: bool,
     #[command(subcommand)]
     command: Commands,
 }
@@ -28,9 +32,9 @@ enum Commands {
         /// Path to the repository root
         path: PathBuf,
     },
-    /// Extract component-level C4 view (detailed constructs within a package)
+    /// Extract component-level C4 view (Functions within architecture containers)
     Component {
-        /// Path to a package directory
+        /// Path to the repository root
         path: PathBuf,
         /// Optional container name filter
         #[arg(long)]
@@ -80,7 +84,11 @@ fn main() {
                 Commands::Deployment { arch, infra } => cmd::deployment::run(&arch, &infra),
                 Commands::List { .. } => unreachable!(),
             };
-            println!("{}", doc.to_json());
+            if cli.ascii {
+                println!("{}", ascii::render(&doc));
+            } else {
+                println!("{}", serde_json::to_string_pretty(&doc).unwrap());
+            }
         }
     }
 }
