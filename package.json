@@ -8,7 +8,8 @@
   "scripts": {
     "build": "npm run build --workspaces",
     "clean": "npm run clean --workspaces --if-present",
-    "e2e": "npm run e2e --workspaces --if-present"
+    "e2e": "npm run e2e --workspaces --if-present",
+    "test": "cd packages/cdk-arch && npm run test"
   },
   "version": "0.1.0"
 }

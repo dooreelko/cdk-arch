@@ -3,5 +3,8 @@ dist
 *tfstate*
 cdktf.out
 fo0
+.idea
 .gemini
 .direnv
+test
+dist-test
