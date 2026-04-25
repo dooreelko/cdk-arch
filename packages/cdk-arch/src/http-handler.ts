@@ -23,24 +23,32 @@ export const httpHandler = <
   const pathParams = path.match(/\{(\w+)\}/g) || [];
 
   const handler = async (...args: any[]) => {
-    const url = pathParams.reduce(
+    const baseUrl = pathParams.reduce(
       (u, param, i) => args[i] !== undefined ? u.replace(param, encodeURIComponent(String(args[i]))) : u,
       `${endpoint.baseUrl}${path}`
     );
 
+    const extraArgs = args.slice(pathParams.length);
+    const isGet = (method ?? 'GET') === 'GET';
+
+    let url = baseUrl;
+    if (isGet && extraArgs.length > 0 && extraArgs[0] != null && typeof extraArgs[0] === 'object') {
+      const qs = new URLSearchParams(extraArgs[0] as Record<string, string>).toString();
+      if (qs) { url = `${baseUrl}?${qs}`; }
+    }
+
     const options: RequestInit = {
       method: method || 'GET',
       headers: { 'Content-Type': 'application/json' },
-      ...((method === 'POST' || method === 'PUT') && args.length > pathParams.length
-        ? { body: JSON.stringify(args.slice(pathParams.length)) }
+      ...(!isGet && extraArgs.length > 0
+        ? { body: extraArgs.length === 1 ? JSON.stringify(extraArgs[0]) : JSON.stringify(extraArgs) }
         : {})
     };
 
-    console.log('HTTP handler. Will fetch', {url, options});
     const response = await fetcher().fetch(url, options);
 
     if (!response.ok) {
-      throw new Error(`Remote call to ${url} with ${JSON.stringify(options)} failed: ${JSON.stringify(response)}`);
+      throw new Error(`Remote call to ${url} with ${JSON.stringify(options)} failed: ${response.status} ${response.statusText}`);
     }
 
     return response.json();

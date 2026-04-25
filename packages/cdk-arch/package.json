@@ -1,6 +1,6 @@
 {
   "name": "@arinoto/cdk-arch",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "CDK Architecture primitives for event-driven solution architectures",
   "repository": {
     "type": "git",
