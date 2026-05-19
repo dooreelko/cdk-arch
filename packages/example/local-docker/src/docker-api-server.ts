@@ -42,7 +42,7 @@ export class DockerApiServer<TRoutes extends ApiRoutes = ApiRoutes> {
 
         console.log('Will invoke', {method, expressPath, params, args});
 
-        const result = await fn.invokeWithRuntimeContext(args, {request: {url: request.url}});
+        const result = await fn.invoke(...args);
         response.json(result);
       } catch (error: any) {
         console.error(`Error handling ${route}:`, error);

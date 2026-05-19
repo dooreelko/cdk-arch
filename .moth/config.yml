@@ -9,7 +9,6 @@ statuses:
   dir: done
   prioritized: false
 default_severity: med
-editor: /usr/bin/nano
 id_length: 5
 no_edit: false
 priority:

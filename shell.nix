@@ -40,6 +40,9 @@ let
   tea = (builtins.getFlake "github:dooreelko/tea")
       .packages.${pkgs.system}.default;
 
+  moth = (builtins.getFlake "github:tailoredshapes/moth")
+      .packages.${pkgs.system}.default;
+
 in pkgs.mkShellNoCC {
 
   buildInputs = [
@@ -55,6 +58,7 @@ in pkgs.mkShellNoCC {
     pkgs.rustc
     pkgs.cargo
     tea
+    moth
   ];
 
   shellHook = ''

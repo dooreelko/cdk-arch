@@ -2,13 +2,11 @@ import { Construct } from 'constructs';
 
 export type FunctionHandler<TArgs extends any[] = any[], TReturn = any> = (...args: TArgs) => Promise<TReturn>;
 
-export type FunctionRuntimeContextMarker = { runtimeContext?: boolean};
-
 /**
  * Represents a serverless function or handler in the architecture.
  * Generic over argument types (TArgs) and return type (TReturn).
  */
-export class Function<TArgs extends any[] = any[], TReturn = any, TRuntimeContext extends FunctionRuntimeContextMarker = any> extends Construct {
+export class Function<TArgs extends any[] = any[], TReturn = any> extends Construct {
   public readonly handler: FunctionHandler<TArgs, TReturn>;
   private _overload?: FunctionHandler<TArgs, TReturn>;
 
@@ -34,10 +32,6 @@ export class Function<TArgs extends any[] = any[], TReturn = any, TRuntimeContex
     return fn(...args);
   }
 
-  public invokeWithRuntimeContext(args: TArgs, ctx: TRuntimeContext): Promise<TReturn> {
-    const fn = this._overload ?? this.handler;
-    return fn.apply({ runtimeContext: true, ...ctx }, args);
-  }
 }
 
 /**
