@@ -1,5 +1,5 @@
 import express, { Express, Request, Response } from 'express'; 
-import { ApiContainer, ApiRoutes, ArchitectureBinding, architectureBinding, Function } from '@arinoto/cdk-arch';
+import { ApiContainer, ApiRoutes, ArchitectureBinding, architectureBinding, Function, runWithContext } from '@arinoto/cdk-arch';
 
 export interface DockerApiServerConfig {
   binding?: ArchitectureBinding;
@@ -42,7 +42,7 @@ export class DockerApiServer<TRoutes extends ApiRoutes = ApiRoutes> {
 
         console.log('Will invoke', {method, expressPath, params, args});
 
-        const result = await fn.invoke(...args);
+        const result = await runWithContext({ request: { url: request.url } }, () => fn.invoke(...args));
         response.json(result);
       } catch (error: any) {
         console.error(`Error handling ${route}:`, error);

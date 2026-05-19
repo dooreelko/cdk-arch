@@ -1,5 +1,5 @@
 import { log, err } from 'architecture';
-import { ApiContainer, ApiRoutes, Function, FunctionHandler } from '@arinoto/cdk-arch';
+import { ApiContainer, ApiRoutes, Function, FunctionHandler, runWithContext } from '@arinoto/cdk-arch';
 
 interface RouteMatch {
   method: string;
@@ -55,7 +55,7 @@ export function createWorkerHandler<TRoutes extends ApiRoutes>(container: ApiCon
         const args = [...pathArgs, ...bodyArg];
 
         log('worker invoke', {route, args});
-        const result = await route.fn.invoke(...args);
+        const result = await runWithContext({ request: { url: request.url } }, () => route.fn.invoke(...args));
 
         log('worker result', {result});
         return new Response(JSON.stringify(result), {
