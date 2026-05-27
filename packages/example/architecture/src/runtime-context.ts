@@ -1,13 +1,12 @@
-export const extractContext = <TCast>(that: any) => {
-  if (!that) {
-    throw new Error('Context is null or underfined');
+import { getCurrentContext } from '@arinoto/cdk-arch';
+
+export const extractContext = <TCast>() => {
+  const ctx = getCurrentContext();
+  if (!ctx) {
+    throw new Error('Context is null or undefined');
   }
 
-  if (!that.runtimeContext) {
-    throw new Error('Context is missing runtimeContext marker');
-  }
-
-  return that as TCast;
+  return ctx as TCast;
 };
 
 export type DemoRequest = {

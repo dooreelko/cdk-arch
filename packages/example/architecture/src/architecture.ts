@@ -1,4 +1,4 @@
-import { Architecture, ApiContainer, Function, FunctionRuntimeContextMarker } from '@arinoto/cdk-arch';
+import { Architecture, ApiContainer, Function } from '@arinoto/cdk-arch';
 import { JsonStore } from './json-store';
 import { DemoRequest, extractContext } from './runtime-context';
 
@@ -22,13 +22,12 @@ const hellosFunction = new Function(arch, 'hellos-handler', () => {
 });
 
 /*
-Define the handler as a `function ()` instead of an arrow one, then the runtime can
-pass an arbitrary execution context. In this example a subset of express Request is expected
+Retrieves the execution context from AsyncLocalStorage. In this example a subset of express Request is expected
 
-See Function.invokeWithRuntimeContext and example/local-docker/DockerApiServer.setupRoute
+See getCurrentContext and example/local-docker/DockerApiServer.setupRoute
 */
-const requestContextFunction = new Function<[], string, FunctionRuntimeContextMarker & DemoRequest>(arch, 'context-handler', function() {
-  const ctx = extractContext<DemoRequest>(this);
+const requestContextFunction = new Function<[], string>(arch, 'context-handler', () => {
+  const ctx = extractContext<DemoRequest>();
   return Promise.resolve(ctx.request.url);
 });
 
