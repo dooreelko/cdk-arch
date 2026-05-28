@@ -73,6 +73,19 @@ export class ApiContainer<TRoutes extends ApiRoutes = ApiRoutes> extends Constru
   }
 
   /**
+   * Mount all routes from another container under a path prefix.
+   * Enables serving a sub-container's API at a nested path, e.g. mounting
+   * a graph container under '/graph' so consolidators can bind via HTTP.
+   */
+  mount(prefix: string, container: ApiContainer): void {
+    container.listRoutes().forEach(name => {
+      const entry = container.getRoute(name);
+      const [method, path] = entry.path.split(' ', 2);
+      this.addRoute(`${container.node.id}/${name}`, `${method} ${prefix}${path}`, entry.handler);
+    });
+  }
+
+  /**
    * Returns a list of TBDFunctions that have not been overloaded.
    * Use this to validate that all required implementations are provided.
    */
