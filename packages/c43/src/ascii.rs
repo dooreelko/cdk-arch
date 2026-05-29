@@ -58,31 +58,39 @@ pub fn render(doc: &C4Document) -> String {
         })
         .collect();
 
+    let mut visited = std::collections::HashSet::new();
     let mut out = String::new();
     for root in &roots {
+        if !visited.insert(root.uid.as_str()) {
+            continue;
+        }
         out.push_str(&format!("{}: {}\n", display_type(&root.node_type), root.name));
         let empty = vec![];
         let children = children_map.get(root.uid.as_str()).unwrap_or(&empty);
         for (i, child_id) in children.iter().enumerate() {
             let is_last = i == children.len() - 1;
             if let Some(child) = nodes.get(child_id) {
-                render_node(child, &nodes, &children_map, &handles_map, &uses_map, "", is_last, &mut out);
+                render_node(child, &nodes, &children_map, &handles_map, &uses_map, "", is_last, &mut out, &mut visited);
             }
         }
     }
     out.trim_end_matches('\n').to_string()
 }
 
-fn render_node(
-    node: &Node,
-    nodes: &HashMap<&str, &Node>,
-    children_map: &HashMap<&str, Vec<&str>>,
-    handles_map: &HashMap<&str, Vec<&str>>,
-    uses_map: &HashMap<&str, Vec<&str>>,
+fn render_node<'a>(
+    node: &'a Node,
+    nodes: &HashMap<&'a str, &'a Node>,
+    children_map: &HashMap<&'a str, Vec<&'a str>>,
+    handles_map: &HashMap<&'a str, Vec<&'a str>>,
+    uses_map: &HashMap<&'a str, Vec<&'a str>>,
     prefix: &str,
     is_last: bool,
     out: &mut String,
+    visited: &mut std::collections::HashSet<&'a str>,
 ) {
+    if !visited.insert(node.uid.as_str()) {
+        return;
+    }
     let connector = if is_last { "└─ " } else { "├─ " };
     let continuation = if is_last { "    " } else { "│   " };
     let new_prefix = format!("{}{}", prefix, continuation);
@@ -119,7 +127,7 @@ fn render_node(
     for (i, child_id) in children.iter().enumerate() {
         let child_is_last = i == children.len() - 1;
         if let Some(child) = nodes.get(child_id) {
-            render_node(child, nodes, children_map, handles_map, uses_map, &new_prefix, child_is_last, out);
+            render_node(child, nodes, children_map, handles_map, uses_map, &new_prefix, child_is_last, out, visited);
         }
     }
 }
