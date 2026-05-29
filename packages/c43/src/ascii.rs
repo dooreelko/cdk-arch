@@ -2,6 +2,35 @@ use std::collections::HashMap;
 
 use crate::model::{C4Document, Node};
 
+fn build_relations_suffix(
+    node_uid: &str,
+    relations: &[crate::model::Relation],
+    nodes: &HashMap<&str, &Node>,
+) -> String {
+    let mut rel_groups: HashMap<&str, Vec<&str>> = HashMap::new();
+    for rel in relations {
+        if rel.start == node_uid && rel.is != "contains" && rel.is != "handles" {
+            let target_name = nodes
+                .get(rel.end.as_str())
+                .map(|n| n.name.as_str())
+                .unwrap_or(rel.end.as_str());
+            rel_groups.entry(rel.is.as_str()).or_default().push(target_name);
+        }
+    }
+
+    let mut rels_str = String::new();
+    if !rel_groups.is_empty() {
+        let mut keys: Vec<&&str> = rel_groups.keys().collect();
+        keys.sort();
+        for key in keys {
+            let mut targets = rel_groups.get(*key).unwrap().clone();
+            targets.sort();
+            rels_str.push_str(&format!(" [{}: {}]", key, targets.join(", ")));
+        }
+    }
+    rels_str
+}
+
 pub fn render(doc: &C4Document) -> String {
     let nodes: HashMap<&str, &Node> =
         doc.nodes.iter().map(|n| (n.uid.as_str(), n)).collect();
@@ -64,13 +93,14 @@ pub fn render(doc: &C4Document) -> String {
         if !visited.insert(root.uid.as_str()) {
             continue;
         }
-        out.push_str(&format!("{}: {}\n", display_type(&root.node_type), root.name));
+        let rels_str = build_relations_suffix(root.uid.as_str(), &doc.relations, &nodes);
+        out.push_str(&format!("{}: {}{}\n", display_type(&root.node_type), root.name, rels_str));
         let empty = vec![];
         let children = children_map.get(root.uid.as_str()).unwrap_or(&empty);
         for (i, child_id) in children.iter().enumerate() {
             let is_last = i == children.len() - 1;
             if let Some(child) = nodes.get(child_id) {
-                render_node(child, &nodes, &children_map, &handles_map, &uses_map, "", is_last, &mut out, &mut visited);
+                render_node(child, &nodes, &children_map, &handles_map, &uses_map, &doc.relations, "", is_last, &mut out, &mut visited);
             }
         }
     }
@@ -83,6 +113,7 @@ fn render_node<'a>(
     children_map: &HashMap<&'a str, Vec<&'a str>>,
     handles_map: &HashMap<&'a str, Vec<&'a str>>,
     uses_map: &HashMap<&'a str, Vec<&'a str>>,
+    relations: &'a [crate::model::Relation],
     prefix: &str,
     is_last: bool,
     out: &mut String,
@@ -95,12 +126,14 @@ fn render_node<'a>(
     let continuation = if is_last { "    " } else { "│   " };
     let new_prefix = format!("{}{}", prefix, continuation);
 
+    let rels_str = build_relations_suffix(node.uid.as_str(), relations, nodes);
     out.push_str(&format!(
-        "{}{}{}: {}\n",
+        "{}{}{}: {}{}\n",
         prefix,
         connector,
         display_type(&node.node_type),
-        node.name
+        node.name,
+        rels_str
     ));
 
     // Print handles sub-items, aligning the uses column
@@ -127,7 +160,7 @@ fn render_node<'a>(
     for (i, child_id) in children.iter().enumerate() {
         let child_is_last = i == children.len() - 1;
         if let Some(child) = nodes.get(child_id) {
-            render_node(child, nodes, children_map, handles_map, uses_map, &new_prefix, child_is_last, out, visited);
+            render_node(child, nodes, children_map, handles_map, uses_map, relations, &new_prefix, child_is_last, out, visited);
         }
     }
 }
