@@ -27,12 +27,66 @@ pub struct RouteEntry {
 
 /// An architectureBinding.bind() call
 #[derive(Debug, Clone)]
+// Updated BindCall struct with has_overloads flag
 pub struct BindCall {
     pub component_var: String,
     pub base_url: Option<String>,
     pub overload_keys: Vec<String>,
+    // true when the "overloads" key is present, regardless of its value
+    pub has_overloads: bool,
     pub file: String,
 }
+
+fn parse_bind_call(args: &[ExprOrSpread], file: &str) -> Option<BindCall> {
+    let component_var = args.first().and_then(|a| expr_to_ident_name(&a.expr))?;
+    let options = args.get(1);
+
+    let mut base_url = None;
+    let mut overload_keys = Vec::new();
+    // Track whether the overloads property existed
+    let mut has_overloads = false;
+
+    if let Some(opts) = options {
+        if let Expr::Object(obj) = opts.expr.as_ref() {
+            for prop in &obj.props {
+                if let PropOrSpread::Prop(p) = prop {
+                    if let Prop::KeyValue(kv) = p.as_ref() {
+                        let key = prop_name_to_string(&kv.key);
+                        match key.as_deref() {
+                            Some("baseUrl") => {
+                                base_url = expr_to_string_or_template(&kv.value);
+                            }
+                            Some("overloads") => {
+                                // Extract overload keys, but also mark that overloads existed
+                                overload_keys = extract_object_keys(&kv.value);
+                                has_overloads = true;
+                            }
+                            _ => {}
+                        }
+                    }
+                    if let Prop::Shorthand(ident) = p.as_ref() {
+                        // Handle shorthand like { overloads } – we treat it as overloads present
+                        if ident.sym == "overloads" {
+                            has_overloads = true;
+                        }
+                    }
+                }
+                if let PropOrSpread::Spread(_spread) = prop {
+                    // We cannot resolve overloads from a spread, ignore for now
+                }
+            }
+        }
+    }
+
+    Some(BindCall {
+        component_var,
+        base_url,
+        overload_keys,
+        has_overloads,
+        file: file.to_string(),
+    })
+}
+
 
 /// An import mapping: local_name -> (module_source, imported_name)
 #[derive(Debug, Clone)]
