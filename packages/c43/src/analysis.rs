@@ -32,10 +32,11 @@ pub struct ConsumerEntry {
     pub source_package: String,
     pub name: String,
     pub construct_type: String,
+    pub construct_id: String,
 }
 
-/// Map: package_name -> { exported_name -> construct_type }
-pub type ExportedConstructsMap = HashMap<String, HashMap<String, String>>;
+/// Map: package_name -> { exported_name -> (construct_type, construct_id) }
+pub type ExportedConstructsMap = HashMap<String, HashMap<String, (String, String)>>;
 
 /// Scan all node projects under root, skipping workspace roots.
 /// Returns project data for each leaf package.
@@ -153,11 +154,11 @@ fn read_package_meta(dir: &Path) -> PackageMeta {
     }
 }
 
-/// Build a map of package_name -> { var_name -> construct_type }
+/// Build a map of package_name -> { var_name -> (construct_type, construct_id) }
 /// resolving one level of re-exports (barrel files).
 pub fn build_exported_constructs_map(projects: &[ProjectData]) -> ExportedConstructsMap {
     // Collect directly exported constructs per project
-    let mut direct_exports: HashMap<&str, HashMap<&str, &str>> = HashMap::new();
+    let mut direct_exports: HashMap<&str, HashMap<&str, (&str, &str)>> = HashMap::new();
 
     for pd in projects {
         let exported_set: HashSet<&str> = pd.exported_names.iter().map(|s| s.as_str()).collect();
@@ -165,7 +166,7 @@ pub fn build_exported_constructs_map(projects: &[ProjectData]) -> ExportedConstr
         for c in &pd.constructs {
             if let Some(var_name) = &c.var_name {
                 if exported_set.contains(var_name.as_str()) {
-                    exports.insert(var_name.as_str(), c.class_name.as_str());
+                    exports.insert(var_name.as_str(), (c.class_name.as_str(), c.id.as_str()));
                 }
             }
         }
@@ -178,11 +179,11 @@ pub fn build_exported_constructs_map(projects: &[ProjectData]) -> ExportedConstr
     let mut result: ExportedConstructsMap = HashMap::new();
 
     for pd in projects {
-        let mut pkg_exports: HashMap<String, String> = HashMap::new();
+        let mut pkg_exports: HashMap<String, (String, String)> = HashMap::new();
 
         if let Some(direct) = direct_exports.get(pd.name.as_str()) {
-            for (name, typ) in direct {
-                pkg_exports.insert(name.to_string(), typ.to_string());
+            for (name, (typ, id)) in direct {
+                pkg_exports.insert(name.to_string(), (typ.to_string(), id.to_string()));
             }
         }
 
@@ -190,11 +191,11 @@ pub fn build_exported_constructs_map(projects: &[ProjectData]) -> ExportedConstr
             let source_pkg = &reexport.source;
             if let Some(source_exports) = direct_exports.get(source_pkg.as_str()) {
                 if reexport.local_name == "*" {
-                    for (name, typ) in source_exports.iter() {
-                        pkg_exports.insert(name.to_string(), typ.to_string());
+                    for (name, (typ, id)) in source_exports.iter() {
+                        pkg_exports.insert(name.to_string(), (typ.to_string(), id.to_string()));
                     }
-                } else if let Some(typ) = source_exports.get(reexport.local_name.as_str()) {
-                    pkg_exports.insert(reexport.local_name.clone(), typ.to_string());
+                } else if let Some((typ, id)) = source_exports.get(reexport.local_name.as_str()) {
+                    pkg_exports.insert(reexport.local_name.clone(), (typ.to_string(), id.to_string()));
                 }
             }
         }
@@ -226,12 +227,13 @@ pub fn find_consumers(
         if let Some(pkg_constructs) = exported_constructs.get(*source) {
             let mut seen = HashSet::new();
             for name in imported_names {
-                if let Some(typ) = pkg_constructs.get(*name) {
+                if let Some((typ, id)) = pkg_constructs.get(*name) {
                     if seen.insert(*name) {
                         consumers.push(ConsumerEntry {
                             source_package: source.to_string(),
                             name: name.to_string(),
                             construct_type: typ.clone(),
+                            construct_id: id.clone(),
                         });
                     }
                 }

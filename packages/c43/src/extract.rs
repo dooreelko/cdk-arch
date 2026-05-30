@@ -37,6 +37,7 @@ pub struct BindCall {
     pub file: String,
 }
 
+
 fn parse_bind_call(args: &[ExprOrSpread], file: &str) -> Option<BindCall> {
     let component_var = args.first().and_then(|a| expr_to_ident_name(&a.expr))?;
     let options = args.get(1);
@@ -508,52 +509,6 @@ fn is_architecture_binding_bind(expr: &Expr) -> bool {
         }
     }
     false
-}
-
-fn parse_bind_call(args: &[ExprOrSpread], file: &str) -> Option<BindCall> {
-    let component_var = args.first().and_then(|a| expr_to_ident_name(&a.expr))?;
-    let options = args.get(1);
-
-    let mut base_url = None;
-    let mut overload_keys = Vec::new();
-
-    if let Some(opts) = options {
-        if let Expr::Object(obj) = opts.expr.as_ref() {
-            for prop in &obj.props {
-                if let PropOrSpread::Prop(p) = prop {
-                    if let Prop::KeyValue(kv) = p.as_ref() {
-                        let key = prop_name_to_string(&kv.key);
-                        match key.as_deref() {
-                            Some("baseUrl") => {
-                                base_url = expr_to_string_or_template(&kv.value);
-                            }
-                            Some("overloads") => {
-                                overload_keys = extract_object_keys(&kv.value);
-                            }
-                            _ => {}
-                        }
-                    }
-                    if let Prop::Shorthand(ident) = p.as_ref() {
-                        // Handle spread shorthand like { ...jsonStoreEndpoint }
-                        let _name = ident.sym.to_string();
-                    }
-                }
-                if let PropOrSpread::Spread(spread) = prop {
-                    // Spread from another variable — try to extract base_url
-                    if let Expr::Ident(_) = spread.expr.as_ref() {
-                        // Can't resolve at static analysis time
-                    }
-                }
-            }
-        }
-    }
-
-    Some(BindCall {
-        component_var,
-        base_url,
-        overload_keys,
-        file: file.to_string(),
-    })
 }
 
 fn extract_object_keys(expr: &Expr) -> Vec<String> {

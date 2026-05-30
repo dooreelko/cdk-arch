@@ -1,14 +1,7 @@
-mod analysis;
-mod ascii;
-mod cmd;
-mod extract;
-mod model;
-mod parse;
-mod scan;
-
 use std::path::PathBuf;
-
 use clap::{Parser, Subcommand};
+use c43::cmd;
+use c43::ascii;
 
 #[derive(Parser)]
 #[command(name = "c43", about = "C4 model extractor for cdk-arch TypeScript projects")]
