@@ -298,7 +298,8 @@ pub fn parse_and_validate(raw: &Value) -> Result<Model, String> {
         routing_order.push(eid);
     }
 
-    let groups = super::groups::build_groups(raw, &nodes)?;
+    let mut groups = super::groups::build_groups(raw, &nodes)?;
+    super::groups::resolve_extents(&mut groups, &nodes)?;
 
     let title = py_str(&raw["title"]);
     let description = py_str(&raw["description"]);

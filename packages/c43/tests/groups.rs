@@ -92,3 +92,52 @@ fn error_duplicate_group_id() {
     ]))).unwrap_err();
     assert!(err.contains("duplicate group id"), "got: {err}");
 }
+
+fn raw_grid(groups: serde_json::Value) -> serde_json::Value {
+    // 2x2 grid: a(0,0) b(1,0) c(0,1) d(1,1)
+    json!({
+        "title":"T","description":"D",
+        "nodes":[
+            {"id":"a","label":"a","grid_col":0,"grid_row":0},
+            {"id":"b","label":"b","grid_col":1,"grid_row":0},
+            {"id":"c","label":"c","grid_col":0,"grid_row":1},
+            {"id":"d","label":"d","grid_col":1,"grid_row":1}
+        ],
+        "edges":[],
+        "groups": groups
+    })
+}
+
+#[test]
+fn extent_from_direct_members() {
+    let m = parse_and_validate(&raw_grid(json!([
+        {"id":"g","title":"G","members":["a","d"]}
+    ]))).unwrap();
+    let g = &m.groups[0];
+    assert_eq!((g.col0, g.col1, g.row0, g.row1), (0, 1, 0, 1));
+    assert_eq!(g.depth, 0);
+}
+
+#[test]
+fn parent_extent_includes_child_and_depth_increases() {
+    let m = parse_and_validate(&raw_grid(json!([
+        {"id":"outer","title":"O","members":["a"]},
+        {"id":"inner","title":"I","members":["d"],"parent":"outer"}
+    ]))).unwrap();
+    let outer = m.groups.iter().find(|g| g.id == "outer").unwrap();
+    let inner = m.groups.iter().find(|g| g.id == "inner").unwrap();
+    // outer encloses a(0,0) plus inner's extent at d(1,1)
+    assert_eq!((outer.col0, outer.col1, outer.row0, outer.row1), (0, 1, 0, 1));
+    assert_eq!(outer.depth, 0);
+    assert_eq!((inner.col0, inner.col1, inner.row0, inner.row1), (1, 1, 1, 1));
+    assert_eq!(inner.depth, 1);
+}
+
+#[test]
+fn error_parent_cycle() {
+    let err = parse_and_validate(&raw_grid(json!([
+        {"id":"x","title":"X","members":["a"],"parent":"y"},
+        {"id":"y","title":"Y","members":["b"],"parent":"x"}
+    ]))).unwrap_err();
+    assert!(err.contains("cycle"), "got: {err}");
+}

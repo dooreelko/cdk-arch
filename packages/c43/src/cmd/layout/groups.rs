@@ -5,6 +5,7 @@
 
 use super::model::{Group, Node};
 use serde_json::Value;
+use std::collections::HashMap;
 use std::collections::HashSet;
 
 /// `str()`-style rendering for ids (always strings in practice).
@@ -89,4 +90,85 @@ pub fn build_groups(raw: &Value, nodes: &[Node]) -> Result<Vec<Group>, String> {
     }
 
     Ok(groups)
+}
+
+/// Resolve grid extents (members ∪ descendant extents) and depth for every
+/// group, in place. Returns an error on a parent cycle.
+pub fn resolve_extents(groups: &mut [Group], nodes: &[Node]) -> Result<(), String> {
+    let node_cell: HashMap<&str, (i64, i64)> = nodes
+        .iter()
+        .map(|n| (n.id.as_str(), (n.grid_col, n.grid_row)))
+        .collect();
+
+    let id_index: HashMap<String, usize> =
+        groups.iter().enumerate().map(|(i, g)| (g.id.clone(), i)).collect();
+
+    // children adjacency
+    let mut children: HashMap<usize, Vec<usize>> = HashMap::new();
+    for (i, g) in groups.iter().enumerate() {
+        if let Some(p) = &g.parent {
+            let pi = id_index[p];
+            children.entry(pi).or_default().push(i);
+        }
+    }
+
+    // depth: walk parent chain; detect cycle with a bounded step count.
+    let n = groups.len();
+    for i in 0..n {
+        let mut depth = 0i64;
+        let mut cur = groups[i].parent.clone();
+        let mut steps = 0;
+        while let Some(p) = cur {
+            steps += 1;
+            if steps > n as i64 {
+                return Err(format!("cycle detected in group parent chain at {}", groups[i].id));
+            }
+            depth += 1;
+            cur = groups[id_index[&p]].parent.clone();
+        }
+        groups[i].depth = depth;
+    }
+
+    // extents: post-order over the parent tree (deepest first). Sorting indices
+    // by descending depth guarantees children are computed before parents.
+    let mut order: Vec<usize> = (0..n).collect();
+    order.sort_by_key(|&i| -groups[i].depth);
+
+    // seed every group from its direct members
+    let mut ext: Vec<Option<(i64, i64, i64, i64)>> = vec![None; n];
+    for i in 0..n {
+        for mid in &groups[i].member_ids {
+            let (c, r) = node_cell[mid.as_str()];
+            ext[i] = Some(match ext[i] {
+                None => (c, c, r, r),
+                Some((c0, c1, r0, r1)) => (c0.min(c), c1.max(c), r0.min(r), r1.max(r)),
+            });
+        }
+    }
+    // fold child extents up into parents (deepest first)
+    for &i in &order {
+        if let Some(kids) = children.get(&i) {
+            for &k in kids {
+                if let Some((kc0, kc1, kr0, kr1)) = ext[k] {
+                    ext[i] = Some(match ext[i] {
+                        None => (kc0, kc1, kr0, kr1),
+                        Some((c0, c1, r0, r1)) =>
+                            (c0.min(kc0), c1.max(kc1), r0.min(kr0), r1.max(kr1)),
+                    });
+                }
+            }
+        }
+    }
+
+    for i in 0..n {
+        let (c0, c1, r0, r1) = ext[i].ok_or_else(|| {
+            format!("group {} has no members and no child groups", groups[i].id)
+        })?;
+        groups[i].col0 = c0;
+        groups[i].col1 = c1;
+        groups[i].row0 = r0;
+        groups[i].row1 = r1;
+    }
+
+    Ok(())
 }
