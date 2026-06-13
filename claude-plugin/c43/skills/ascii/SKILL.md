@@ -1,11 +1,17 @@
 ---
-name: c43-diagram
 description: Always use when user asks to create, generate, or build a c4 or c43 architecture diagram. 
 ---
 
-# C43 diagram skill
+# C43 ascii diagram skill
 
 Generate C43 architecture diagrams.
+Provided "$ARGUMENTS" is either 
+- kind of diagram the user wants to generate (system, component, etc). In this case run `c43 <kind> --ascii .`
+- the ready output from the c43. In this case use input as is for the diagram
+- or nothing. In this case run `c43 system --ascii .`
+
+This will give you the architecture, you can proceed with rendering.
+
 
 ## How to create a diagram
 

@@ -1,0 +1,12 @@
+{
+  "name": "c43-test",
+  "owner": {
+    "name": "sascha"
+  },
+  "plugins": [
+	{
+		"name": "ascii",
+		"source": "./c43"
+	}
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "c43",
+  "version": "0.1.0",
+  "description": "Generate C43 architecture diagrams.",
+  "author": { "name": "Sascha Fedorenko" }
+}
