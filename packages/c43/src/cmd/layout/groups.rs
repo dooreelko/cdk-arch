@@ -266,6 +266,104 @@ pub fn horizontal_ring_counts(groups: &[Group]) -> BTreeMap<i64, (i64, i64)> {
     counts
 }
 
+/// Assign each group its pixel rectangle. Requires `col_x`/`row_y`/bands built
+/// by geometry. Borders pack toward nodes by nesting depth (deepest innermost):
+/// on a lane's side nearer the enclosed nodes the deepest group sits closest to
+/// the nodes, shallower groups step outward toward the lane centre.
+pub fn assign_boxes(
+    groups: &mut [Group],
+    col_x: &BTreeMap<i64, i64>,
+    row_y: &BTreeMap<i64, i64>,
+    col_bands: &[super::model::Band],
+    row_bands: &[super::model::Band],
+) {
+    // Column lane span: col_x region keys align with band starts (incl. -1).
+    let col_lane_span = |region: i64| -> Option<(i64, i64)> {
+        let s = *col_x.get(&region)?;
+        let b = col_bands.iter().find(|b| b.start == s && b.kind == "lane")?;
+        Some((b.start, b.end))
+    };
+    // Row lanes are located by band adjacency to the node row, because row_y's
+    // lane keys (2r+2) and the top lane (no key) don't match the column
+    // convention. The lane ABOVE node row r is the "lane" band whose `end`
+    // touches the node row start; the lane BELOW row r is the "lane" band whose
+    // `start` touches the node row end.
+    let row_node_start = |r: i64| -> Option<i64> { row_y.get(&(2 * r + 1)).copied() };
+    let lane_above_row = |r: i64| -> Option<(i64, i64)> {
+        let ns = row_node_start(r)?;
+        let b = row_bands.iter().find(|b| b.end == ns && b.kind == "lane")?;
+        Some((b.start, b.end))
+    };
+    let lane_below_row = |r: i64| -> Option<(i64, i64)> {
+        let ns = row_node_start(r)?;
+        // node band starts at ns; find it to learn its end, then the lane there.
+        let node = row_bands.iter().find(|b| b.start == ns && b.kind == "node")?;
+        let b = row_bands
+            .iter()
+            .find(|b| b.start == node.end && b.kind == "lane")?;
+        Some((b.start, b.end))
+    };
+
+    let n = groups.len();
+
+    // Vertical borders (left/right x).
+    for i in 0..n {
+        let (c0, c1) = (groups[i].col0, groups[i].col1);
+        // LEFT border in lane region 2*c0 - 1, packed on its RIGHT side:
+        // deepest hugs the right nodes => nearest lane END (e-1).
+        let lreg = 2 * c0 - 1;
+        groups[i].x = if let Some((_s, e)) = col_lane_span(lreg) {
+            let mut owners: Vec<&Group> =
+                groups.iter().filter(|g| 2 * g.col0 - 1 == lreg).collect();
+            owners.sort_by_key(|g| -g.depth);
+            let rank = owners.iter().position(|g| g.id == groups[i].id).unwrap() as i64;
+            e - 1 - rank
+        } else {
+            *col_x.get(&(2 * c0)).unwrap() - 1
+        };
+        // RIGHT border in lane region 2*c1 + 1, packed on its LEFT side:
+        // deepest hugs the left nodes => nearest lane START (s).
+        let rreg = 2 * c1 + 1;
+        let right_x = if let Some((s, _e)) = col_lane_span(rreg) {
+            let mut owners: Vec<&Group> =
+                groups.iter().filter(|g| 2 * g.col1 + 1 == rreg).collect();
+            owners.sort_by_key(|g| -g.depth);
+            let rank = owners.iter().position(|g| g.id == groups[i].id).unwrap() as i64;
+            s + rank
+        } else {
+            *col_x.get(&(2 * c1)).unwrap()
+        };
+        groups[i].w = right_x - groups[i].x + 1;
+    }
+
+    // Horizontal borders (top/bottom y).
+    for i in 0..n {
+        let (r0, r1) = (groups[i].row0, groups[i].row1);
+        // TOP border in the lane ABOVE node row r0, packed on its BOTTOM side:
+        // deepest hugs the row below => nearest lane END.
+        groups[i].y = if let Some((_s, e)) = lane_above_row(r0) {
+            let mut owners: Vec<&Group> = groups.iter().filter(|g| g.row0 == r0).collect();
+            owners.sort_by_key(|g| -g.depth);
+            let rank = owners.iter().position(|g| g.id == groups[i].id).unwrap() as i64;
+            e - 1 - rank
+        } else {
+            *row_y.get(&(2 * r0 + 1)).unwrap() - 1
+        };
+        // BOTTOM border in the lane BELOW node row r1, packed on its TOP side:
+        // deepest hugs the row above => nearest lane START.
+        let bot_y = if let Some((s, _e)) = lane_below_row(r1) {
+            let mut owners: Vec<&Group> = groups.iter().filter(|g| g.row1 == r1).collect();
+            owners.sort_by_key(|g| -g.depth);
+            let rank = owners.iter().position(|g| g.id == groups[i].id).unwrap() as i64;
+            s + rank
+        } else {
+            let node_top = *row_y.get(&(2 * r1 + 1)).unwrap();
+            node_top + super::model::BOX_H
+        };
+        groups[i].h = bot_y - groups[i].y + 1;
+    }
+}
+
 /// Width of a vertical lane given its (left_rings, right_rings). With no rings
 /// this is exactly LANE_MIN_W (backward compatible). Each populated side adds
 /// its ring columns plus one PAD gap separating rings from the edge zone.

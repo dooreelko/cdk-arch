@@ -287,3 +287,46 @@ fn left_lane_added_when_groups_present() {
     assert!(a.x > GUTTER_W + 1 + BOX_MARGIN_X,
         "expected left lane to push col 0 right, got x={}", a.x);
 }
+
+#[test]
+fn group_box_surrounds_member_nodes() {
+    let mut m = parse_and_validate(&json!({
+        "title":"T","description":"D",
+        "nodes":[
+            {"id":"a","label":"a","grid_col":0,"grid_row":0},
+            {"id":"b","label":"b","grid_col":1,"grid_row":0}
+        ],
+        "edges":[],
+        "groups":[{"id":"g","title":"G","members":["a","b"]}]
+    })).unwrap();
+    geometry(&mut m);
+    let g = &m.groups[0];
+    let a = m.nodes.iter().find(|n| n.id == "a").unwrap();
+    let b = m.nodes.iter().find(|n| n.id == "b").unwrap();
+    assert!(g.x < a.x, "left border left of node a (g.x={}, a.x={})", g.x, a.x);
+    assert!(g.x + g.w - 1 > b.x + b.w - 1, "right border right of node b");
+    assert!(g.y < a.y, "top border above nodes");
+    assert!(g.y + g.h - 1 > a.y + a.h - 1, "bottom border below nodes");
+}
+
+#[test]
+fn nested_group_inside_parent_box() {
+    let mut m = parse_and_validate(&json!({
+        "title":"T","description":"D",
+        "nodes":[
+            {"id":"a","label":"a","grid_col":0,"grid_row":0},
+            {"id":"b","label":"b","grid_col":1,"grid_row":0}
+        ],
+        "edges":[],
+        "groups":[
+            {"id":"outer","title":"O","members":["a","b"]},
+            {"id":"inner","title":"I","members":["b"],"parent":"outer"}
+        ]
+    })).unwrap();
+    geometry(&mut m);
+    let outer = m.groups.iter().find(|g| g.id == "outer").unwrap();
+    let inner = m.groups.iter().find(|g| g.id == "inner").unwrap();
+    assert!(outer.x < inner.x, "outer left border left of inner left border (outer.x={}, inner.x={})", outer.x, inner.x);
+    assert!(outer.y < inner.y && outer.y + outer.h > inner.y + inner.h,
+        "outer encloses inner vertically");
+}

@@ -132,5 +132,11 @@ pub fn geometry(m: &mut Model) {
         n.y = m.row_y[&(2 * n.grid_row + 1)] + BOX_MARGIN_Y;
     }
 
+    if !m.groups.is_empty() {
+        let (col_x, row_y) = (m.col_x.clone(), m.row_y.clone());
+        let (cb, rb) = (m.col_bands.clone(), m.row_bands.clone());
+        super::groups::assign_boxes(&mut m.groups, &col_x, &row_y, &cb, &rb);
+    }
+
     super::model::build_band_caches(m);
 }
