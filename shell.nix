@@ -57,6 +57,7 @@ in pkgs.mkShellNoCC {
     pkgs.terraform
     pkgs.rustc
     pkgs.cargo
+    pkgs.drawio-headless
     tea
     moth
   ];

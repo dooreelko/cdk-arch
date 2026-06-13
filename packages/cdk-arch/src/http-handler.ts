@@ -32,8 +32,15 @@ export const httpHandler = <
     const isGet = (method ?? 'GET') === 'GET';
 
     let url = baseUrl;
-    if (isGet && extraArgs.length > 0 && extraArgs[0] != null && typeof extraArgs[0] === 'object') {
-      const qs = new URLSearchParams(extraArgs[0] as Record<string, string>).toString();
+    if (isGet && extraArgs.length > 0) {
+      const extra = extraArgs[0];
+      if (extra == null || typeof extra !== 'object') {
+        throw new Error(
+          `GET route '${route.path}' received a non-object extra arg (${typeof extra}) — ` +
+          `primitives cannot be serialized as query params. Wrap in an object instead.`
+        );
+      }
+      const qs = new URLSearchParams(extra as Record<string, string>).toString();
       if (qs) { url = `${baseUrl}?${qs}`; }
     }
 
