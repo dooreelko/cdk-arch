@@ -61,7 +61,7 @@ impl fmt::Display for Canvas {
             .iter()
             .map(|row| {
                 let s: String = row.iter().collect();
-                s.trim_end_matches(' ').to_string()
+                s.trim_end_matches(char::is_whitespace).to_string()
             })
             .collect();
         write!(f, "{}\n", rows.join("\n"))
