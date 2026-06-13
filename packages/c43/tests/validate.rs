@@ -416,6 +416,15 @@ fn unknown_hint_key_rejected() {
 }
 
 #[test]
+fn unknown_hint_key_reports_first_inserted() {
+    // Two unknown keys; Python reports the first INSERTED ("zzz"), not the first sorted ("aaa").
+    let mut raw = base();
+    raw["hints"] = json!({"zzz": [], "aaa": []});
+    let err = parse_and_validate(&raw).unwrap_err();
+    assert!(err.contains("unknown key in hints: 'zzz'"), "{err}");
+}
+
+#[test]
 fn to_side_right_prohibited() {
     let mut raw = base();
     raw["hints"] = json!({"ports": [{"edge_id": "e1", "to_side": "right"}]});
