@@ -266,6 +266,15 @@ pub fn horizontal_ring_counts(groups: &[Group]) -> BTreeMap<i64, (i64, i64)> {
     counts
 }
 
+/// Depth-rank of group `id` among all groups matching `predicate`, deepest = 0.
+/// Used to pack nested borders: rank 0 hugs the nodes, higher ranks step toward
+/// the lane centre.
+fn rank_by_depth(groups: &[Group], id: &str, predicate: impl Fn(&Group) -> bool) -> i64 {
+    let mut owners: Vec<&Group> = groups.iter().filter(|g| predicate(g)).collect();
+    owners.sort_by_key(|g| -g.depth);
+    owners.iter().position(|g| g.id == id).unwrap() as i64
+}
+
 /// Assign each group its pixel rectangle. Requires `col_x`/`row_y`/bands built
 /// by geometry. Borders pack toward nodes by nesting depth (deepest innermost):
 /// on a lane's side nearer the enclosed nodes the deepest group sits closest to
@@ -313,25 +322,19 @@ pub fn assign_boxes(
         // deepest hugs the right nodes => nearest lane END (e-1).
         let lreg = 2 * c0 - 1;
         groups[i].x = if let Some((_s, e)) = col_lane_span(lreg) {
-            let mut owners: Vec<&Group> =
-                groups.iter().filter(|g| 2 * g.col0 - 1 == lreg).collect();
-            owners.sort_by_key(|g| -g.depth);
-            let rank = owners.iter().position(|g| g.id == groups[i].id).unwrap() as i64;
+            let rank = rank_by_depth(groups, &groups[i].id, |g| 2 * g.col0 - 1 == lreg);
             e - 1 - rank
         } else {
-            *col_x.get(&(2 * c0)).unwrap() - 1
+            unreachable!("geometry always emits a lane adjacent to each node column")
         };
         // RIGHT border in lane region 2*c1 + 1, packed on its LEFT side:
         // deepest hugs the left nodes => nearest lane START (s).
         let rreg = 2 * c1 + 1;
         let right_x = if let Some((s, _e)) = col_lane_span(rreg) {
-            let mut owners: Vec<&Group> =
-                groups.iter().filter(|g| 2 * g.col1 + 1 == rreg).collect();
-            owners.sort_by_key(|g| -g.depth);
-            let rank = owners.iter().position(|g| g.id == groups[i].id).unwrap() as i64;
+            let rank = rank_by_depth(groups, &groups[i].id, |g| 2 * g.col1 + 1 == rreg);
             s + rank
         } else {
-            *col_x.get(&(2 * c1)).unwrap()
+            unreachable!("geometry always emits a lane adjacent to each node column")
         };
         groups[i].w = right_x - groups[i].x + 1;
     }
@@ -342,23 +345,18 @@ pub fn assign_boxes(
         // TOP border in the lane ABOVE node row r0, packed on its BOTTOM side:
         // deepest hugs the row below => nearest lane END.
         groups[i].y = if let Some((_s, e)) = lane_above_row(r0) {
-            let mut owners: Vec<&Group> = groups.iter().filter(|g| g.row0 == r0).collect();
-            owners.sort_by_key(|g| -g.depth);
-            let rank = owners.iter().position(|g| g.id == groups[i].id).unwrap() as i64;
+            let rank = rank_by_depth(groups, &groups[i].id, |g| g.row0 == r0);
             e - 1 - rank
         } else {
-            *row_y.get(&(2 * r0 + 1)).unwrap() - 1
+            unreachable!("geometry always emits a lane adjacent to each node row")
         };
         // BOTTOM border in the lane BELOW node row r1, packed on its TOP side:
         // deepest hugs the row above => nearest lane START.
         let bot_y = if let Some((s, _e)) = lane_below_row(r1) {
-            let mut owners: Vec<&Group> = groups.iter().filter(|g| g.row1 == r1).collect();
-            owners.sort_by_key(|g| -g.depth);
-            let rank = owners.iter().position(|g| g.id == groups[i].id).unwrap() as i64;
+            let rank = rank_by_depth(groups, &groups[i].id, |g| g.row1 == r1);
             s + rank
         } else {
-            let node_top = *row_y.get(&(2 * r1 + 1)).unwrap();
-            node_top + super::model::BOX_H
+            unreachable!("geometry always emits a lane adjacent to each node row")
         };
         groups[i].h = bot_y - groups[i].y + 1;
     }
