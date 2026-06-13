@@ -298,10 +298,13 @@ pub fn parse_and_validate(raw: &Value) -> Result<Model, String> {
         routing_order.push(eid);
     }
 
+    let groups = super::groups::build_groups(raw, &nodes)?;
+
     let title = py_str(&raw["title"]);
     let description = py_str(&raw["description"]);
     let mut model = Model::new(title, description, nodes, edges);
     model.hint_ports = hint_ports;
     model.routing_order = routing_order;
+    model.groups = groups;
     Ok(model)
 }
