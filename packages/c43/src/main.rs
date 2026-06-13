@@ -1,14 +1,7 @@
-mod analysis;
-mod ascii;
-mod cmd;
-mod extract;
-mod model;
-mod parse;
-mod scan;
-
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
+use c43::{ascii, cmd};
 
 #[derive(Parser)]
 #[command(name = "c43", about = "C4 model extractor for cdk-arch TypeScript projects")]
@@ -60,10 +53,25 @@ enum Commands {
         #[arg(long)]
         all: bool,
     },
+    /// Render an ASCII C43 diagram from a layout.json (grid + edges)
+    Layout {
+        /// Path to layout.json
+        layout: std::path::PathBuf,
+        /// Iterate on engine feedback to settle ports/order automatically
+        #[arg(long)]
+        auto: bool,
+        /// Eval budget for --auto
+        #[arg(long, default_value_t = 200)]
+        max_evals: usize,
+    },
 }
 
 fn main() {
     let cli = Cli::parse();
+
+    if let Commands::Layout { layout, auto, max_evals } = &cli.command {
+        std::process::exit(cmd::layout::run(layout, *auto, *max_evals));
+    }
 
     match cli.command {
         Commands::List { path, json, all } => {
@@ -83,6 +91,7 @@ fn main() {
                 }
                 Commands::Deployment { arch, infra } => cmd::deployment::run(&arch, &infra),
                 Commands::List { .. } => unreachable!(),
+                Commands::Layout { .. } => unreachable!(),
             };
             if cli.ascii {
                 println!("{}", ascii::render(&doc));
