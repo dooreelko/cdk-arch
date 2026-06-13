@@ -1,3 +1,5 @@
+use c43::cmd::layout::geometry::geometry;
+use c43::cmd::layout::groups::{horizontal_ring_counts, vertical_ring_counts};
 use c43::cmd::layout::model::{Group, Model};
 use c43::cmd::layout::parse::parse_and_validate;
 use serde_json::json;
@@ -212,4 +214,76 @@ fn error_partial_overlap() {
     });
     let err = parse_and_validate(&raw).unwrap_err();
     assert!(err.contains("overlap"), "got: {err}");
+}
+
+#[test]
+fn vertical_ring_counts_pack_two_sides() {
+    let m = parse_and_validate(&json!({
+        "title":"T","description":"D",
+        "nodes":[
+            {"id":"a","label":"a","grid_col":0,"grid_row":0},
+            {"id":"mm","label":"mm","grid_col":1,"grid_row":0},
+            {"id":"z","label":"z","grid_col":2,"grid_row":0}
+        ],
+        "edges":[],
+        "groups":[
+            {"id":"gl","title":"L","members":["a"]},
+            {"id":"gr","title":"R","members":["z"]}
+        ]
+    })).unwrap();
+    // map: lane region index -> (left_rings, right_rings)
+    let counts = vertical_ring_counts(&m.groups);
+    // left bounding lane (region -1): gl's LEFT border sits on the right side of that lane
+    assert_eq!(counts.get(&-1).copied().unwrap_or((0,0)), (0, 1));
+    // lane region 1 (right of col0): gl's RIGHT border -> left_rings = 1
+    assert_eq!(counts.get(&1).copied().unwrap_or((0,0)).0, 1);
+    // lane region 3 (right of col1 / left of col2): gr's LEFT border -> right_rings = 1
+    assert_eq!(counts.get(&3).copied().unwrap_or((0,0)).1, 1);
+}
+
+#[test]
+fn horizontal_ring_counts_smoke() {
+    let m = parse_and_validate(&json!({
+        "title":"T","description":"D",
+        "nodes":[
+            {"id":"a","label":"a","grid_col":0,"grid_row":0},
+            {"id":"b","label":"b","grid_col":0,"grid_row":1}
+        ],
+        "edges":[],
+        "groups":[{"id":"g","title":"G","members":["a"]}]
+    })).unwrap();
+    let counts = horizontal_ring_counts(&m.groups);
+    // group g spans row 0 only: top border in top lane (region -1) bottom side (.1),
+    // bottom border in lane below row 0 (region 1) bottom side (.0).
+    assert_eq!(counts.get(&-1).copied().unwrap_or((0,0)).1, 1);
+    assert_eq!(counts.get(&1).copied().unwrap_or((0,0)).0, 1);
+}
+
+#[test]
+fn groupless_geometry_unchanged() {
+    use c43::cmd::layout::model::{GUTTER_W, BOX_MARGIN_X};
+    let raw = json!({"title":"T","description":"D",
+        "nodes":[{"id":"a","label":"alpha","grid_col":0,"grid_row":0},
+                 {"id":"b","label":"b","grid_col":1,"grid_row":0}],
+        "edges":[{"id":"e1","from":"a","to":"b"}]});
+    let mut m = parse_and_validate(&raw).unwrap();
+    geometry(&mut m);
+    let a = m.nodes.iter().find(|n| n.id == "a").unwrap();
+    assert_eq!(a.x, GUTTER_W + 1 + BOX_MARGIN_X);
+}
+
+#[test]
+fn left_lane_added_when_groups_present() {
+    use c43::cmd::layout::model::{GUTTER_W, BOX_MARGIN_X};
+    let mut m = parse_and_validate(&json!({
+        "title":"T","description":"D",
+        "nodes":[{"id":"a","label":"a","grid_col":0,"grid_row":0}],
+        "edges":[],
+        "groups":[{"id":"g","title":"G","members":["a"]}]
+    })).unwrap();
+    geometry(&mut m);
+    let a = m.nodes.iter().find(|n| n.id == "a").unwrap();
+    // a left bounding lane now sits between spine and node col 0, pushing the box right
+    assert!(a.x > GUTTER_W + 1 + BOX_MARGIN_X,
+        "expected left lane to push col 0 right, got x={}", a.x);
 }

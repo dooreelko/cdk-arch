@@ -5,6 +5,7 @@
 
 use super::model::{Group, Node};
 use serde_json::Value;
+use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::collections::HashSet;
 
@@ -233,4 +234,52 @@ pub fn validate_extents(groups: &[Group], nodes: &[Node]) -> Result<(), String> 
     }
 
     Ok(())
+}
+
+/// For each vertical lane region index, how many group borders pack on its
+/// left side (right-borders of groups ending at the node column to the left)
+/// and its right side (left-borders of groups starting at the node column to
+/// the right). Region -1 is the left bounding lane.
+pub fn vertical_ring_counts(groups: &[Group]) -> BTreeMap<i64, (i64, i64)> {
+    let mut counts: BTreeMap<i64, (i64, i64)> = BTreeMap::new();
+    for g in groups {
+        // left border sits in the lane left of col0: region 2*col0 - 1
+        let left_lane = 2 * g.col0 - 1;
+        counts.entry(left_lane).or_insert((0, 0)).1 += 1; // right side of that lane
+        // right border sits in the lane right of col1: region 2*col1 + 1
+        let right_lane = 2 * g.col1 + 1;
+        counts.entry(right_lane).or_insert((0, 0)).0 += 1; // left side of that lane
+    }
+    counts
+}
+
+/// Row analogue. Region -1 is the top lane (before node row 0). top side ->
+/// `.1`, bottom side -> `.0`.
+pub fn horizontal_ring_counts(groups: &[Group]) -> BTreeMap<i64, (i64, i64)> {
+    let mut counts: BTreeMap<i64, (i64, i64)> = BTreeMap::new();
+    for g in groups {
+        let top_lane = 2 * g.row0 - 1;
+        counts.entry(top_lane).or_insert((0, 0)).1 += 1;
+        let bottom_lane = 2 * g.row1 + 1;
+        counts.entry(bottom_lane).or_insert((0, 0)).0 += 1;
+    }
+    counts
+}
+
+/// Width of a vertical lane given its (left_rings, right_rings). With no rings
+/// this is exactly LANE_MIN_W (backward compatible). Each populated side adds
+/// its ring columns plus one PAD gap separating rings from the edge zone.
+pub fn lane_width(left_rings: i64, right_rings: i64) -> i64 {
+    use super::model::{GROUP_PAD, LANE_MIN_W};
+    let left = if left_rings > 0 { left_rings + GROUP_PAD } else { 0 };
+    let right = if right_rings > 0 { right_rings + GROUP_PAD } else { 0 };
+    left + LANE_MIN_W + right
+}
+
+/// Height of a horizontal lane (same rule with LANE_MIN_H).
+pub fn lane_height(top_rings: i64, bottom_rings: i64) -> i64 {
+    use super::model::{GROUP_PAD, LANE_MIN_H};
+    let top = if top_rings > 0 { top_rings + GROUP_PAD } else { 0 };
+    let bottom = if bottom_rings > 0 { bottom_rings + GROUP_PAD } else { 0 };
+    top + LANE_MIN_H + bottom
 }
