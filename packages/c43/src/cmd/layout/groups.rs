@@ -172,3 +172,65 @@ pub fn resolve_extents(groups: &mut [Group], nodes: &[Node]) -> Result<(), Strin
 
     Ok(())
 }
+
+/// Validate that each group's rectangle encloses only its own members or
+/// descendants' members, and that no two groups partially overlap.
+pub fn validate_extents(groups: &[Group], nodes: &[Node]) -> Result<(), String> {
+    let id_index: HashMap<&str, usize> =
+        groups.iter().enumerate().map(|(i, g)| (g.id.as_str(), i)).collect();
+
+    // owned[i] = members of group i ∪ members of all its descendants.
+    let n = groups.len();
+    let mut owned: Vec<HashSet<&str>> = vec![HashSet::new(); n];
+    for i in 0..n {
+        for (j, _g) in groups.iter().enumerate() {
+            // j is owned-by-i if i is on j's ancestor chain (including j == i)
+            let mut cur = Some(j);
+            let mut is_desc = false;
+            let mut steps = 0;
+            while let Some(c) = cur {
+                if c == i { is_desc = true; break; }
+                cur = groups[c].parent.as_deref().map(|p| id_index[p]);
+                steps += 1;
+                if steps > n { break; }
+            }
+            if is_desc {
+                for mid in &groups[j].member_ids {
+                    owned[i].insert(mid.as_str());
+                }
+            }
+        }
+    }
+
+    // enclosing non-members
+    for (i, g) in groups.iter().enumerate() {
+        for nd in nodes {
+            let inside = g.col0 <= nd.grid_col && nd.grid_col <= g.col1
+                && g.row0 <= nd.grid_row && nd.grid_row <= g.row1;
+            if inside && !owned[i].contains(nd.id.as_str()) {
+                return Err(format!(
+                    "group {} encloses non-member node {}", g.id, nd.id
+                ));
+            }
+        }
+    }
+
+    // partial overlap: rectangles either disjoint, or one fully contains the other
+    let contains = |a: &Group, b: &Group| -> bool {
+        a.col0 <= b.col0 && b.col1 <= a.col1 && a.row0 <= b.row0 && b.row1 <= a.row1
+    };
+    let disjoint = |a: &Group, b: &Group| -> bool {
+        a.col1 < b.col0 || b.col1 < a.col0 || a.row1 < b.row0 || b.row1 < a.row0
+    };
+    for i in 0..n {
+        for j in (i + 1)..n {
+            let (a, b) = (&groups[i], &groups[j]);
+            if disjoint(a, b) || contains(a, b) || contains(b, a) {
+                continue;
+            }
+            return Err(format!("groups {} and {} overlap", a.id, b.id));
+        }
+    }
+
+    Ok(())
+}

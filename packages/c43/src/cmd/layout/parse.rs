@@ -300,6 +300,7 @@ pub fn parse_and_validate(raw: &Value) -> Result<Model, String> {
 
     let mut groups = super::groups::build_groups(raw, &nodes)?;
     super::groups::resolve_extents(&mut groups, &nodes)?;
+    super::groups::validate_extents(&groups, &nodes)?;
 
     let title = py_str(&raw["title"]);
     let description = py_str(&raw["description"]);

@@ -111,7 +111,7 @@ fn raw_grid(groups: serde_json::Value) -> serde_json::Value {
 #[test]
 fn extent_from_direct_members() {
     let m = parse_and_validate(&raw_grid(json!([
-        {"id":"g","title":"G","members":["a","d"]}
+        {"id":"g","title":"G","members":["a","b","c","d"]}
     ]))).unwrap();
     let g = &m.groups[0];
     assert_eq!((g.col0, g.col1, g.row0, g.row1), (0, 1, 0, 1));
@@ -121,7 +121,7 @@ fn extent_from_direct_members() {
 #[test]
 fn parent_extent_includes_child_and_depth_increases() {
     let m = parse_and_validate(&raw_grid(json!([
-        {"id":"outer","title":"O","members":["a"]},
+        {"id":"outer","title":"O","members":["a","b","c"]},
         {"id":"inner","title":"I","members":["d"],"parent":"outer"}
     ]))).unwrap();
     let outer = m.groups.iter().find(|g| g.id == "outer").unwrap();
@@ -156,7 +156,7 @@ fn three_level_nesting_extents_and_depth() {
     // gp contains p contains c; only c has a direct member (d at (1,1)),
     // gp also directly holds a at (0,0). Extents must fold up correctly.
     let m = parse_and_validate(&raw_grid(json!([
-        {"id":"gp","title":"GP","members":["a"]},
+        {"id":"gp","title":"GP","members":["a","b","c"]},
         {"id":"p","title":"P","members":[],"parent":"gp"},
         {"id":"c","title":"C","members":["d"],"parent":"p"}
     ]))).unwrap();
@@ -172,4 +172,44 @@ fn three_level_nesting_extents_and_depth() {
     assert_eq!((p.col0, p.col1, p.row0, p.row1), (1, 1, 1, 1));
     // gp = a(0,0) ∪ p's extent (1,1) => (0,1,0,1)
     assert_eq!((gp.col0, gp.col1, gp.row0, gp.row1), (0, 1, 0, 1));
+}
+
+#[test]
+fn error_encloses_non_member() {
+    // group spans a(0,0)..d(1,1) but only claims a and d; b and c are strangers.
+    let err = parse_and_validate(&raw_grid(json!([
+        {"id":"g","title":"G","members":["a","d"]}
+    ]))).unwrap_err();
+    // b at (1,0) and c at (0,1) are inside the rectangle but not members
+    assert!(err.contains("encloses non-member"), "got: {err}");
+}
+
+#[test]
+fn nesting_is_allowed() {
+    // inner fully inside outer -> OK, no error
+    let m = parse_and_validate(&raw_grid(json!([
+        {"id":"outer","title":"O","members":["a","b","c","d"]},
+        {"id":"inner","title":"I","members":["d"],"parent":"outer"}
+    ]))).unwrap();
+    assert_eq!(m.groups.len(), 2);
+}
+
+#[test]
+fn error_partial_overlap() {
+    // 3x1 row: a(0,0) b(1,0) e(2,0); g1 spans a..b, g2 spans b..e -> overlap at b
+    let raw = json!({
+        "title":"T","description":"D",
+        "nodes":[
+            {"id":"a","label":"a","grid_col":0,"grid_row":0},
+            {"id":"b","label":"b","grid_col":1,"grid_row":0},
+            {"id":"e","label":"e","grid_col":2,"grid_row":0}
+        ],
+        "edges":[],
+        "groups":[
+            {"id":"g1","title":"1","members":["a","b"]},
+            {"id":"g2","title":"2","members":["b","e"]}
+        ]
+    });
+    let err = parse_and_validate(&raw).unwrap_err();
+    assert!(err.contains("overlap"), "got: {err}");
 }
