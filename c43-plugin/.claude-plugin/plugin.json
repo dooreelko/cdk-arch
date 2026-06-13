@@ -1,0 +1,6 @@
+{
+  "name": "c43-diagram",
+  "version": "0.1.0",
+  "description": "Generate C43 architecture diagrams as ASCII from a grid + edges description.",
+  "author": { "name": "Oleksandr Fedorenko" }
+}
