@@ -144,7 +144,7 @@ def _astar(start, goal, blocked, occupied, allow_cross, w, h, forbidden=None):
     m.row_bands = [(0, h, "lane", None)]
     layout._build_band_caches(m)
     return layout._astar(start, goal, blocked, occupied,
-                         forbidden or set(), allow_cross, m)
+                         forbidden or set(), allow_cross, set(), set(), m)
 
 def test_astar_pass1_rejects_occupied_start():
     cells, crossings = _astar((10, 5), (20, 5), set(), {(10, 5): "z"},
