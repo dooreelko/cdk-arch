@@ -1,6 +1,6 @@
 import { Architecture, ApiContainer, Function } from '@arinoto/cdk-arch';
 import { JsonStore } from './json-store';
-import { DemoRequest, extractContext } from './runtime-context';
+import { extractContext, DemoRequest } from './runtime-context';
 
 export interface Greeting {
   when: number;

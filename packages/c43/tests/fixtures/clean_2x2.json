@@ -1,0 +1,14 @@
+{
+  "title": "clean 2x2",
+  "description": "four boxes, two non-crossing edges",
+  "nodes": [
+    {"id": "a", "label": "a", "grid_col": 0, "grid_row": 0},
+    {"id": "b", "label": "b", "grid_col": 1, "grid_row": 0},
+    {"id": "c", "label": "c", "grid_col": 0, "grid_row": 1},
+    {"id": "d", "label": "d", "grid_col": 1, "grid_row": 1}
+  ],
+  "edges": [
+    {"id": "e1", "from": "a", "to": "b"},
+    {"id": "e2", "from": "c", "to": "d"}
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "title": "K5",
+  "description": "non-planar, forces a crossing",
+  "nodes": [
+    {"id": "n1", "label": "n1", "grid_col": 0, "grid_row": 0},
+    {"id": "n2", "label": "n2", "grid_col": 1, "grid_row": 0},
+    {"id": "n3", "label": "n3", "grid_col": 2, "grid_row": 0},
+    {"id": "n4", "label": "n4", "grid_col": 0, "grid_row": 1},
+    {"id": "n5", "label": "n5", "grid_col": 1, "grid_row": 1}
+  ],
+  "edges": [
+    {"id": "e12", "from": "n1", "to": "n2"},
+    {"id": "e13", "from": "n1", "to": "n3"},
+    {"id": "e14", "from": "n1", "to": "n4"},
+    {"id": "e15", "from": "n1", "to": "n5"},
+    {"id": "e23", "from": "n2", "to": "n3"},
+    {"id": "e24", "from": "n2", "to": "n4"},
+    {"id": "e25", "from": "n2", "to": "n5"},
+    {"id": "e34", "from": "n3", "to": "n4"},
+    {"id": "e35", "from": "n3", "to": "n5"},
+    {"id": "e45", "from": "n4", "to": "n5"}
+  ]
+}

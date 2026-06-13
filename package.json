@@ -6,10 +6,10 @@
     "packages/example/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces && cd packages/c43 && cargo build",
+    "build": "npm run build --workspaces && cargo build --release --manifest-path packages/c43/Cargo.toml",
     "clean": "npm run clean --workspaces --if-present",
     "e2e": "npm run e2e --workspaces --if-present",
-    "test": "cd packages/cdk-arch && npm run test && cd ../c43 && cargo test"
+    "test": "cd packages/cdk-arch && npm run test && cargo test --manifest-path ../c43/Cargo.toml"
   },
   "version": "0.1.0"
 }

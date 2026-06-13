@@ -8,3 +8,8 @@ fo0
 .direnv
 test
 dist-test
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
