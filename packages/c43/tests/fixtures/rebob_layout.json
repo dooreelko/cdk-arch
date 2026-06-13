@@ -1,0 +1,182 @@
+{
+  "title": "rebob",
+  "description": "System architecture for the rebob platform",
+  "nodes": [
+    {
+      "id": "frontend",
+      "label": "@bob/frontend",
+      "grid_col": 0,
+      "grid_row": 0
+    },
+    {
+      "id": "bootstrap",
+      "label": "@bob/sub-bob-bootstrap",
+      "grid_col": 0,
+      "grid_row": 1
+    },
+    {
+      "id": "dispatcher",
+      "label": "dispatcher",
+      "grid_col": 1,
+      "grid_row": 0
+    },
+    {
+      "id": "sub_bob_manager",
+      "label": "sub-bob-manager",
+      "grid_col": 1,
+      "grid_row": 1
+    },
+    {
+      "id": "consolidator",
+      "label": "consolidator",
+      "grid_col": 1,
+      "grid_row": 2
+    },
+    {
+      "id": "chat",
+      "label": "chat",
+      "grid_col": 2,
+      "grid_row": 0
+    },
+    {
+      "id": "memory",
+      "label": "memory",
+      "grid_col": 2,
+      "grid_row": 1
+    },
+    {
+      "id": "sub_bob",
+      "label": "sub-bob",
+      "grid_col": 2,
+      "grid_row": 2
+    },
+    {
+      "id": "bob_registry",
+      "label": "bob-registry",
+      "grid_col": 3,
+      "grid_row": 0
+    },
+    {
+      "id": "event_storage",
+      "label": "event-storage",
+      "grid_col": 3,
+      "grid_row": 1
+    },
+    {
+      "id": "llm",
+      "label": "llm",
+      "grid_col": 3,
+      "grid_row": 2
+    },
+    {
+      "id": "queue",
+      "label": "queue",
+      "grid_col": 3,
+      "grid_row": 3
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "from": "dispatcher",
+      "to": "sub_bob_manager"
+    },
+    {
+      "id": "e2",
+      "from": "chat",
+      "to": "event_storage"
+    },
+    {
+      "id": "e3",
+      "from": "memory",
+      "to": "llm"
+    },
+    {
+      "id": "e4",
+      "from": "memory",
+      "to": "queue"
+    },
+    {
+      "id": "e5",
+      "from": "consolidator",
+      "to": "llm"
+    },
+    {
+      "id": "e6",
+      "from": "consolidator",
+      "to": "memory"
+    },
+    {
+      "id": "e7",
+      "from": "consolidator",
+      "to": "queue"
+    },
+    {
+      "id": "e8",
+      "from": "sub_bob_manager",
+      "to": "chat"
+    },
+    {
+      "id": "sub_bob_manager_to_memory",
+      "from": "sub_bob_manager",
+      "to": "memory"
+    },
+    {
+      "id": "bootstrap_to_memory",
+      "from": "bootstrap",
+      "to": "memory"
+    },
+    {
+      "id": "fe_to_registry",
+      "from": "frontend",
+      "to": "bob_registry"
+    },
+    {
+      "id": "fe_to_chat",
+      "from": "frontend",
+      "to": "chat"
+    },
+    {
+      "id": "fe_to_memory",
+      "from": "frontend",
+      "to": "memory"
+    },
+    {
+      "id": "fe_to_manager",
+      "from": "frontend",
+      "to": "sub_bob_manager"
+    }
+  ],
+  "hints": {
+    "ports": [
+      {
+        "edge_id": "e1",
+        "to_side": "left"
+      },
+      {
+        "edge_id": "e3",
+        "from_side": "bottom"
+      },
+      {
+        "edge_id": "e4",
+        "to_side": "bottom"
+      },
+      {
+        "edge_id": "e6",
+        "to_side": "bottom"
+      },
+      {
+        "edge_id": "e7",
+        "to_side": "bottom"
+      },
+      {
+        "edge_id": "e8",
+        "to_side": "bottom"
+      },
+      {
+        "edge_id": "e2",
+        "from_side": "bottom"
+      }
+    ]
+  }
+}
