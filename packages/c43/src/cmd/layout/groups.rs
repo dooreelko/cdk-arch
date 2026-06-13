@@ -236,10 +236,6 @@ pub fn validate_extents(groups: &[Group], nodes: &[Node]) -> Result<(), String> 
     Ok(())
 }
 
-/// For each vertical lane region index, how many group borders pack on its
-/// left side (right-borders of groups ending at the node column to the left)
-/// and its right side (left-borders of groups starting at the node column to
-/// the right). Region -1 is the left bounding lane.
 /// Returns (vertical_border_cells, horizontal_border_cells) for all group
 /// frames. Vertical = left/right sides (block vertical travel; cross with
 /// horizontal moves). Horizontal = top/bottom sides. Corners appear in both.
@@ -261,6 +257,10 @@ pub fn border_cells(groups: &[Group]) -> (HashSet<(i64, i64)>, HashSet<(i64, i64
     (vert, horiz)
 }
 
+/// For each vertical lane region index, how many group borders pack on its
+/// left side (right-borders of groups ending at the node column to the left)
+/// and its right side (left-borders of groups starting at the node column to
+/// the right). Region -1 is the left bounding lane.
 pub fn vertical_ring_counts(groups: &[Group]) -> BTreeMap<i64, (i64, i64)> {
     let mut counts: BTreeMap<i64, (i64, i64)> = BTreeMap::new();
     for g in groups {
