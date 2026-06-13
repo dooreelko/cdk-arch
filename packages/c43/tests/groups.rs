@@ -5,6 +5,7 @@ use c43::cmd::layout::model::{Group, Model};
 use c43::cmd::layout::parse::parse_and_validate;
 use c43::cmd::layout::ports::assign_ports;
 use c43::cmd::layout::render::{render, Canvas};
+use c43::cmd::layout::report::result_json;
 use c43::cmd::layout::route::route_all;
 use serde_json::json;
 
@@ -411,4 +412,30 @@ fn title_sits_inside_bottom_left() {
     let row = lines[title_row];
     let cols: Vec<char> = row.chars().collect();
     assert_eq!(cols.get(title_col).copied(), Some('G'));
+}
+
+#[test]
+fn result_json_includes_groups() {
+    let mut m = parse_and_validate(&json!({
+        "title":"T","description":"D",
+        "nodes":[{"id":"a","label":"a","grid_col":0,"grid_row":0}],
+        "edges":[],
+        "groups":[{"id":"g","title":"G","members":["a"]}]
+    })).unwrap();
+    geometry(&mut m);
+    let rj = result_json(&m);
+    let groups = rj["groups"].as_array().expect("groups array present");
+    assert_eq!(groups.len(), 1);
+    assert_eq!(groups[0]["id"], "g");
+    assert_eq!(groups[0]["title"], "G");
+    assert!(groups[0]["x"].is_i64() && groups[0]["w"].is_i64());
+}
+
+#[test]
+fn result_json_groups_empty_when_none() {
+    let raw = json!({"title":"T","description":"D",
+        "nodes":[{"id":"a","label":"a","grid_col":0,"grid_row":0}],"edges":[]});
+    let mut m = parse_and_validate(&raw).unwrap();
+    geometry(&mut m);
+    assert_eq!(result_json(&m)["groups"].as_array().unwrap().len(), 0);
 }

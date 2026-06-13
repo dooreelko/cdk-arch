@@ -281,6 +281,19 @@ pub fn result_json(m: &Model) -> Value {
             })
         })
         .collect();
+    let groups: Vec<Value> = m
+        .groups
+        .iter()
+        .map(|g| {
+            json!({
+                "id": g.id,
+                "title": g.title,
+                "parent": g.parent,
+                "grid": {"col0": g.col0, "col1": g.col1, "row0": g.row0, "row1": g.row1},
+                "x": g.x, "y": g.y, "w": g.w, "h": g.h,
+            })
+        })
+        .collect();
     json!({
         "status": if m.errors.is_empty() { "ok" } else { "error" },
         "errors": m.errors.iter().map(error_json).collect::<Vec<_>>(),
@@ -292,6 +305,7 @@ pub fn result_json(m: &Model) -> Value {
         "box": {"width": m.box_w, "height": m.box_h},
         "nodes": nodes,
         "edges": edges,
+        "groups": groups,
     })
 }
 
@@ -343,5 +357,6 @@ pub fn validation_error_result(raw: Option<&Value>, message: &str, suggestion: &
         "box": {"width": 0, "height": 0},
         "nodes": Vec::<Value>::new(),
         "edges": Vec::<Value>::new(),
+        "groups": Vec::<Value>::new(),
     })
 }
