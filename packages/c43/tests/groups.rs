@@ -4,6 +4,7 @@ use c43::cmd::layout::groups::{horizontal_ring_counts, vertical_ring_counts};
 use c43::cmd::layout::model::{Group, Model};
 use c43::cmd::layout::parse::parse_and_validate;
 use c43::cmd::layout::ports::assign_ports;
+use c43::cmd::layout::render::{render, Canvas};
 use c43::cmd::layout::route::route_all;
 use serde_json::json;
 
@@ -366,4 +367,48 @@ fn edge_crosses_group_border_perpendicular() {
     let e = &m.edges[0];
     assert!(e.route.is_some(), "edge crossing a group border must route");
     assert!(m.errors.iter().all(|er| er.code != "unroutable"));
+}
+
+fn render_to_string(m: &mut c43::cmd::layout::model::Model) -> String {
+    geometry(m);
+    assign_ports(m);
+    route_all(m);
+    let mut cv = Canvas::new(m.canvas_w, m.canvas_h);
+    let dir = tempfile::tempdir().unwrap();
+    render(m, &mut cv, &dir.path().join("out.txt")).unwrap();
+    cv.to_string()
+}
+
+#[test]
+fn renders_double_line_frame_and_title() {
+    let mut m = parse_and_validate(&json!({
+        "title":"T","description":"D",
+        "nodes":[{"id":"a","label":"alpha","grid_col":0,"grid_row":0}],
+        "edges":[],
+        "groups":[{"id":"g","title":"MyGroup","members":["a"]}]
+    })).unwrap();
+    let out = render_to_string(&mut m);
+    assert!(out.contains('╔') && out.contains('╗')
+        && out.contains('╚') && out.contains('╝'), "frame glyphs present");
+    assert!(out.contains("MyGroup"), "title rendered");
+}
+
+#[test]
+fn title_sits_inside_bottom_left() {
+    let mut m = parse_and_validate(&json!({
+        "title":"T","description":"D",
+        "nodes":[{"id":"a","label":"alpha","grid_col":0,"grid_row":0}],
+        "edges":[],
+        "groups":[{"id":"g","title":"GG","members":["a"]}]
+    })).unwrap();
+    geometry(&mut m);
+    let g = &m.groups[0].clone();
+    let out = render_to_string(&mut m);
+    let lines: Vec<&str> = out.lines().collect();
+    // title row = one above the bottom border; title col = one right of left border
+    let title_row = (g.y + g.h - 2) as usize;
+    let title_col = (g.x + 1) as usize;
+    let row = lines[title_row];
+    let cols: Vec<char> = row.chars().collect();
+    assert_eq!(cols.get(title_col).copied(), Some('G'));
 }

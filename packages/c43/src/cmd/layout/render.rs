@@ -149,6 +149,26 @@ fn draw_box(cv: &mut Canvas, n: &super::model::Node) {
     paint_text(cv, lx, y0 + n.h / 2, &n.label);
 }
 
+fn draw_group(cv: &mut Canvas, g: &super::model::Group) {
+    use super::model::{GROUP_BL, GROUP_BR, GROUP_H, GROUP_TL, GROUP_TR, GROUP_V};
+    let (x0, y0) = (g.x, g.y);
+    let (x1, y1) = (g.x + g.w - 1, g.y + g.h - 1);
+    for x in x0..=x1 {
+        cv.paint(x, y0, GROUP_H);
+        cv.paint(x, y1, GROUP_H);
+    }
+    for y in y0..=y1 {
+        cv.paint(x0, y, GROUP_V);
+        cv.paint(x1, y, GROUP_V);
+    }
+    cv.paint(x0, y0, GROUP_TL);
+    cv.paint(x1, y0, GROUP_TR);
+    cv.paint(x0, y1, GROUP_BL);
+    cv.paint(x1, y1, GROUP_BR);
+    // title: inside, one space from left border, one row above bottom border
+    paint_text(cv, x0 + 1, y1 - 1, &g.title);
+}
+
 fn paint_edge(cv: &mut Canvas, e: &Edge) {
     let route = e.route.as_ref().expect("paint_edge requires a route");
     for w in route.windows(2) {
@@ -186,6 +206,13 @@ pub fn render_with_observer(
     paint_scaffolding(m, cv);
     cv.save(path)?;
     on_save(cv);
+    let mut groups: Vec<&super::model::Group> = m.groups.iter().collect();
+    groups.sort_by_key(|g| g.depth); // outer (depth 0) first
+    for g in groups {
+        draw_group(cv, g);
+        cv.save(path)?;
+        on_save(cv);
+    }
     for n in &m.nodes {
         draw_box(cv, n);
         cv.save(path)?;
