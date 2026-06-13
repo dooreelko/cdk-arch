@@ -38,6 +38,10 @@ pub fn geometry(m: &mut Model) {
         let pad = if left_rings > 0 { GROUP_PAD } else { 0 };
         left_rings + pad + LANE_MIN_W / 2
     };
+    let edge_center_off_h = |top_rings: i64, base: i64| -> i64 {
+        let pad = if top_rings > 0 { GROUP_PAD } else { 0 };
+        base + top_rings + pad + LANE_MIN_H / 2
+    };
 
     let mut x = GUTTER_W + 1;
     // Left bounding lane (region -1), only if some group's left border needs it.
@@ -93,10 +97,7 @@ pub fn geometry(m: &mut Model) {
         start: TITLE_H,
         end: TITLE_H + top_h,
         kind: "lane",
-        center: Some(TITLE_H + {
-            let pad = if top_t > 0 { GROUP_PAD } else { 0 };
-            top_t + pad + LANE_MIN_H / 2
-        }),
+        center: Some(edge_center_off_h(top_t, TITLE_H)),
     }); // top lane, above node row 0
     y = TITLE_H + top_h;
     for r in 0..=max_row {
@@ -116,10 +117,7 @@ pub fn geometry(m: &mut Model) {
             start: y,
             end: y + h,
             kind: "lane",
-            center: Some(y + {
-                let pad = if t > 0 { GROUP_PAD } else { 0 };
-                t + pad + LANE_MIN_H / 2
-            }),
+            center: Some(edge_center_off_h(t, y)),
         });
         y += h;
     }
