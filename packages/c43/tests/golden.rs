@@ -50,3 +50,20 @@ fn rebob_render_matches_golden() {
     assert_eq!(q["crossings"], 1);
     assert!(q["congestion"].as_i64().unwrap() <= 10, "congestion {}", q["congestion"]);
 }
+
+#[test]
+fn rebob_groups_render_matches_golden() {
+    let dir = tempfile::tempdir().unwrap();
+    let fix = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures");
+    std::fs::copy(format!("{fix}/rebob_groups_layout.json"), dir.path().join("layout.json"))
+        .unwrap();
+    let bin = env!("CARGO_BIN_EXE_c43");
+    Command::new(bin)
+        .args(["layout", "layout.json"])
+        .current_dir(dir.path())
+        .output()
+        .unwrap();
+    let got = std::fs::read_to_string(dir.path().join("result.txt")).expect("result.txt missing");
+    let expected = std::fs::read_to_string(format!("{fix}/expected_rebob_groups.txt")).unwrap();
+    assert_eq!(got, expected, "rebob groups render drifted from golden");
+}

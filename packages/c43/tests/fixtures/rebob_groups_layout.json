@@ -1,0 +1,86 @@
+{
+  "title": "rebob groups",
+  "description": "Nested group frames for the rebob platform architecture",
+  "nodes": [
+    { "id": "frontend", "label": "@bob/frontend", "grid_col": 0, "grid_row": 0 },
+    { "id": "bootstrap", "label": "@bob/sub-bob-bootstrap", "grid_col": 0, "grid_row": 1 },
+
+    { "id": "runtime", "label": "runtime", "grid_col": 1, "grid_row": 0 },
+    { "id": "dispatcher_mcp", "label": "dispatcher-mcp", "grid_col": 1, "grid_row": 1 },
+
+    { "id": "bus", "label": "bus", "grid_col": 2, "grid_row": 0 },
+    { "id": "chat_mcp", "label": "chat-mcp", "grid_col": 2, "grid_row": 1 },
+    { "id": "task_queue", "label": "task-queue", "grid_col": 2, "grid_row": 2 },
+
+    { "id": "graph", "label": "graph", "grid_col": 3, "grid_row": 0 },
+    { "id": "memory_mcp", "label": "memory-mcp", "grid_col": 3, "grid_row": 1 },
+
+    { "id": "consolidator_api", "label": "consolidator-api", "grid_col": 4, "grid_row": 0 },
+    { "id": "event_storage", "label": "event-storage", "grid_col": 4, "grid_row": 1 },
+    { "id": "sub_bob", "label": "sub-bob", "grid_col": 4, "grid_row": 2 },
+
+    { "id": "registry", "label": "registry", "grid_col": 5, "grid_row": 0 },
+    { "id": "registry_mcp", "label": "registry-mcp", "grid_col": 5, "grid_row": 1 },
+    { "id": "llm", "label": "llm", "grid_col": 5, "grid_row": 2 },
+
+    { "id": "bob_queue", "label": "bob-queue", "grid_col": 6, "grid_row": 0 },
+    { "id": "manager", "label": "manager", "grid_col": 6, "grid_row": 1 },
+    { "id": "manager_mcp", "label": "manager-mcp", "grid_col": 6, "grid_row": 2 }
+  ],
+  "edges": [
+    { "id": "e_disp_mgr", "from": "runtime", "to": "manager" },
+    { "id": "e_mem_llm", "from": "graph", "to": "llm" },
+    { "id": "e_mem_queue", "from": "memory_mcp", "to": "task_queue" },
+    { "id": "e_cons_mem", "from": "consolidator_api", "to": "graph" },
+    { "id": "e_fe_reg", "from": "frontend", "to": "registry" }
+  ],
+  "groups": [
+    {
+      "id": "rebob",
+      "title": "rebob",
+      "members": ["frontend", "bootstrap", "event_storage", "sub_bob", "llm"]
+    },
+    {
+      "id": "dispatcher",
+      "title": "dispatcher",
+      "parent": "rebob",
+      "members": ["runtime", "dispatcher_mcp"]
+    },
+    {
+      "id": "chat",
+      "title": "chat",
+      "parent": "rebob",
+      "members": ["bus", "chat_mcp"]
+    },
+    {
+      "id": "queue",
+      "title": "queue",
+      "parent": "rebob",
+      "members": ["task_queue"]
+    },
+    {
+      "id": "memory",
+      "title": "memory",
+      "parent": "rebob",
+      "members": ["graph", "memory_mcp"]
+    },
+    {
+      "id": "consolidator",
+      "title": "consolidator",
+      "parent": "rebob",
+      "members": ["consolidator_api"]
+    },
+    {
+      "id": "bob_registry",
+      "title": "bob-registry",
+      "parent": "rebob",
+      "members": ["registry", "registry_mcp"]
+    },
+    {
+      "id": "sub_bob_manager",
+      "title": "sub-bob-manager",
+      "parent": "rebob",
+      "members": ["bob_queue", "manager", "manager_mcp"]
+    }
+  ]
+}
