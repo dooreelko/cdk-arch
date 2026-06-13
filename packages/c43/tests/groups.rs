@@ -141,3 +141,35 @@ fn error_parent_cycle() {
     ]))).unwrap_err();
     assert!(err.contains("cycle"), "got: {err}");
 }
+
+#[test]
+fn error_group_with_no_members_and_no_children() {
+    // a group with empty members and no children has no extent -> error
+    let err = parse_and_validate(&raw_grid(json!([
+        {"id":"empty","title":"E","members":[]}
+    ]))).unwrap_err();
+    assert!(err.contains("no members"), "got: {err}");
+}
+
+#[test]
+fn three_level_nesting_extents_and_depth() {
+    // gp contains p contains c; only c has a direct member (d at (1,1)),
+    // gp also directly holds a at (0,0). Extents must fold up correctly.
+    let m = parse_and_validate(&raw_grid(json!([
+        {"id":"gp","title":"GP","members":["a"]},
+        {"id":"p","title":"P","members":[],"parent":"gp"},
+        {"id":"c","title":"C","members":["d"],"parent":"p"}
+    ]))).unwrap();
+    let gp = m.groups.iter().find(|g| g.id == "gp").unwrap();
+    let p = m.groups.iter().find(|g| g.id == "p").unwrap();
+    let c = m.groups.iter().find(|g| g.id == "c").unwrap();
+    assert_eq!(c.depth, 2);
+    assert_eq!(p.depth, 1);
+    assert_eq!(gp.depth, 0);
+    // c is just d(1,1)
+    assert_eq!((c.col0, c.col1, c.row0, c.row1), (1, 1, 1, 1));
+    // p has no direct members, inherits c's extent
+    assert_eq!((p.col0, p.col1, p.row0, p.row1), (1, 1, 1, 1));
+    // gp = a(0,0) ∪ p's extent (1,1) => (0,1,0,1)
+    assert_eq!((gp.col0, gp.col1, gp.row0, gp.row1), (0, 1, 0, 1));
+}
