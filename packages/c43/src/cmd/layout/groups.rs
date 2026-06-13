@@ -1,8 +1,6 @@
 //! Group frames: build + validate from raw JSON, resolve grid extents,
 //! lay out lane rings, and expose border cells for routing/rendering.
 
-#![allow(dead_code)] // functions are wired in over the next tasks
-
 use super::model::{Group, Node};
 use serde_json::Value;
 use std::collections::BTreeMap;

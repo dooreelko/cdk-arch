@@ -1,6 +1,6 @@
 use c43::cmd::layout::geometry::geometry;
 use c43::cmd::layout::groups::border_cells;
-use c43::cmd::layout::groups::{horizontal_ring_counts, vertical_ring_counts};
+use c43::cmd::layout::groups::{horizontal_ring_counts, lane_height, lane_width, vertical_ring_counts};
 use c43::cmd::layout::model::{Group, Model};
 use c43::cmd::layout::parse::parse_and_validate;
 use c43::cmd::layout::ports::assign_ports;
@@ -348,6 +348,59 @@ fn border_cells_classify_sides() {
     assert!(horiz.contains(&(11, 10)));  // top edge, mid
     assert!(horiz.contains(&(11, 13)));  // bottom edge, mid
     assert!(vert.contains(&(10, 10)) && horiz.contains(&(10, 10))); // corner = both
+}
+
+#[test]
+fn lane_sizing_adds_pad_only_when_rings_present() {
+    use c43::cmd::layout::model::{GROUP_PAD, LANE_MIN_H, LANE_MIN_W};
+    // No rings on either side -> exactly the legacy minimum (backward compat).
+    assert_eq!(lane_width(0, 0), LANE_MIN_W);
+    assert_eq!(lane_height(0, 0), LANE_MIN_H);
+    // Each populated side adds its ring columns plus one PAD gap.
+    assert_eq!(lane_width(2, 0), 2 + GROUP_PAD + LANE_MIN_W);
+    assert_eq!(lane_width(0, 1), LANE_MIN_W + 1 + GROUP_PAD);
+    assert_eq!(lane_width(2, 1), 2 + GROUP_PAD + LANE_MIN_W + 1 + GROUP_PAD);
+    assert_eq!(lane_height(1, 3), 1 + GROUP_PAD + LANE_MIN_H + 3 + GROUP_PAD);
+}
+
+#[test]
+fn edge_cannot_run_along_a_group_border() {
+    // a(0,0) -> c(0,2): same column, so the edge must travel vertically. A group
+    // wrapping a forces a vertical border in the lanes around column 0; the
+    // router must never lay a vertical run along that border. Whatever route it
+    // finds, no vertical segment may sit on a vertical-border cell.
+    let mut m = parse_and_validate(&json!({
+        "title":"T","description":"D",
+        "nodes":[
+            {"id":"a","label":"a","grid_col":0,"grid_row":0},
+            {"id":"c","label":"c","grid_col":0,"grid_row":1}
+        ],
+        "edges":[{"id":"e1","from":"a","to":"c"}],
+        "groups":[{"id":"g","title":"G","members":["a","c"]}]
+    })).unwrap();
+    geometry(&mut m);
+    assign_ports(&mut m);
+    route_all(&mut m);
+    let (vborder, hborder) = border_cells(&m.groups);
+    let route = m.edges[0].route.as_ref().expect("edge should route");
+    // Reconstruct the full cell path and check each step's orientation against
+    // the border classification: a vertical step may not land on a vertical
+    // border cell, a horizontal step may not land on a horizontal border cell.
+    for seg in route.windows(2) {
+        let (x0, y0) = (seg[0][0], seg[0][1]);
+        let (x1, y1) = (seg[1][0], seg[1][1]);
+        if x0 == x1 {
+            for y in y0.min(y1)..=y0.max(y1) {
+                assert!(!vborder.contains(&(x0, y)),
+                    "vertical run along a vertical border at ({x0},{y})");
+            }
+        } else {
+            for x in x0.min(x1)..=x0.max(x1) {
+                assert!(!hborder.contains(&(x, y0)),
+                    "horizontal run along a horizontal border at ({x},{y0})");
+            }
+        }
+    }
 }
 
 #[test]

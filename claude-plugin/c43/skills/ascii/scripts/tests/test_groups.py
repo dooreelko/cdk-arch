@@ -205,6 +205,67 @@ def test_border_cells_classify_sides():
     assert (10, 10) in vert and (10, 10) in horiz   # corner = both
 
 
+def test_lane_sizing_adds_pad_only_when_rings_present():
+    pad = layout.GROUP_PAD
+    # No rings -> exactly the legacy minimum (backward compat).
+    assert layout.lane_width(0, 0) == layout.LANE_MIN_W
+    assert layout.lane_height(0, 0) == layout.LANE_MIN_H
+    # Each populated side adds its ring columns plus one PAD gap.
+    assert layout.lane_width(2, 0) == 2 + pad + layout.LANE_MIN_W
+    assert layout.lane_width(0, 1) == layout.LANE_MIN_W + 1 + pad
+    assert layout.lane_width(2, 1) == 2 + pad + layout.LANE_MIN_W + 1 + pad
+    assert layout.lane_height(1, 3) == 1 + pad + layout.LANE_MIN_H + 3 + pad
+
+
+def test_edge_cannot_run_along_a_group_border():
+    # a(0,0) -> c(0,1): the edge travels vertically; the group wrapping both
+    # forces vertical borders in the surrounding lanes. No vertical segment of
+    # the route may sit on a vertical-border cell (no run-along), and likewise
+    # for horizontal segments on horizontal borders.
+    m = layout.parse_and_validate({
+        "title": "T", "description": "D",
+        "nodes": [{"id": "a", "label": "a", "grid_col": 0, "grid_row": 0},
+                  {"id": "c", "label": "c", "grid_col": 0, "grid_row": 1}],
+        "edges": [{"id": "e1", "from": "a", "to": "c"}],
+        "groups": [{"id": "g", "title": "G", "members": ["a", "c"]}]})
+    layout.geometry(m)
+    layout.assign_ports(m)
+    layout.route_all(m)
+    vborder, hborder = layout.border_cells(m.groups)
+    route = m.edges[0].route
+    assert route is not None
+    for (x0, y0), (x1, y1) in zip(route, route[1:]):
+        if x0 == x1:
+            for y in range(min(y0, y1), max(y0, y1) + 1):
+                assert (x0, y) not in vborder, \
+                    f"vertical run along a vertical border at ({x0},{y})"
+        else:
+            for x in range(min(x0, x1), max(x0, x1) + 1):
+                assert (x, y0) not in hborder, \
+                    f"horizontal run along a horizontal border at ({x},{y0})"
+
+
+def test_three_level_nesting_extents_and_depth():
+    # 3x1 row a(0) b(1) e(2): outer wraps all, mid wraps b+e, inner wraps e.
+    m = layout.parse_and_validate({
+        "title": "T", "description": "D",
+        "nodes": [{"id": "a", "label": "a", "grid_col": 0, "grid_row": 0},
+                  {"id": "b", "label": "b", "grid_col": 1, "grid_row": 0},
+                  {"id": "e", "label": "e", "grid_col": 2, "grid_row": 0}],
+        "edges": [],
+        "groups": [
+            {"id": "outer", "title": "O", "members": ["a"]},
+            {"id": "mid", "title": "M", "members": ["b"], "parent": "outer"},
+            {"id": "inner", "title": "I", "members": ["e"], "parent": "mid"}]})
+    by_id = {g.id: g for g in m.groups}
+    assert (by_id["outer"].col0, by_id["outer"].col1) == (0, 2)
+    assert by_id["outer"].depth == 0
+    assert (by_id["mid"].col0, by_id["mid"].col1) == (1, 2)
+    assert by_id["mid"].depth == 1
+    assert (by_id["inner"].col0, by_id["inner"].col1) == (2, 2)
+    assert by_id["inner"].depth == 2
+
+
 def test_edge_crosses_group_border_perpendicular():
     m = layout.parse_and_validate({
         "title": "T", "description": "D",
