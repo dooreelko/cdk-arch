@@ -118,6 +118,8 @@ pub fn astar(
     occupied: &HashMap<(i64, i64), String>,
     forbidden: &HashSet<(i64, i64)>,
     allow_cross: bool,
+    vborder: &HashSet<(i64, i64)>,
+    hborder: &HashSet<(i64, i64)>,
     m: &Model,
 ) -> (Option<Vec<(i64, i64)>>, Option<Vec<(i64, i64)>>) {
     let (w, h) = (m.canvas_w, m.canvas_h);
@@ -170,6 +172,16 @@ pub fn astar(
         for d in [(1, 0), (-1, 0), (0, 1), (0, -1)] {
             let np = (pos.0 + d.0, pos.1 + d.1);
             if !in_bounds(np) {
+                continue;
+            }
+            // Group frames: an edge may cross a border perpendicularly but never
+            // run along one or turn on one. A vertical border forbids vertical
+            // moves (onto the cell or off it); a horizontal border forbids
+            // horizontal moves. Perpendicular crossing stays allowed (no cost).
+            if d.1 != 0 && (vborder.contains(&np) || vborder.contains(&pos)) {
+                continue;
+            }
+            if d.0 != 0 && (hborder.contains(&np) || hborder.contains(&pos)) {
                 continue;
             }
             if blocked.contains(&np) && np != goal {
@@ -264,6 +276,7 @@ pub fn crossing_runs(
 
 pub fn route_all(m: &mut Model) {
     let base_blocked = build_blocked(m);
+    let (vborder, hborder) = super::groups::border_cells(&m.groups);
     let mut occupied: HashMap<(i64, i64), String> = HashMap::new();
     let mut forbidden: HashSet<(i64, i64)> = HashSet::new();
 
@@ -302,6 +315,8 @@ pub fn route_all(m: &mut Model) {
             occupied,
             forbidden,
             allow_cross,
+            &vborder,
+            &hborder,
             m,
         )
     };

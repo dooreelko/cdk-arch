@@ -70,7 +70,10 @@ fn astar_adapter(
     build_band_caches(&mut m);
     let empty = HashSet::new();
     let forbidden = forbidden.unwrap_or(&empty);
-    astar(start, goal, blocked, occupied, forbidden, allow_cross, &m)
+    let no_border = HashSet::new();
+    astar(
+        start, goal, blocked, occupied, forbidden, allow_cross, &no_border, &no_border, &m,
+    )
 }
 
 fn two_nodes() -> Value {

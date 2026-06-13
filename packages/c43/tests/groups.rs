@@ -1,7 +1,10 @@
 use c43::cmd::layout::geometry::geometry;
+use c43::cmd::layout::groups::border_cells;
 use c43::cmd::layout::groups::{horizontal_ring_counts, vertical_ring_counts};
 use c43::cmd::layout::model::{Group, Model};
 use c43::cmd::layout::parse::parse_and_validate;
+use c43::cmd::layout::ports::assign_ports;
+use c43::cmd::layout::route::route_all;
 use serde_json::json;
 
 #[test]
@@ -329,4 +332,38 @@ fn nested_group_inside_parent_box() {
     assert!(outer.x < inner.x, "outer left border left of inner left border (outer.x={}, inner.x={})", outer.x, inner.x);
     assert!(outer.y < inner.y && outer.y + outer.h > inner.y + inner.h,
         "outer encloses inner vertically");
+}
+
+#[test]
+fn border_cells_classify_sides() {
+    use c43::cmd::layout::model::Group;
+    // group box 5 wide, 4 tall at (10,10): verticals x=10 & x=14; horizontals y=10 & y=13.
+    let g = Group { id:"g".into(), title:"g".into(), parent:None, member_ids:vec![],
+        depth:0, col0:0,col1:0,row0:0,row1:0, x:10,y:10,w:5,h:4 };
+    let (vert, horiz) = border_cells(std::slice::from_ref(&g));
+    assert!(vert.contains(&(10, 11)));   // left edge, mid
+    assert!(vert.contains(&(14, 11)));   // right edge, mid
+    assert!(horiz.contains(&(11, 10)));  // top edge, mid
+    assert!(horiz.contains(&(11, 13)));  // bottom edge, mid
+    assert!(vert.contains(&(10, 10)) && horiz.contains(&(10, 10))); // corner = both
+}
+
+#[test]
+fn edge_crosses_group_border_perpendicular() {
+    let mut m = parse_and_validate(&json!({
+        "title":"T","description":"D",
+        "nodes":[
+            {"id":"a","label":"a","grid_col":0,"grid_row":0},
+            {"id":"b","label":"b","grid_col":1,"grid_row":0}
+        ],
+        "edges":[{"id":"e1","from":"a","to":"b"}],
+        "groups":[{"id":"g","title":"G","members":["a"]}],
+        "hints":{"ports":[{"edge_id":"e1","from_side":"right","to_side":"left"}]}
+    })).unwrap();
+    geometry(&mut m);
+    assign_ports(&mut m);
+    route_all(&mut m);
+    let e = &m.edges[0];
+    assert!(e.route.is_some(), "edge crossing a group border must route");
+    assert!(m.errors.iter().all(|er| er.code != "unroutable"));
 }
