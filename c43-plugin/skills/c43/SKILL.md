@@ -101,6 +101,18 @@ them horizontally, vertically, and diagonally:
 
 #### Algorithm
 
+**Running the engine.** Prefer the compiled `c43` binary; fall back to Python:
+
+    if command -v c43 >/dev/null 2>&1; then
+      c43 layout layout.json --auto         # auto loop (drop --auto for one pass)
+    else
+      uv run skills/c43/scripts/autolayout.py layout.json   # fallback loop
+      # one pass: uv run skills/c43/scripts/layout.py layout.json
+    fi
+
+Both paths write identical `result.txt` / `result.json`, so everything below
+applies unchanged regardless of which ran.
+
 1. Produce `layout.json` with node grid positions:
    ```json
    {
@@ -123,8 +135,8 @@ them horizontally, vertically, and diagonally:
      side)
    - `hints.routing_order`: edge ids to route first, in order; unlisted edges
      follow, shortest first
-2. Run the auto loop:
-   `uv run .claude/skills/c43/scripts/autolayout.py layout.json`
+2. Run the auto loop (see **Running the engine** above for the resolution
+   block — `c43 layout layout.json --auto`, or the `autolayout.py` fallback):
    - This starts from your `layout.json` (hints optional), then iterates:
      re-routes, reads the engine's own defect feedback, and keeps the single
      port/order change that most improves the layout, until it is clean or
@@ -135,7 +147,8 @@ them horizontally, vertically, and diagonally:
      (`--max-evals=N`, default 200). Exit codes match the engine: 0 = clean,
      1 = best attempt still has errors, 2 = usage.
    - For a single deterministic pass with no iteration (hand-tuning, or when
-     you have already pinned every hint), run `layout.py layout.json` instead.
+     you have already pinned every hint), drop `--auto` (binary) or run the
+     `layout.py` fallback instead — see **Running the engine** above.
 3. Read `result.json`. Every key is always present regardless of outcome:
    - `status`: `"ok"` | `"error"`
    - `errors`: list of `{code, edge_ids, at, message, suggestion}`
