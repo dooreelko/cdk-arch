@@ -126,6 +126,10 @@ applies unchanged regardless of which ran.
      "description": "One line description",
      "nodes": [{"id": "svc", "label": "svc", "grid_col": 0, "grid_row": 0}],
      "edges": [{"id": "e1", "from": "svc", "to": "db"}],
+     "groups": [
+       {"id": "svc_group", "title": "Service Group", "members": ["svc", "db"]},
+       {"id": "inner", "title": "Inner", "members": ["db"], "parent": "svc_group"}
+     ],
      "hints": {
        "ports": [{"edge_id": "e1", "from_side": "right", "to_side": "left"}],
        "routing_order": ["e1"]
@@ -141,6 +145,17 @@ applies unchanged regardless of which ran.
      side)
    - `hints.routing_order`: edge ids to route first, in order; unlisted edges
      follow, shortest first
+   - `groups` is optional. Each group draws a nested double-line frame
+     (`╔═╗║╚╝`) around its members in the edge lanes. Fields:
+     - `id` (required), `title` (required), `members` (leaf node ids directly
+       in the group), `parent` (optional id of the enclosing group).
+     - A group's extent is the bounding rectangle of its members plus all
+       descendant groups. Frames hug the nodes while edges keep lane centres;
+       edges may cross a frame side but never run along one, and keep ≥1 cell
+       of clearance from frames. The title sits inside, bottom-left.
+     - Validation rejects: unknown member/parent ids, duplicate group ids,
+       parent cycles, a frame enclosing a non-member node, and partially
+       overlapping frames (full nesting is allowed).
 2. Run the auto loop (see **Running the engine** above for the resolution
    block — `c43 layout layout.json --auto`, or the `autolayout.py` fallback):
    - This starts from your `layout.json` (hints optional), then iterates:
@@ -174,6 +189,7 @@ applies unchanged regardless of which ran.
    - `title`, `description`, `canvas` (`width`/`height`), `box` (`width`/`height`)
    - `nodes`: id, label, grid_col/grid_row and resolved x/y/w/h
    - `edges`: id, from, to, char, from_port/to_port (`side`,`x`,`y`), route polyline
+   - `groups`: id, title, parent, grid (col0/col1/row0/row1), and resolved x/y/w/h
 4. If the result still has defects the loop could not remove (check `quality`
    and `diagnostics`), the levers, in order of leverage, are:
    1. `hints.ports` — move one edge of a `crossing`/`congestion` pair off the
