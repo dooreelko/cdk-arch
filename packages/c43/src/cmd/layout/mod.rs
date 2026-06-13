@@ -1,4 +1,5 @@
 pub mod model;
+pub mod groups;
 pub mod parse;
 pub mod geometry;
 pub mod ports;

@@ -17,6 +17,16 @@ pub const LANE_MIN_W: i64 = 16;
 pub const LANE_MIN_H: i64 = 7;
 pub const TITLE_H: i64 = 6;
 
+// Group frame glyphs (double-line box drawing) and ring padding.
+pub const GROUP_TL: char = '╔';
+pub const GROUP_TR: char = '╗';
+pub const GROUP_BL: char = '╚';
+pub const GROUP_BR: char = '╝';
+pub const GROUP_H: char = '═';
+pub const GROUP_V: char = '║';
+/// One blank cell between adjacent group rings and between rings and the edge zone.
+pub const GROUP_PAD: i64 = 1;
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct Node {
     pub id: String,
@@ -62,6 +72,28 @@ pub struct Edge {
     pub route: Option<Vec<[i64; 2]>>,
 }
 
+/// A visual group frame. `member_ids` are the leaf node ids directly in this
+/// group; child groups link via their own `parent`. Grid extent and pixel box
+/// are filled in later (parse resolves grid extent + depth; geometry the box).
+#[derive(Debug, Clone, PartialEq)]
+pub struct Group {
+    pub id: String,
+    pub title: String,
+    pub parent: Option<String>,
+    pub member_ids: Vec<String>,
+    pub depth: i64,
+    // grid extent (inclusive grid-cell indices)
+    pub col0: i64,
+    pub col1: i64,
+    pub row0: i64,
+    pub row1: i64,
+    // pixel box (inclusive corners), set in geometry
+    pub x: i64,
+    pub y: i64,
+    pub w: i64,
+    pub h: i64,
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct LayoutError {
     pub code: String,
@@ -91,6 +123,7 @@ pub struct Model {
     pub description: String,
     pub nodes: Vec<Node>,
     pub edges: Vec<Edge>,
+    pub groups: Vec<Group>,
     pub hint_ports: IndexMap<String, HintPort>,
     pub routing_order: Vec<String>,
     pub canvas_w: i64,
@@ -115,6 +148,7 @@ impl Model {
             description,
             nodes,
             edges,
+            groups: Vec::new(),
             hint_ports: IndexMap::new(),
             routing_order: Vec::new(),
             canvas_w: 0,
