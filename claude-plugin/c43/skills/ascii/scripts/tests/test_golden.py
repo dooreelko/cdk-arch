@@ -16,14 +16,19 @@ import subprocess
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-REPO = os.path.abspath(os.path.join(HERE, *[os.pardir] * 5))
-SCRIPT = os.path.join(REPO, ".claude", "skills", "c43", "scripts", "layout.py")
-LAYOUT = os.path.join(REPO, "layout.json")
+SCRIPT = os.path.join(os.path.dirname(HERE), "layout.py")
+# Canonical rebob inputs live with the Rust engine fixtures (the parity oracle
+# source of truth); both implementations render them byte-identically.
+RUST_FIXTURES = os.path.abspath(
+    os.path.join(HERE, *[os.pardir] * 6, "packages", "c43", "tests", "fixtures"))
+LAYOUT = os.path.join(RUST_FIXTURES, "rebob_layout.json")
 EXPECTED = os.path.join(HERE, "expected_rebob.txt")
+GROUPS_LAYOUT = os.path.join(RUST_FIXTURES, "rebob_groups_layout.json")
+GROUPS_EXPECTED = os.path.join(HERE, "expected_rebob_groups.txt")
 
 
-def _run(tmp_path):
-    return subprocess.run([sys.executable, SCRIPT, LAYOUT], cwd=tmp_path,
+def _run(tmp_path, layout=LAYOUT):
+    return subprocess.run([sys.executable, SCRIPT, layout], cwd=tmp_path,
                           capture_output=True, text=True)
 
 
@@ -56,3 +61,18 @@ def test_rebob_errors_are_exactly_the_known_crossing(tmp_path):
     # the crossing edge hugs another only at the crossing itself, not the whole
     # way (pass-2 spacing is a soft cost, not disabled): congestion stays tiny
     assert q["congestion"] <= 10, q["congestion"]
+
+
+def test_rebob_groups_render_matches_golden(tmp_path):
+    """Byte-parity oracle: the Python reference renders the nested-group rebob
+    fixture identically to the Rust engine's committed golden."""
+    proc = _run(tmp_path, GROUPS_LAYOUT)
+    out = os.path.join(tmp_path, "result.txt")
+    assert os.path.exists(out), proc.stderr
+    with open(out, encoding="utf-8") as f:
+        got = f.read()
+    with open(GROUPS_EXPECTED, encoding="utf-8") as f:
+        expected = f.read()
+    assert got == expected, (
+        "rebob groups render drifted from golden; inspect result.txt, "
+        "re-approve visually, then update expected_rebob_groups.txt")
