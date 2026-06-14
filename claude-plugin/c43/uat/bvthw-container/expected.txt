@@ -1,0 +1,60 @@
+# Expected outcome — bvthw rebob CONTAINER diagram (nested groups)
+
+This is a manual UAT. The LLM authors the grid placement, so exact coordinates
+vary run to run. Judge the generated result.json / result.txt against the
+invariants below — they capture what a correct render of this nested-group
+architecture must satisfy, not a byte-exact image.
+
+## Files produced (in the test's /tmp working dir)
+- layout.json   — the model the skill authored (must contain a `groups` array)
+- result.json   — resolved layout + resolved group boxes + quality scorecard
+- result.txt    — the rendered ASCII diagram with group frames
+
+## result.json invariants
+- status: "ok" preferred. "error" is acceptable ONLY if every error has
+  code "crossing"; there must be NO "validation" or "unroutable" errors
+  (a validation error means the authored groups enclose strangers or overlap —
+  that is a real failure of the skill's placement).
+- quality.dropped == 0
+- nodes: every container + leaf backend + client + frontend is present. The
+  container leaves (membership-bearing nodes) are:
+    runtime, dispatcher-mcp, bus, chat-mcp, task-queue, graph, memory-mcp,
+    consolidator-api, registry, registry-mcp, bob-queue, manager, manager-mcp
+  plus the leaf backends / client / frontend:
+    event-storage, sub-bob, llm, @bob/sub-bob-bootstrap, @bob/frontend
+- groups: NESTED. There is one top-level group "rebob" (parent null/absent),
+  and each backend that has children is a group with parent "rebob":
+    dispatcher  -> members include runtime, dispatcher-mcp
+    chat        -> members include bus, chat-mcp
+    queue       -> members include task-queue
+    memory      -> members include graph, memory-mcp
+    consolidator-> members include consolidator-api
+    bob-registry-> members include registry, registry-mcp
+    sub-bob-manager -> members include bob-queue, manager, manager-mcp
+  (Leaf backends event-storage, sub-bob, llm and the client/frontend are direct
+   members of "rebob", not their own groups.)
+- each group in result.json has resolved x/y/w/h and grid (col0/col1/row0/row1);
+  the rebob group's box encloses all the backend group boxes.
+
+## result.txt visual checks (the seven group rules — human eyeball)
+1. Each group draws a double-line frame (`╔ ═ ╗ ║ ╚ ╝`) surrounding its members.
+2. Nesting is visual: the outer `rebob` frame contains all the backend frames;
+   inner frames hug their nodes.
+3. Group borders sit in the edge lanes; the LEFT bounding lane carries NO edge
+   characters.
+4. Edges gravitate to lane centres; group frames hug the nodes.
+5. Edges may CROSS a frame side (a single perpendicular pass-through) but never
+   run ALONG a frame side.
+6. At least one blank cell between every edge and every group border.
+7. Each group title sits INSIDE its frame, one space from the left border, one
+   row above the bottom border (e.g. "rebob", "dispatcher", "consolidator").
+
+## How to judge
+PASS if result.json shows the nested group structure above with no validation/
+unroutable errors and no dropped edge, AND result.txt shows nested double-line
+frames satisfying the seven rules. Missing groups, a flat (groupless) render,
+validation errors, or a dropped edge = FAIL.
+
+Note: dense placement may leave a few crossings or the known same-depth
+sibling stair-stepping (cosmetic); these do not fail the test as long as the
+seven group rules hold.

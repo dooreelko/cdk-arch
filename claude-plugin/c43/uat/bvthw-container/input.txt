@@ -1,0 +1,26 @@
+System: rebob
+  ├─ Backend: dispatcher [uses: runtime, sub-bob-manager]
+  │   ├─ dispatcherruntime: runtime
+  │   └─ mcpcontainer: dispatcher-mcp
+  ├─ Backend: chat [uses: bus, event-storage]
+  │   ├─ messagebus: bus
+  │   └─ mcpcontainer: chat-mcp
+  ├─ Backend: queue
+  │   └─ taskqueue: task-queue
+  ├─ Backend: memory [uses: graph, llm, queue]
+  │   ├─ graph: graph
+  │   └─ mcpcontainer: memory-mcp
+  ├─ Backend: event-storage
+  ├─ Backend: sub-bob
+  ├─ Backend: consolidator [uses: llm, memory, queue]
+  │   └─ consolidatorapi: consolidator-api
+  ├─ Backend: llm
+  ├─ Backend: bob-registry
+  │   ├─ ApiContainer: registry [uses: runtime]
+  │   └─ mcpcontainer: registry-mcp
+  ├─ Backend: sub-bob-manager [uses: chat, memory]
+  │   ├─ bobqueue: bob-queue
+  │   ├─ ApiContainer: manager [uses: bob-queue, runtime]
+  │   └─ mcpcontainer: manager-mcp
+  ├─ Client: @bob/sub-bob-bootstrap [uses: memory]
+  └─ Frontend: @bob/frontend [uses: bob-registry, chat, memory, sub-bob-manager]

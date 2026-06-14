@@ -1,0 +1,13 @@
+System: rebob
+  ├─ Backend: dispatcher [uses: sub-bob-manager]
+  ├─ Backend: chat [uses: event-storage]
+  ├─ Backend: queue
+  ├─ Backend: memory [uses: llm, queue]
+  ├─ Backend: event-storage
+  ├─ Backend: sub-bob
+  ├─ Backend: consolidator [uses: llm, memory, queue]
+  ├─ Backend: llm
+  ├─ Backend: bob-registry
+  ├─ Backend: sub-bob-manager [uses: chat, memory]
+  ├─ Client: @bob/sub-bob-bootstrap [uses: memory]
+  └─ Frontend: @bob/frontend [uses: bob-registry, chat, memory, sub-bob-manager]

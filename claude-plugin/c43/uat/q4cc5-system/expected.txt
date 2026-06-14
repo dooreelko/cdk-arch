@@ -1,0 +1,43 @@
+# Expected outcome — q4cc5 rebob SYSTEM diagram (flat, no groups)
+
+This is a manual UAT. The LLM authors the grid placement, so exact coordinates
+vary run to run. Judge the generated result.json / result.txt against the
+invariants below — they capture what a correct render of this architecture must
+satisfy, not a byte-exact image.
+
+## Files produced (in the test's /tmp working dir)
+- layout.json   — the model the skill authored
+- result.json   — resolved layout + quality scorecard
+- result.txt    — the rendered ASCII diagram
+
+## result.json invariants
+- status: "ok" preferred. "error" is acceptable ONLY if every error has
+  code "crossing" (a dense graph may need 1–2 clean crossings); there must be
+  NO "validation" or "unroutable" errors.
+- quality.dropped == 0  (no edge omitted from the drawing)
+- nodes: exactly these 12 ids present (labels may differ in formatting):
+    dispatcher, chat, queue, memory, event-storage, sub-bob, consolidator,
+    llm, bob-registry, sub-bob-manager, @bob/sub-bob-bootstrap, @bob/frontend
+- edges: the "uses" relations are all present (direction = from "uses"-er to used):
+    dispatcher -> sub-bob-manager
+    chat -> event-storage
+    memory -> llm ; memory -> queue
+    consolidator -> llm ; consolidator -> memory ; consolidator -> queue
+    sub-bob-manager -> chat ; sub-bob-manager -> memory
+    @bob/sub-bob-bootstrap -> memory
+    @bob/frontend -> bob-registry ; @bob/frontend -> chat ;
+    @bob/frontend -> memory ; @bob/frontend -> sub-bob-manager
+- groups: ABSENT or empty array. This is the SYSTEM (flat) view — there are no
+  child containers, so NO group frames are expected.
+
+## result.txt visual checks (human eyeball)
+- Every node drawn as a single-line box (`+`, `-`, `|`) with its label centred.
+- NO double-line group frames (`╔ ═ ╗ ║ ╚ ╝`) anywhere — groups must not appear.
+- Edges drawn in their own characters with `*` at source and an arrowhead
+  (`► ◄ ▲ ▼`) at the target; left-to-right / top-to-bottom flow.
+- @bob/frontend (a hub with 4 out-edges) is readable, edges spread across sides.
+
+## How to judge
+PASS if all result.json invariants hold and the diagram has no group frames.
+A couple of clean crossings on this dense graph are acceptable; validation or
+unroutable errors, a dropped edge, missing node/edge, or any group frame = FAIL.
