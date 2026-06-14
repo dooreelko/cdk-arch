@@ -37,17 +37,18 @@ pub fn build_model(raw: &Value) -> Result<Model, String> {
 }
 
 /// Run the layout engine. `auto` selects the iteration loop; `max_evals`
-/// bounds it. Writes result.txt/result.json to the current directory.
+/// bounds it. Writes output to `json_out` and `txt_out` (defaulting to
+/// result.json / result.txt when called from the CLI without overrides).
 /// Returns the process exit code (0 clean, 1 rendered-with-errors, 2 usage).
-pub fn run(input: &Path, auto: bool, max_evals: usize) -> i32 {
+pub fn run(input: &Path, auto: bool, max_evals: usize, txt_out: &Path, json_out: &Path) -> i32 {
     // Stale outputs from a previous run must never be mistaken for this run's
     // results, even if we crash before writing anything new.
-    for stale in ["result.json", "result.txt"] {
+    for stale in [json_out, txt_out] {
         let _ = std::fs::remove_file(stale); // ignore NotFound (and any) errors
     }
 
-    let json_path = Path::new("result.json");
-    let txt_path = Path::new("result.txt");
+    let json_path = json_out;
+    let txt_path = txt_out;
 
     // Read + parse the input. On either failure, emit a validation error
     // result (no raw echo) and exit 1.
@@ -88,6 +89,7 @@ pub fn run(input: &Path, auto: bool, max_evals: usize) -> i32 {
     if auto {
         return run_auto(&raw, max_evals, json_path, txt_path);
     }
+
 
     let mut m = match parse::parse_and_validate(&raw) {
         Ok(m) => m,

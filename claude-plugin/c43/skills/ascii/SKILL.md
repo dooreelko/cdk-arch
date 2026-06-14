@@ -11,6 +11,14 @@ Provided "$ARGUMENTS" is either
 - or nothing. In this case run `c43 system --ascii .`
 
 This will give you the architecture, you can proceed with rendering.
+In either scenario don't attempt to infer architecture from the code, use only output from c43 tool.
+
+## A recursive approach
+
+The hierarchy of the diagrams is system -> container -> component -> deployment
+Essentially each node in the previous diagram is a group on the next.
+So for the best results and visual consistency, when a user requests, for example, a component diagram
+it's best to first generate a layout for system (`c43 system`), use that for placement of the groups/nodes of container (via `c43 container` + layout hints from system) and then the same for `c43 component`
 
 
 ## How to create a diagram
@@ -18,6 +26,10 @@ This will give you the architecture, you can proceed with rendering.
 Describe the diagram as `layout.json` (nodes on a grid + edges), then run the
 layout engine. The engine produces `result.txt` (the ASCII diagram) and
 `result.json` (machine-readable outcome) in the current directory.
+
+Experiment with several layouts to see which has the best overall quality.
+Keep layout and result json files, rename them to avoid overwriting.
+Use `c43 --agent-help` for details on flags.
 
 ### The grid
 `result.txt` lays node cells on a grid with ruler scaffolding. Each edge is
@@ -105,7 +117,7 @@ them horizontally, vertically, and diagonally:
 1 Nodes with more in or out connections gravitate to the center
 1 Linked nodes should be as close to each other as possible
 1 Keep the grid balanced: spread nodes across BOTH columns and rows rather than
-  cramming everything into a few rows. The grid can grow arbitrarily large in
+  cramming everything into a few rows or columns. The grid can grow arbitrarily large in
   either direction (there is no column/row limit), so prefer adding a row over
   overloading one. A roughly square node grid (columns ≈ rows) renders close to
   a 16:9 landscape, because each grid step is wider than it is tall. A wide, flat

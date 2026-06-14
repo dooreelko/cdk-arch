@@ -1,5 +1,5 @@
 use std::path::PathBuf;
-use clap::{Parser, Subcommand};
+use clap::{CommandFactory, Parser, Subcommand};
 use c43::{ascii, cmd};
 
 #[derive(Parser)]
@@ -8,8 +8,11 @@ struct Cli {
     /// Output as ASCII tree instead of JSON
     #[arg(long, global = true)]
     ascii: bool,
+    /// Print a recursive overview of all commands and options (for LLM agents)
+    #[arg(long)]
+    agent_help: bool,
     #[command(subcommand)]
-    command: Commands,
+    command: Option<Commands>,
 }
 
 #[derive(Subcommand)]
@@ -62,17 +65,37 @@ enum Commands {
         /// Eval budget for --auto
         #[arg(long, default_value_t = 200)]
         max_evals: usize,
+        /// Output path for the ASCII diagram (default: result.txt)
+        #[arg(long, default_value = "result.txt")]
+        out_txt: std::path::PathBuf,
+        /// Output path for the JSON result (default: result.json)
+        #[arg(long, default_value = "result.json")]
+        out_json: std::path::PathBuf,
     },
 }
 
 fn main() {
-    let cli = Cli::parse();
+    let mut cli = Cli::parse();
 
-    if let Commands::Layout { layout, auto, max_evals } = &cli.command {
-        std::process::exit(cmd::layout::run(layout, *auto, *max_evals));
+    if cli.agent_help {
+        let mut cmd = Cli::command();
+        cmd::agent_help::run(&mut cmd);
+        return;
     }
 
-    match cli.command {
+    let command = match cli.command.take() {
+        Some(c) => c,
+        None => {
+            eprintln!("error: a subcommand is required (try --agent-help or --help)");
+            std::process::exit(2);
+        }
+    };
+
+    if let Commands::Layout { layout, auto, max_evals, out_txt, out_json } = &command {
+        std::process::exit(cmd::layout::run(layout, *auto, *max_evals, out_txt, out_json));
+    }
+
+    match command {
         Commands::List { path, json, all } => {
             let output = cmd::list::run(&path, all);
             if json {
