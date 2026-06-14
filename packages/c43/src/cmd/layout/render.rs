@@ -165,8 +165,9 @@ fn draw_group(cv: &mut Canvas, g: &super::model::Group) {
     cv.paint(x1, y0, GROUP_TR);
     cv.paint(x0, y1, GROUP_BL);
     cv.paint(x1, y1, GROUP_BR);
-    // title: inside, one space from left border, one row above bottom border
-    paint_text(cv, x0 + 1, y1 - 1, &g.title);
+    // title: inside, one blank cell in from the left border and one blank row
+    // above the bottom border (so a single space separates it from each side).
+    paint_text(cv, x0 + 2, y1 - 2, &g.title);
 }
 
 fn paint_edge(cv: &mut Canvas, e: &Edge) {

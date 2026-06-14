@@ -282,6 +282,29 @@ def test_edge_crosses_group_border_perpendicular():
     assert all(er.code != "unroutable" for er in m.errors)
 
 
+def test_left_bounding_lane_carries_no_edges():
+    # A group wraps both nodes so the left bounding lane (region -1) exists. No
+    # routed edge cell may land in that lane's column span -- it is reserved for
+    # the outermost group frame.
+    m = layout.parse_and_validate({
+        "title": "T", "description": "D",
+        "nodes": [{"id": "a", "label": "a", "grid_col": 0, "grid_row": 0},
+                  {"id": "b", "label": "b", "grid_col": 1, "grid_row": 0}],
+        "edges": [{"id": "e1", "from": "a", "to": "b"}],
+        "groups": [{"id": "g", "title": "G", "members": ["a", "b"]}]})
+    layout.geometry(m)
+    layout.assign_ports(m)
+    layout.route_all(m)
+    lx = m.col_x[-1]
+    lane = next(b for b in m.col_bands if b[0] == lx and b[2] == "lane")
+    for e in m.edges:
+        if e.route is None:
+            continue
+        for (cx, _cy) in layout._route_cell_set(e.route):
+            assert cx < lane[0] or cx >= lane[1], \
+                f"edge {e.id} routed into the left bounding lane at x={cx}"
+
+
 def _render_to_string(m, tmp_path):
     layout.geometry(m)
     layout.assign_ports(m)
@@ -310,8 +333,10 @@ def test_title_sits_inside_bottom_left(tmp_path):
         "groups": [{"id": "g", "title": "GG", "members": ["a"]}]})
     layout.geometry(m)
     g = m.groups[0]
-    title_row = g.y + g.h - 2
-    title_col = g.x + 1
+    # one blank row above the bottom border (y1-2) and one blank cell in from
+    # the left border (x0+2) -- a one-cell gap from each side.
+    title_row = g.y + g.h - 3
+    title_col = g.x + 2
     out = _render_to_string(m, tmp_path)
     lines = out.split("\n")
     cols = list(lines[title_row])

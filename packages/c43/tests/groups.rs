@@ -423,6 +423,45 @@ fn edge_crosses_group_border_perpendicular() {
     assert!(m.errors.iter().all(|er| er.code != "unroutable"));
 }
 
+#[test]
+fn left_bounding_lane_carries_no_edges() {
+    use c43::cmd::layout::report::route_cell_set;
+    // Two nodes with an edge between them; a group wraps the left node so the
+    // left bounding lane (region -1) exists. No routed edge cell may land in
+    // that lane's column span -- it is reserved for the outermost group frame.
+    let mut m = parse_and_validate(&json!({
+        "title":"T","description":"D",
+        "nodes":[
+            {"id":"a","label":"a","grid_col":0,"grid_row":0},
+            {"id":"b","label":"b","grid_col":1,"grid_row":0}
+        ],
+        "edges":[{"id":"e1","from":"a","to":"b"}],
+        "groups":[{"id":"g","title":"G","members":["a","b"]}]
+    })).unwrap();
+    geometry(&mut m);
+    assign_ports(&mut m);
+    route_all(&mut m);
+    // resolve the left lane's column span from the band whose start == col_x[-1]
+    let lx = *m.col_x.get(&-1).expect("left bounding lane present");
+    let lane = m
+        .col_bands
+        .iter()
+        .find(|b| b.start == lx && b.kind == "lane")
+        .expect("left lane band present");
+    for e in &m.edges {
+        if let Some(route) = &e.route {
+            for (cx, _cy) in route_cell_set(route) {
+                assert!(
+                    cx < lane.start || cx >= lane.end,
+                    "edge {} routed into the left bounding lane at x={}",
+                    e.id,
+                    cx
+                );
+            }
+        }
+    }
+}
+
 fn render_to_string(m: &mut c43::cmd::layout::model::Model) -> String {
     geometry(m);
     assign_ports(m);
@@ -459,9 +498,10 @@ fn title_sits_inside_bottom_left() {
     let g = &m.groups[0].clone();
     let out = render_to_string(&mut m);
     let lines: Vec<&str> = out.lines().collect();
-    // title row = one above the bottom border; title col = one right of left border
-    let title_row = (g.y + g.h - 2) as usize;
-    let title_col = (g.x + 1) as usize;
+    // title sits inside with a one-cell gap from each side: one blank row above
+    // the bottom border (y1-2) and one blank cell in from the left border (x0+2).
+    let title_row = (g.y + g.h - 3) as usize;
+    let title_col = (g.x + 2) as usize;
     let row = lines[title_row];
     let cols: Vec<char> = row.chars().collect();
     assert_eq!(cols.get(title_col).copied(), Some('G'));

@@ -78,6 +78,18 @@ fn build_blocked(m: &Model) -> HashSet<(i64, i64)> {
             }
         }
     }
+    // left bounding lane (region -1): reserved for the outermost group frames
+    // only -- edges may never route here (inbound-left ports are prohibited, so
+    // this lane never needs to carry an edge). Block its whole column span.
+    if let Some(&lx) = m.col_x.get(&-1) {
+        if let Some(lb) = m.col_bands.iter().find(|b| b.start == lx && b.kind == "lane") {
+            for x in lb.start..lb.end {
+                for y in 0..m.canvas_h {
+                    blocked.insert((x, y));
+                }
+            }
+        }
+    }
     blocked
 }
 

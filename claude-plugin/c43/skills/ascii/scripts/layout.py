@@ -890,6 +890,17 @@ def _build_blocked(m):
             for x in range(GUTTER_W + 1, m.canvas_w):
                 for y in range(s_y, e_y):
                     blocked.add((x, y))
+    # left bounding lane (region -1): reserved for the outermost group frames
+    # only -- edges may never route here (inbound-left ports are prohibited, so
+    # this lane never needs to carry an edge). Block its whole column span.
+    if -1 in m.col_x:
+        lx = m.col_x[-1]
+        for s_x, e_x, ckind, _ in m.col_bands:
+            if s_x == lx and ckind == "lane":
+                for x in range(s_x, e_x):
+                    for y in range(0, m.canvas_h):
+                        blocked.add((x, y))
+                break
     return blocked
 
 def _port_exit(port):
@@ -1198,8 +1209,9 @@ def _draw_group(cv, g):
     cv.paint(x1, y0, GROUP_TR)
     cv.paint(x0, y1, GROUP_BL)
     cv.paint(x1, y1, GROUP_BR)
-    # title: inside, one space from left border, one row above bottom border
-    _paint_text(cv, x0 + 1, y1 - 1, g.title)
+    # title: inside, one blank cell in from the left border and one blank row
+    # above the bottom border (so a single space separates it from each side).
+    _paint_text(cv, x0 + 2, y1 - 2, g.title)
 
 
 def _paint_edge(cv, e):

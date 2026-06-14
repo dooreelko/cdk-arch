@@ -104,6 +104,14 @@ them horizontally, vertically, and diagonally:
 1 Secondary/auxilary services (monitoring, DLQ) go below
 1 Nodes with more in or out connections gravitate to the center
 1 Linked nodes should be as close to each other as possible
+1 Keep the grid balanced: spread nodes across BOTH columns and rows rather than
+  cramming everything into a few rows. The grid can grow arbitrarily large in
+  either direction (there is no column/row limit), so prefer adding a row over
+  overloading one. A roughly square node grid (columns ≈ rows) renders close to
+  a 16:9 landscape, because each grid step is wider than it is tall. A wide, flat
+  grid (many columns, few rows) forces many long edges to share the same few
+  horizontal lanes, which crowds them — distribute nodes so edges have lanes to
+  spread into. As a rule of thumb, for N nodes aim for about ⌈√N⌉ columns.
 
 #### Algorithm
 
@@ -145,7 +153,8 @@ applies unchanged regardless of which ran.
      side)
    - `hints.routing_order`: edge ids to route first, in order; unlisted edges
      follow, shortest first
-   - `groups` is optional. Each group draws a nested double-line frame
+   - `groups` represent nodes with both parent and child nodes. 
+     Each group draws a nested double-line frame
      (`╔═╗║╚╝`) around its members in the edge lanes. Fields:
      - `id` (required), `title` (required), `members` (leaf node ids directly
        in the group), `parent` (optional id of the enclosing group).
