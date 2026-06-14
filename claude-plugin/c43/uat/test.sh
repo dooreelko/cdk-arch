@@ -86,7 +86,9 @@ for case in "${CASES[@]}"; do
   echo "work: $WORK"
   echo "============================================================"
 
-  read -r -d '' PROMPT <<EOF
+  # `read -d ''` returns non-zero at EOF (no NUL delimiter) even though PROMPT
+  # is fully populated; `|| true` keeps that from tripping `set -e`.
+  read -r -d '' PROMPT <<EOF || true
 Use the c43:ascii skill to generate a c43 ASCII architecture diagram.
 
 The architecture to render is in the file ./input.txt in the current directory
@@ -99,14 +101,16 @@ Render in this directory. Do not ask me questions; make reasonable choices and
 produce the diagram. When finished, briefly confirm the files you wrote.
 EOF
 
+  # `|| rc=$?` keeps a non-zero claude exit (e.g. a render with crossings) from
+  # aborting the run under `set -e`; we want to report it and move on.
+  rc=0
   (
     cd "$WORK" || exit 11
     PATH="$C43_DIR:$PATH" "$CLAUDE_BIN" --print \
       --plugin-dir "$PLUGIN_DIR" \
       --permission-mode acceptEdits \
       "$PROMPT"
-  )
-  rc=$?
+  ) || rc=$?
   echo
   echo "--- claude exit code: $rc"
 
