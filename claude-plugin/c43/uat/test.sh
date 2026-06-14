@@ -24,7 +24,7 @@
 #   CLAUDE_BIN claude executable               (default: claude on PATH)
 #   KEEP=1     keep an existing /tmp/<case> dir instead of wiping it
 
-set -uo pipefail
+set -exuo pipefail
 
 # --- locate things relative to this script -----------------------------------
 UAT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
@@ -44,10 +44,8 @@ fail_pre() { echo "UAT preflight error: $*" >&2; exit 2; }
 command -v "$CLAUDE_BIN" >/dev/null 2>&1 || fail_pre "claude CLI not found (set CLAUDE_BIN=...)"
 [ -f "$PLUGIN_DIR/.claude-plugin/plugin.json" ] || fail_pre "plugin.json not found under $PLUGIN_DIR"
 
-# make the in-dev c43 the first thing on PATH for the spawned claude
-BIN_SHIM="$(mktemp -d)"
-ln -sf "$C43_BIN" "$BIN_SHIM/c43"
-trap 'rm -rf "$BIN_SHIM"' EXIT
+# directory holding the in-dev c43, prepended to PATH for the spawned claude
+C43_DIR="$(dirname "$C43_BIN")"
 
 # --- choose cases -------------------------------------------------------------
 if [ "$#" -gt 0 ]; then
@@ -103,7 +101,7 @@ EOF
 
   (
     cd "$WORK" || exit 11
-    PATH="$BIN_SHIM:$PATH" "$CLAUDE_BIN" --print \
+    PATH="$C43_DIR:$PATH" "$CLAUDE_BIN" --print \
       --plugin-dir "$PLUGIN_DIR" \
       --permission-mode acceptEdits \
       "$PROMPT"
