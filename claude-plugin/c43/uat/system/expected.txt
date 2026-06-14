@@ -1,4 +1,4 @@
-# Expected outcome — q4cc5 rebob SYSTEM diagram (flat, no groups)
+# Expected outcome — rebob SYSTEM diagram (flat, no groups)
 
 This is a manual UAT. The LLM authors the grid placement, so exact coordinates
 vary run to run. Judge the generated result.json / result.txt against the

@@ -1,4 +1,4 @@
-# Expected outcome — bvthw rebob CONTAINER diagram (nested groups)
+# Expected outcome — rebob CONTAINER diagram (nested groups)
 
 This is a manual UAT. The LLM authors the grid placement, so exact coordinates
 vary run to run. Judge the generated result.json / result.txt against the

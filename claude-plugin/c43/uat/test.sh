@@ -16,7 +16,7 @@
 #
 # Usage:
 #   ./test.sh                 # run every case
-#   ./test.sh bvthw-container # run one case by directory name
+#   ./test.sh container       # run one case by directory name
 #
 # Env overrides:
 #   C43_BIN    path to the c43 binary to test  (default: the release build in
