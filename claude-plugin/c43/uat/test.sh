@@ -87,28 +87,49 @@ for case in "${CASES[@]}"; do
   echo "============================================================"
 
   PROMPT="$(cat <<'EOF'
-Use the c43:ascii skill to generate a c43 ASCII architecture diagram.
+You are a UAT runner. Your only job is to exercise the c43:ascii skill once and
+report what it produced -- you are NOT here to perfect the diagram. Do the
+minimum to get a render on disk, then stop and report. A human judges quality
+afterwards from the files; you do not iterate toward a "good" layout.
 
-The architecture to render is in the file ./input.txt in the current directory
-(a c43 container/system tree). Read it, build the layout.json the skill needs
-(place nodes on the grid; for the container view, every node that has children
-must become a group, producing nested groups), then run the c43 layout engine so
-it writes result.txt and result.json into the current directory.
+Task:
+1. Read ./input.txt in the current directory (a c43 container/system tree).
+2. Use the c43:ascii skill to build the layout.json it needs (place nodes on the
+   grid; for the container view, every node that has children becomes a group,
+   producing nested groups).
+3. Run the c43 layout engine ONCE so it writes result.txt and result.json into
+   the current directory. A single pass is enough -- do NOT run the auto-loop and
+   do NOT hand-tune placement across multiple iterations chasing zero crossings.
+   Crossings, wraps, or other quality defects are acceptable and expected; the
+   human reviewer will assess them.
 
-Render in this directory. Do not ask me questions; make reasonable choices and
-produce the diagram. When finished, briefly confirm the files you wrote.
+Rules:
+- Work only in the current directory.
+- Do not ask questions; make reasonable choices and proceed.
+- Stop as soon as result.txt and result.json exist. Then briefly report: the
+  files you wrote and the engine's reported status. Do not keep going to improve
+  the result.
 EOF
 )"
 
   # `|| rc=$?` keeps a non-zero claude exit (e.g. a render with crossings) from
   # aborting the run under `set -e`; we want to report it and move on.
+  #
+  # The spawned agent must (a) run the `c43` binary without a per-command Bash
+  # approval prompt and (b) reach the binary + Python fallback, which live in
+  # the repo outside the /tmp working dir. This is a non-interactive UAT the
+  # user launches locally, so we skip permission prompts outright and add the
+  # repo root as an allowed directory.
+  # The prompt is fed on stdin, NOT as a positional arg: `--add-dir` is variadic
+  # and would otherwise swallow a trailing prompt argument as another directory
+  # (claude then errors "Input must be provided ... when using --print").
   rc=0
   (
     cd "$WORK" || exit 11
-    PATH="$C43_DIR:$PATH" "$CLAUDE_BIN" --print \
+    printf '%s' "$PROMPT" | PATH="$C43_DIR:$PATH" "$CLAUDE_BIN" --print \
       --plugin-dir "$PLUGIN_DIR" \
-      --permission-mode acceptEdits \
-      "$PROMPT"
+      --permission-mode bypassPermissions \
+      --add-dir "$REPO_ROOT"
   ) || rc=$?
   echo
   echo "--- claude exit code: $rc"
