@@ -137,6 +137,7 @@ dependencies = [
 name = "c43"
 version = "0.1.0"
 dependencies = [
+ "c43-layout",
  "clap",
  "indexmap",
  "serde",
