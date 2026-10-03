@@ -19,3 +19,6 @@ __pycache__/
 
 # rust
 /target
+
+# rendered diagrams (scripts/render.sh)
+/out
