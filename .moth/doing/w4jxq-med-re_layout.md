@@ -32,3 +32,18 @@ there's a new layout engine at ../c43-router we
   - Removed: the `layout` command (with `--auto`, `--max-evals`, `--out-txt/--out-json`), the cell engine `src/cmd/layout/`, `tests/fixtures/*_layout.json`, and the `component` and `deployment` commands. agent-help and README get updated.
 - e2e (local-docker): `c43 container . --drawio` produces valid non-empty drawio.
 - Moths: router's done moths (ehfb0 ios4y jzk19 z16j2) are copied as-is into `.moth/done`. pxxyh is deleted (cell renderer gone). New moths for the plugin skill rewrite and for placement hints.
+
+## Decisions (during implementation)
+
+- Groups: only what `contains` something becomes a group (spec rule). In the system view, backends are plain nodes. An empty backend in the container view (rebob sub-bob) is a node too. Rejected: making every backend a group (import-arch.sh did that), because backends in the system view would all become empty frames.
+- Empty document (nothing besides the system node, e.g. local-docker): drawio with only the frame and title, `warning: nothing to lay out`, exit 0.
+- Relations the engine would reject (self-loop, member → own ancestor group, unknown endpoint, a second `contains` parent) are dropped or kept-first, with a stderr warning.
+- `component` and `deployment` are removed from the CLI only. Their library code stays because the uid tests (mx8pk) run extraction through it.
+- Golden fixtures were generated once from c43-router@48b6428 (`packages/c43-layout/tests/gen/gen-goldens.ts`). Engine JSON and drawio XML are bit-equal to the TS output on all 5 cases.
+
+## Implementation (abstract)
+
+- `packages/c43-layout`: one Rust module per TS module (normalize, groups, geom, skeleton, place, ports, check, tracks, route, lanes, layout, repair, hier, engine). JS semantics kept explicitly: insertion-ordered maps/sets, stable sorts, `Math.round`, float summation order, and exact float parsing (serde_json `float_roundtrip`).
+- Text-dependent sizes enter as unit hints (`sizes.node`, `sizes.groupTitle`, `sizes.titleHeight`). The header band, label wrapping, fonts and pixel scale live in `c43::drawio`.
+- `c43::drawio`: `graph` (C4 doc → graph + hints), `text` (width estimate and wrapping), `header`, `export` (drawio XML), `render`/`render_layout`.
+- `c43 system|container --drawio`: XML on stdout, warnings and violations on stderr.
