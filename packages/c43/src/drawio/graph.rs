@@ -43,6 +43,17 @@ pub fn build(doc: &C4Document) -> Built {
             warnings.push(format!("dropped {} contains {}: unknown node {missing}", r.start, r.end));
             continue;
         }
+        let mut up = Some(r.start.as_str());
+        let cycle = std::iter::from_fn(|| {
+            let cur = up?;
+            up = parent.get(cur).copied();
+            Some(cur)
+        })
+        .any(|x| x == r.end);
+        if cycle {
+            warnings.push(format!("dropped {} contains {}: containment cycle", r.start, r.end));
+            continue;
+        }
         match parent.get(r.end.as_str()) {
             Some(p) => warnings.push(format!("{} contained by both {p} and {}, keeping {p}", r.end, r.start)),
             None => {

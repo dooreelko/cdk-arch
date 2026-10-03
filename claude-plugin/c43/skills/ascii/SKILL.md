@@ -4,6 +4,8 @@ description: Always use when user asks to create, generate, or build a c4 or c43
 
 # C43 ascii diagram skill
 
+> **Outdated (moth t1yse):** `c43 layout`, `c43 component` and `c43 deployment` no longer exist. Laid-out diagrams come from `c43 system|container --drawio <path>` (drawio XML on stdout, warnings on stderr).
+
 Generate C43 architecture diagrams.
 Provided "$ARGUMENTS" is either 
 - kind of diagram the user wants to generate (system, component, etc). In this case run `c43 <kind> --ascii .`

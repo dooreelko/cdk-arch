@@ -88,3 +88,14 @@ fn labels_only_with_several_kinds() {
     let b = build(&doc_from_json(&json!({"nodes": nodes, "relations": [rel("a", "uses", "b"), rel("b", "uses", "c")]})));
     assert!(b.graph.edges.iter().all(|e| e.label.is_none()));
 }
+
+#[test]
+fn containment_cycles_are_dropped_with_a_warning() {
+    let doc = doc_from_json(&json!({
+        "nodes": [node("a", "x"), node("b", "x"), node("c", "x"), node("d", "x")],
+        "relations": [rel("a", "contains", "b"), rel("b", "contains", "a"), rel("b", "contains", "c"), rel("c", "uses", "d"), rel("d", "contains", "d")]
+    }));
+    let b = build(&doc);
+    assert_eq!(b.warnings, ["dropped b contains a: containment cycle", "dropped d contains d: containment cycle"]);
+    assert!(c43::drawio::render(&doc).is_ok());
+}
