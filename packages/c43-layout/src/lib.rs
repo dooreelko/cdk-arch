@@ -4,6 +4,7 @@ pub mod geom;
 pub mod groups;
 pub mod js;
 pub mod lanes;
+pub mod layout;
 pub mod model;
 pub mod normalize;
 pub mod place;
