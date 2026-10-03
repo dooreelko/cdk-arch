@@ -1,0 +1,1 @@
+Rewrite claude-plugin/c43 skill (skills/ascii incl. layout.py/autolayout.py, uat) for the new engine: drop the cell-based layout flow, document `c43 system|container --drawio`. Needs more than a rename - scope to be discussed.
