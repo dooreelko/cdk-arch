@@ -1,0 +1,80 @@
+{
+  "title": "groups",
+  "description": "Synthetic nested-groups case: group endpoints, nesting, an empty group",
+  "groups": [
+    {
+      "id": "api",
+      "label": "api service"
+    },
+    {
+      "id": "core",
+      "label": "core",
+      "group": "api"
+    },
+    {
+      "id": "store",
+      "label": "storage"
+    },
+    {
+      "id": "spare",
+      "label": "spare"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "user",
+      "label": "user"
+    },
+    {
+      "id": "api/handler",
+      "label": "handler",
+      "group": "api"
+    },
+    {
+      "id": "api/core/logic",
+      "label": "logic",
+      "group": "core"
+    },
+    {
+      "id": "api/core/cache",
+      "label": "cache",
+      "group": "core"
+    },
+    {
+      "id": "store/db",
+      "label": "db",
+      "group": "store"
+    },
+    {
+      "id": "store/blob",
+      "label": "blob",
+      "group": "store"
+    }
+  ],
+  "edges": [
+    {
+      "from": "user",
+      "to": "api"
+    },
+    {
+      "from": "api",
+      "to": "api/handler"
+    },
+    {
+      "from": "api/handler",
+      "to": "api/core/logic"
+    },
+    {
+      "from": "api/core/logic",
+      "to": "api/core/cache"
+    },
+    {
+      "from": "api/core/logic",
+      "to": "store/db"
+    },
+    {
+      "from": "api",
+      "to": "store"
+    }
+  ]
+}

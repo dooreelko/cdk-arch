@@ -1,0 +1,31 @@
+{
+  "kinds": [
+    {
+      "from": "CF",
+      "to": "R53",
+      "kind": "nf"
+    },
+    {
+      "from": "CW",
+      "to": "SES",
+      "kind": "nf"
+    }
+  ],
+  "sizes": {
+    "node": {
+      "U": 3,
+      "CF": 5,
+      "R53": 4,
+      "AGW": 4,
+      "LA": 4,
+      "LB": 4,
+      "LC": 4,
+      "ATH": 4,
+      "S3": 2,
+      "CW": 5,
+      "SES": 3
+    },
+    "groupTitle": {},
+    "titleHeight": 1
+  }
+}

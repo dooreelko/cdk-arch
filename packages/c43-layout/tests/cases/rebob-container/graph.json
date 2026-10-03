@@ -1,0 +1,286 @@
+{
+  "title": "rebob",
+  "groups": [
+    {
+      "id": "backend:dispatcher",
+      "label": "dispatcher"
+    },
+    {
+      "id": "backend:chat",
+      "label": "chat"
+    },
+    {
+      "id": "backend:queue",
+      "label": "queue"
+    },
+    {
+      "id": "backend:memory",
+      "label": "memory"
+    },
+    {
+      "id": "backend:event-storage",
+      "label": "event-storage"
+    },
+    {
+      "id": "backend:sub-bob",
+      "label": "sub-bob"
+    },
+    {
+      "id": "backend:consolidator",
+      "label": "consolidator"
+    },
+    {
+      "id": "backend:llm",
+      "label": "llm"
+    },
+    {
+      "id": "backend:llm-legacy",
+      "label": "llm-legacy"
+    },
+    {
+      "id": "backend:bob-registry",
+      "label": "bob-registry"
+    },
+    {
+      "id": "backend:sub-bob-manager",
+      "label": "sub-bob-manager"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "@bob/sub-bob-bootstrap",
+      "label": "@bob/sub-bob-bootstrap"
+    },
+    {
+      "id": "@bob/frontend",
+      "label": "@bob/frontend"
+    },
+    {
+      "id": "dispatcher/runtime",
+      "label": "runtime",
+      "group": "backend:dispatcher"
+    },
+    {
+      "id": "dispatcher/dispatcher",
+      "label": "dispatcher",
+      "group": "backend:dispatcher"
+    },
+    {
+      "id": "dispatcher/dispatcher-mcp",
+      "label": "dispatcher-mcp",
+      "group": "backend:dispatcher"
+    },
+    {
+      "id": "chat/bus",
+      "label": "bus",
+      "group": "backend:chat"
+    },
+    {
+      "id": "chat/chat",
+      "label": "chat",
+      "group": "backend:chat"
+    },
+    {
+      "id": "chat/chat-mcp",
+      "label": "chat-mcp",
+      "group": "backend:chat"
+    },
+    {
+      "id": "queue/task-queue",
+      "label": "task-queue",
+      "group": "backend:queue"
+    },
+    {
+      "id": "memory/graph",
+      "label": "graph",
+      "group": "backend:memory"
+    },
+    {
+      "id": "memory/memory",
+      "label": "memory",
+      "group": "backend:memory"
+    },
+    {
+      "id": "memory/memory-mcp",
+      "label": "memory-mcp",
+      "group": "backend:memory"
+    },
+    {
+      "id": "event-storage/event-storage",
+      "label": "event-storage",
+      "group": "backend:event-storage"
+    },
+    {
+      "id": "consolidator/consolidator-api",
+      "label": "consolidator-api",
+      "group": "backend:consolidator"
+    },
+    {
+      "id": "llm/llm",
+      "label": "llm",
+      "group": "backend:llm"
+    },
+    {
+      "id": "llm-legacy/llm",
+      "label": "llm",
+      "group": "backend:llm-legacy"
+    },
+    {
+      "id": "bob-registry/runtime",
+      "label": "runtime",
+      "group": "backend:bob-registry"
+    },
+    {
+      "id": "bob-registry/registry",
+      "label": "registry",
+      "group": "backend:bob-registry"
+    },
+    {
+      "id": "bob-registry/registry-mcp",
+      "label": "registry-mcp",
+      "group": "backend:bob-registry"
+    },
+    {
+      "id": "sub-bob-manager/runtime",
+      "label": "runtime",
+      "group": "backend:sub-bob-manager"
+    },
+    {
+      "id": "sub-bob-manager/bob-queue",
+      "label": "bob-queue",
+      "group": "backend:sub-bob-manager"
+    },
+    {
+      "id": "sub-bob-manager/manager",
+      "label": "manager",
+      "group": "backend:sub-bob-manager"
+    },
+    {
+      "id": "sub-bob-manager/manager-mcp",
+      "label": "manager-mcp",
+      "group": "backend:sub-bob-manager"
+    }
+  ],
+  "edges": [
+    {
+      "from": "backend:dispatcher",
+      "to": "backend:sub-bob-manager"
+    },
+    {
+      "from": "backend:chat",
+      "to": "backend:event-storage"
+    },
+    {
+      "from": "backend:memory",
+      "to": "backend:llm"
+    },
+    {
+      "from": "backend:memory",
+      "to": "backend:queue"
+    },
+    {
+      "from": "@bob/sub-bob-bootstrap",
+      "to": "backend:memory"
+    },
+    {
+      "from": "@bob/frontend",
+      "to": "backend:bob-registry"
+    },
+    {
+      "from": "@bob/frontend",
+      "to": "backend:chat"
+    },
+    {
+      "from": "@bob/frontend",
+      "to": "backend:memory"
+    },
+    {
+      "from": "@bob/frontend",
+      "to": "backend:sub-bob-manager"
+    },
+    {
+      "from": "backend:consolidator",
+      "to": "backend:llm"
+    },
+    {
+      "from": "backend:consolidator",
+      "to": "backend:memory"
+    },
+    {
+      "from": "backend:consolidator",
+      "to": "backend:queue"
+    },
+    {
+      "from": "backend:sub-bob-manager",
+      "to": "backend:chat"
+    },
+    {
+      "from": "backend:sub-bob-manager",
+      "to": "backend:memory"
+    },
+    {
+      "from": "dispatcher/dispatcher",
+      "to": "dispatcher/runtime"
+    },
+    {
+      "from": "backend:dispatcher",
+      "to": "sub-bob-manager/manager"
+    },
+    {
+      "from": "chat/chat",
+      "to": "chat/bus"
+    },
+    {
+      "from": "memory/memory",
+      "to": "memory/graph"
+    },
+    {
+      "from": "memory/memory",
+      "to": "queue/task-queue"
+    },
+    {
+      "from": "memory/memory",
+      "to": "llm/llm"
+    },
+    {
+      "from": "backend:consolidator",
+      "to": "memory/graph"
+    },
+    {
+      "from": "backend:consolidator",
+      "to": "llm/llm"
+    },
+    {
+      "from": "backend:consolidator",
+      "to": "queue/task-queue"
+    },
+    {
+      "from": "bob-registry/registry",
+      "to": "bob-registry/runtime"
+    },
+    {
+      "from": "sub-bob-manager/manager",
+      "to": "sub-bob-manager/bob-queue"
+    },
+    {
+      "from": "sub-bob-manager/manager",
+      "to": "sub-bob-manager/runtime"
+    },
+    {
+      "from": "sub-bob-manager/manager",
+      "to": "chat/chat"
+    },
+    {
+      "from": "sub-bob-manager/manager",
+      "to": "memory/memory"
+    },
+    {
+      "from": "backend:sub-bob-manager",
+      "to": "sub-bob-manager/bob-queue"
+    },
+    {
+      "from": "backend:sub-bob-manager",
+      "to": "sub-bob-manager/runtime"
+    }
+  ]
+}

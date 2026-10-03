@@ -1,0 +1,44 @@
+{
+  "kinds": [],
+  "sizes": {
+    "node": {
+      "@bob/sub-bob-bootstrap": 4,
+      "@bob/frontend": 4,
+      "dispatcher/runtime": 4,
+      "dispatcher/dispatcher": 5,
+      "dispatcher/dispatcher-mcp": 5,
+      "chat/bus": 3,
+      "chat/chat": 3,
+      "chat/chat-mcp": 3,
+      "queue/task-queue": 3,
+      "memory/graph": 3,
+      "memory/memory": 4,
+      "memory/memory-mcp": 4,
+      "event-storage/event-storage": 4,
+      "consolidator/consolidator-api": 6,
+      "llm/llm": 3,
+      "llm-legacy/llm": 3,
+      "bob-registry/runtime": 4,
+      "bob-registry/registry": 4,
+      "bob-registry/registry-mcp": 4,
+      "sub-bob-manager/runtime": 4,
+      "sub-bob-manager/bob-queue": 3,
+      "sub-bob-manager/manager": 4,
+      "sub-bob-manager/manager-mcp": 5
+    },
+    "groupTitle": {
+      "backend:dispatcher": 3.6528000000000005,
+      "backend:chat": 1.6727999999999998,
+      "backend:queue": 2.214,
+      "backend:memory": 2.8608000000000002,
+      "backend:event-storage": 4.801200000000001,
+      "backend:sub-bob": 2.9796000000000005,
+      "backend:consolidator": 4.26,
+      "backend:llm": 1.3428,
+      "backend:llm-legacy": 3.8640000000000008,
+      "backend:bob-registry": 4.26,
+      "backend:sub-bob-manager": 6.094799999999999
+    },
+    "titleHeight": 1
+  }
+}

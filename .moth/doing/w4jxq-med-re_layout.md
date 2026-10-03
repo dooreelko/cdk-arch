@@ -15,7 +15,7 @@ there's a new layout engine at ../c43-router we
   - graph: optional title, groups (id, label, parent), nodes (id, label, parent), edges (from, to, optional label). Containment is a tree. Edges cross it and may end on groups.
   - hints, in separate parts:
     - a) relative placement suggestions: `left-of right-of above below same-row same-col`. They may cross group boundaries, since nodes are aligned globally anyway (e.g. a server in a cluster group next to a db outside it). Hints are suggestions. At most one may carry a priority flag, which wins over the others (e.g. the start node). More than one priority → error.
-    - b) kind: `a->b is nf`, default data. The lib has no other domain knowledge beyond "data flows left→right, nf flows up→down". Node kind is derived inside the lib: a node is nf ⇔ no data edge touches it.
+    - b) kind: `a->b is nf`, default data. The lib has no other domain knowledge beyond "data flows left→right, nf flows up→down". Node kind is derived inside the lib: a node is nf ⇔ it has edges and none of them is data (isolated nodes are data, as in the router).
     - c) sizes in abstract cell units (no text in the engine): min node size per node (engine uses the global max, keeping equal squares), min group title width, header height.
   - Unknown id in hints → error.
 - Output: `{version, layout, metrics}` (violations, crossings, soft scores, ignored placement hints).

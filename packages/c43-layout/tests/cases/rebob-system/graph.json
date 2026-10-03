@@ -1,0 +1,113 @@
+{
+  "title": "rebob",
+  "description": "System architecture for the rebob platform",
+  "groups": [],
+  "nodes": [
+    {
+      "id": "frontend",
+      "label": "@bob/frontend"
+    },
+    {
+      "id": "bootstrap",
+      "label": "@bob/sub-bob-bootstrap"
+    },
+    {
+      "id": "dispatcher",
+      "label": "dispatcher"
+    },
+    {
+      "id": "sub_bob_manager",
+      "label": "sub-bob-manager"
+    },
+    {
+      "id": "consolidator",
+      "label": "consolidator"
+    },
+    {
+      "id": "chat",
+      "label": "chat"
+    },
+    {
+      "id": "memory",
+      "label": "memory"
+    },
+    {
+      "id": "sub_bob",
+      "label": "sub-bob"
+    },
+    {
+      "id": "bob_registry",
+      "label": "bob-registry"
+    },
+    {
+      "id": "event_storage",
+      "label": "event-storage"
+    },
+    {
+      "id": "llm",
+      "label": "llm"
+    },
+    {
+      "id": "queue",
+      "label": "queue"
+    }
+  ],
+  "edges": [
+    {
+      "from": "dispatcher",
+      "to": "sub_bob_manager"
+    },
+    {
+      "from": "chat",
+      "to": "event_storage"
+    },
+    {
+      "from": "memory",
+      "to": "llm"
+    },
+    {
+      "from": "memory",
+      "to": "queue"
+    },
+    {
+      "from": "consolidator",
+      "to": "llm"
+    },
+    {
+      "from": "consolidator",
+      "to": "memory"
+    },
+    {
+      "from": "consolidator",
+      "to": "queue"
+    },
+    {
+      "from": "sub_bob_manager",
+      "to": "chat"
+    },
+    {
+      "from": "sub_bob_manager",
+      "to": "memory"
+    },
+    {
+      "from": "bootstrap",
+      "to": "memory"
+    },
+    {
+      "from": "frontend",
+      "to": "bob_registry"
+    },
+    {
+      "from": "frontend",
+      "to": "chat"
+    },
+    {
+      "from": "frontend",
+      "to": "memory"
+    },
+    {
+      "from": "frontend",
+      "to": "sub_bob_manager"
+    }
+  ]
+}

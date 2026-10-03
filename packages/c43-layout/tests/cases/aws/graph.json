@@ -1,0 +1,101 @@
+{
+  "title": "Event-driven order processing on AWS",
+  "description": "Customers reach the storefront through CloudFront, which serves static assets and forwards API calls to API Gateway. Three Lambda functions handle orders, payments and reporting; order and payment data land in S3, while reporting queries run through Athena over the same bucket. Route53 provides DNS and the TLS certificate for the distribution. A CloudWatch alarm watches the Lambdas and, together with the order Lambda, sends notification emails through SES.",
+  "groups": [],
+  "nodes": [
+    {
+      "id": "U",
+      "label": "User"
+    },
+    {
+      "id": "CF",
+      "label": "CloudFront"
+    },
+    {
+      "id": "R53",
+      "label": "Route53"
+    },
+    {
+      "id": "AGW",
+      "label": "API Gateway"
+    },
+    {
+      "id": "LA",
+      "label": "Lambda A"
+    },
+    {
+      "id": "LB",
+      "label": "Lambda B"
+    },
+    {
+      "id": "LC",
+      "label": "Lambda C"
+    },
+    {
+      "id": "ATH",
+      "label": "Athena"
+    },
+    {
+      "id": "S3",
+      "label": "S3"
+    },
+    {
+      "id": "CW",
+      "label": "CloudWatch alarm"
+    },
+    {
+      "id": "SES",
+      "label": "SES"
+    }
+  ],
+  "edges": [
+    {
+      "from": "U",
+      "to": "CF"
+    },
+    {
+      "from": "CF",
+      "to": "AGW"
+    },
+    {
+      "from": "CF",
+      "to": "R53"
+    },
+    {
+      "from": "AGW",
+      "to": "LA"
+    },
+    {
+      "from": "AGW",
+      "to": "LB"
+    },
+    {
+      "from": "AGW",
+      "to": "LC"
+    },
+    {
+      "from": "LA",
+      "to": "S3"
+    },
+    {
+      "from": "LB",
+      "to": "S3"
+    },
+    {
+      "from": "LC",
+      "to": "ATH"
+    },
+    {
+      "from": "ATH",
+      "to": "S3"
+    },
+    {
+      "from": "LA",
+      "to": "SES"
+    },
+    {
+      "from": "CW",
+      "to": "SES"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "kinds": [],
+  "sizes": {
+    "node": {
+      "user": 3,
+      "api/handler": 4,
+      "api/core/logic": 3,
+      "api/core/cache": 3,
+      "store/db": 2,
+      "store/blob": 3
+    },
+    "groupTitle": {
+      "api": 3.8771999999999998,
+      "core": 1.6728,
+      "store": 2.6628000000000003,
+      "spare": 2.0555999999999996
+    },
+    "titleHeight": 1
+  }
+}

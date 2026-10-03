@@ -1,0 +1,21 @@
+{
+  "kinds": [],
+  "sizes": {
+    "node": {
+      "frontend": 4,
+      "bootstrap": 4,
+      "dispatcher": 5,
+      "sub_bob_manager": 4,
+      "consolidator": 5,
+      "chat": 3,
+      "memory": 4,
+      "sub_bob": 3,
+      "bob_registry": 4,
+      "event_storage": 4,
+      "llm": 3,
+      "queue": 3
+    },
+    "groupTitle": {},
+    "titleHeight": 1
+  }
+}

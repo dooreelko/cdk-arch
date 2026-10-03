@@ -1,0 +1,700 @@
+{
+  "nodes": [
+    {
+      "uid": "system:rebob",
+      "name": "rebob",
+      "type": "system",
+      "attributes": {}
+    },
+    {
+      "uid": "backend:dispatcher",
+      "name": "dispatcher",
+      "type": "backend",
+      "attributes": {
+        "project": "@bob/dispatcher-arch",
+        "file": "packages/dispatcher/arch/src/architecture.ts",
+        "variable": "dispatcherArch",
+        "kind": "architecture"
+      }
+    },
+    {
+      "uid": "backend:chat",
+      "name": "chat",
+      "type": "backend",
+      "attributes": {
+        "project": "@bob/chat-arch",
+        "file": "packages/chat/arch/src/architecture.ts",
+        "variable": "chatArch",
+        "kind": "architecture"
+      }
+    },
+    {
+      "uid": "backend:queue",
+      "name": "queue",
+      "type": "backend",
+      "attributes": {
+        "project": "@bob/queue-arch",
+        "file": "packages/queue/arch/src/index.ts",
+        "variable": "queueArch",
+        "kind": "architecture"
+      }
+    },
+    {
+      "uid": "backend:memory",
+      "name": "memory",
+      "type": "backend",
+      "attributes": {
+        "project": "@bob/memory-arch",
+        "file": "packages/memory/arch/src/architecture.ts",
+        "variable": "memoryArch",
+        "kind": "architecture"
+      }
+    },
+    {
+      "uid": "backend:event-storage",
+      "name": "event-storage",
+      "type": "backend",
+      "attributes": {
+        "project": "@bob/event-storage-arch",
+        "file": "packages/event-storage/arch/src/architecture.ts",
+        "variable": "eventStorageArch",
+        "kind": "architecture"
+      }
+    },
+    {
+      "uid": "backend:sub-bob",
+      "name": "sub-bob",
+      "type": "backend",
+      "attributes": {
+        "project": "@bob/sub-bob-arch",
+        "file": "packages/sub-bob/arch/src/architecture.ts",
+        "variable": "subBobArch",
+        "kind": "architecture"
+      }
+    },
+    {
+      "uid": "backend:consolidator",
+      "name": "consolidator",
+      "type": "backend",
+      "attributes": {
+        "project": "@bob/memory-consolidator-arch",
+        "file": "packages/consolidator/arch/src/architecture.ts",
+        "variable": "consolidatorArch",
+        "kind": "architecture"
+      }
+    },
+    {
+      "uid": "backend:llm",
+      "name": "llm",
+      "type": "backend",
+      "attributes": {
+        "project": "@bob/llm-arch",
+        "file": "packages/llm/arch/src/architecture.ts",
+        "variable": "llmArch",
+        "kind": "architecture"
+      }
+    },
+    {
+      "uid": "backend:llm-legacy",
+      "name": "llm-legacy",
+      "type": "backend",
+      "attributes": {
+        "project": "@bob/llm-server-docker",
+        "file": "packages/llm/server-docker/src/architecture.ts",
+        "variable": "llmArch",
+        "kind": "architecture"
+      }
+    },
+    {
+      "uid": "backend:bob-registry",
+      "name": "bob-registry",
+      "type": "backend",
+      "attributes": {
+        "project": "@bob/registry-arch",
+        "file": "packages/bob-registry/arch/src/architecture.ts",
+        "variable": "registryArch",
+        "kind": "architecture"
+      }
+    },
+    {
+      "uid": "backend:sub-bob-manager",
+      "name": "sub-bob-manager",
+      "type": "backend",
+      "attributes": {
+        "project": "@bob/manager-arch",
+        "file": "packages/sub-bob-manager/arch/src/architecture.ts",
+        "variable": "managerArch",
+        "kind": "architecture"
+      }
+    },
+    {
+      "uid": "@bob/sub-bob-bootstrap",
+      "name": "@bob/sub-bob-bootstrap",
+      "type": "client",
+      "attributes": {
+        "project": "@bob/sub-bob-bootstrap"
+      }
+    },
+    {
+      "uid": "@bob/frontend",
+      "name": "@bob/frontend",
+      "type": "frontend",
+      "attributes": {
+        "project": "@bob/frontend"
+      }
+    },
+    {
+      "uid": "dispatcher/runtime",
+      "name": "runtime",
+      "type": "dispatcherruntime",
+      "attributes": {
+        "project": "@bob/dispatcher-arch",
+        "file": "packages/dispatcher/arch/src/architecture.ts",
+        "variable": "dispatcherRuntime",
+        "kind": "apicontainer"
+      }
+    },
+    {
+      "uid": "dispatcher/dispatcher",
+      "name": "dispatcher",
+      "type": "apicontainer",
+      "attributes": {
+        "project": "@bob/dispatcher-arch",
+        "file": "packages/dispatcher/arch/src/architecture.ts",
+        "variable": "dispatcherApiContainer",
+        "kind": "apicontainer"
+      }
+    },
+    {
+      "uid": "dispatcher/dispatcher-mcp",
+      "name": "dispatcher-mcp",
+      "type": "mcpcontainer",
+      "attributes": {
+        "project": "@bob/dispatcher-arch",
+        "file": "packages/dispatcher/arch/src/architecture.ts",
+        "variable": "dispatcherMcpContainer",
+        "kind": "construct"
+      }
+    },
+    {
+      "uid": "chat/bus",
+      "name": "bus",
+      "type": "messagebus",
+      "attributes": {
+        "project": "@bob/chat-arch",
+        "file": "packages/chat/arch/src/architecture.ts",
+        "variable": "messageBus",
+        "kind": "apicontainer"
+      }
+    },
+    {
+      "uid": "chat/chat",
+      "name": "chat",
+      "type": "apicontainer",
+      "attributes": {
+        "project": "@bob/chat-arch",
+        "file": "packages/chat/arch/src/architecture.ts",
+        "variable": "chatApiContainer",
+        "kind": "apicontainer"
+      }
+    },
+    {
+      "uid": "chat/chat-mcp",
+      "name": "chat-mcp",
+      "type": "mcpcontainer",
+      "attributes": {
+        "project": "@bob/chat-arch",
+        "file": "packages/chat/arch/src/architecture.ts",
+        "variable": "chatMcpContainer",
+        "kind": "construct"
+      }
+    },
+    {
+      "uid": "queue/task-queue",
+      "name": "task-queue",
+      "type": "taskqueue",
+      "attributes": {
+        "project": "@bob/queue-arch",
+        "file": "packages/queue/arch/src/index.ts",
+        "variable": "taskQueue",
+        "kind": "apicontainer"
+      }
+    },
+    {
+      "uid": "memory/graph",
+      "name": "graph",
+      "type": "graph",
+      "attributes": {
+        "project": "@bob/memory-arch",
+        "file": "packages/memory/arch/src/architecture.ts",
+        "variable": "graph",
+        "kind": "apicontainer"
+      }
+    },
+    {
+      "uid": "memory/memory",
+      "name": "memory",
+      "type": "apicontainer",
+      "attributes": {
+        "project": "@bob/memory-arch",
+        "file": "packages/memory/arch/src/architecture.ts",
+        "variable": "memoryApiContainer",
+        "kind": "apicontainer"
+      }
+    },
+    {
+      "uid": "memory/memory-mcp",
+      "name": "memory-mcp",
+      "type": "mcpcontainer",
+      "attributes": {
+        "project": "@bob/memory-arch",
+        "file": "packages/memory/arch/src/architecture.ts",
+        "variable": "memoryMcpContainer",
+        "kind": "construct"
+      }
+    },
+    {
+      "uid": "event-storage/event-storage",
+      "name": "event-storage",
+      "type": "apicontainer",
+      "attributes": {
+        "project": "@bob/event-storage-arch",
+        "file": "packages/event-storage/arch/src/architecture.ts",
+        "variable": "eventStorageApiContainer",
+        "kind": "apicontainer"
+      }
+    },
+    {
+      "uid": "consolidator/consolidator-api",
+      "name": "consolidator-api",
+      "type": "consolidatorapi",
+      "attributes": {
+        "project": "@bob/memory-consolidator-arch",
+        "file": "packages/consolidator/arch/src/architecture.ts",
+        "variable": "consolidatorApi",
+        "kind": "apicontainer"
+      }
+    },
+    {
+      "uid": "llm/llm",
+      "name": "llm",
+      "type": "llmgateway",
+      "attributes": {
+        "project": "@bob/llm-arch",
+        "file": "packages/llm/arch/src/architecture.ts",
+        "variable": "llm",
+        "kind": "apicontainer"
+      }
+    },
+    {
+      "uid": "llm-legacy/llm",
+      "name": "llm",
+      "type": "routedllm",
+      "attributes": {
+        "project": "@bob/llm-server-docker",
+        "file": "packages/llm/server-docker/src/architecture.ts",
+        "variable": "llm",
+        "kind": "apicontainer"
+      }
+    },
+    {
+      "uid": "bob-registry/runtime",
+      "name": "runtime",
+      "type": "registryruntime",
+      "attributes": {
+        "project": "@bob/registry-arch",
+        "file": "packages/bob-registry/arch/src/architecture.ts",
+        "variable": "registryRuntime",
+        "kind": "apicontainer"
+      }
+    },
+    {
+      "uid": "bob-registry/registry",
+      "name": "registry",
+      "type": "apicontainer",
+      "attributes": {
+        "project": "@bob/registry-arch",
+        "file": "packages/bob-registry/arch/src/architecture.ts",
+        "variable": "registryApiContainer",
+        "kind": "apicontainer"
+      }
+    },
+    {
+      "uid": "bob-registry/registry-mcp",
+      "name": "registry-mcp",
+      "type": "mcpcontainer",
+      "attributes": {
+        "project": "@bob/registry-arch",
+        "file": "packages/bob-registry/arch/src/architecture.ts",
+        "variable": "registryMcpContainer",
+        "kind": "construct"
+      }
+    },
+    {
+      "uid": "sub-bob-manager/runtime",
+      "name": "runtime",
+      "type": "managerruntime",
+      "attributes": {
+        "project": "@bob/manager-arch",
+        "file": "packages/sub-bob-manager/arch/src/architecture.ts",
+        "variable": "managerRuntime",
+        "kind": "apicontainer"
+      }
+    },
+    {
+      "uid": "sub-bob-manager/bob-queue",
+      "name": "bob-queue",
+      "type": "bobqueue",
+      "attributes": {
+        "project": "@bob/manager-arch",
+        "file": "packages/sub-bob-manager/arch/src/architecture.ts",
+        "variable": "bobQueue",
+        "kind": "apicontainer"
+      }
+    },
+    {
+      "uid": "sub-bob-manager/manager",
+      "name": "manager",
+      "type": "apicontainer",
+      "attributes": {
+        "project": "@bob/manager-arch",
+        "file": "packages/sub-bob-manager/arch/src/architecture.ts",
+        "variable": "managerApiContainer",
+        "kind": "apicontainer"
+      }
+    },
+    {
+      "uid": "sub-bob-manager/manager-mcp",
+      "name": "manager-mcp",
+      "type": "mcpcontainer",
+      "attributes": {
+        "project": "@bob/manager-arch",
+        "file": "packages/sub-bob-manager/arch/src/architecture.ts",
+        "variable": "managerMcpContainer",
+        "kind": "construct"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "start": "system:rebob",
+      "is": "contains",
+      "end": "backend:dispatcher"
+    },
+    {
+      "start": "system:rebob",
+      "is": "contains",
+      "end": "backend:chat"
+    },
+    {
+      "start": "system:rebob",
+      "is": "contains",
+      "end": "backend:queue"
+    },
+    {
+      "start": "system:rebob",
+      "is": "contains",
+      "end": "backend:memory"
+    },
+    {
+      "start": "system:rebob",
+      "is": "contains",
+      "end": "backend:event-storage"
+    },
+    {
+      "start": "system:rebob",
+      "is": "contains",
+      "end": "backend:sub-bob"
+    },
+    {
+      "start": "system:rebob",
+      "is": "contains",
+      "end": "backend:consolidator"
+    },
+    {
+      "start": "system:rebob",
+      "is": "contains",
+      "end": "backend:llm"
+    },
+    {
+      "start": "system:rebob",
+      "is": "contains",
+      "end": "backend:llm-legacy"
+    },
+    {
+      "start": "system:rebob",
+      "is": "contains",
+      "end": "backend:bob-registry"
+    },
+    {
+      "start": "system:rebob",
+      "is": "contains",
+      "end": "backend:sub-bob-manager"
+    },
+    {
+      "start": "backend:dispatcher",
+      "is": "uses",
+      "end": "backend:sub-bob-manager"
+    },
+    {
+      "start": "backend:chat",
+      "is": "uses",
+      "end": "backend:event-storage"
+    },
+    {
+      "start": "backend:memory",
+      "is": "uses",
+      "end": "backend:llm"
+    },
+    {
+      "start": "backend:memory",
+      "is": "uses",
+      "end": "backend:queue"
+    },
+    {
+      "start": "system:rebob",
+      "is": "contains",
+      "end": "@bob/sub-bob-bootstrap"
+    },
+    {
+      "start": "@bob/sub-bob-bootstrap",
+      "is": "uses",
+      "end": "backend:memory"
+    },
+    {
+      "start": "system:rebob",
+      "is": "contains",
+      "end": "@bob/frontend"
+    },
+    {
+      "start": "@bob/frontend",
+      "is": "uses",
+      "end": "backend:bob-registry"
+    },
+    {
+      "start": "@bob/frontend",
+      "is": "uses",
+      "end": "backend:chat"
+    },
+    {
+      "start": "@bob/frontend",
+      "is": "uses",
+      "end": "backend:memory"
+    },
+    {
+      "start": "@bob/frontend",
+      "is": "uses",
+      "end": "backend:sub-bob-manager"
+    },
+    {
+      "start": "backend:consolidator",
+      "is": "uses",
+      "end": "backend:llm"
+    },
+    {
+      "start": "backend:consolidator",
+      "is": "uses",
+      "end": "backend:memory"
+    },
+    {
+      "start": "backend:consolidator",
+      "is": "uses",
+      "end": "backend:queue"
+    },
+    {
+      "start": "backend:sub-bob-manager",
+      "is": "uses",
+      "end": "backend:chat"
+    },
+    {
+      "start": "backend:sub-bob-manager",
+      "is": "uses",
+      "end": "backend:memory"
+    },
+    {
+      "start": "backend:dispatcher",
+      "is": "contains",
+      "end": "dispatcher/runtime"
+    },
+    {
+      "start": "backend:dispatcher",
+      "is": "contains",
+      "end": "dispatcher/dispatcher"
+    },
+    {
+      "start": "backend:dispatcher",
+      "is": "contains",
+      "end": "dispatcher/dispatcher-mcp"
+    },
+    {
+      "start": "backend:chat",
+      "is": "contains",
+      "end": "chat/bus"
+    },
+    {
+      "start": "backend:chat",
+      "is": "contains",
+      "end": "chat/chat"
+    },
+    {
+      "start": "backend:chat",
+      "is": "contains",
+      "end": "chat/chat-mcp"
+    },
+    {
+      "start": "backend:queue",
+      "is": "contains",
+      "end": "queue/task-queue"
+    },
+    {
+      "start": "backend:memory",
+      "is": "contains",
+      "end": "memory/graph"
+    },
+    {
+      "start": "backend:memory",
+      "is": "contains",
+      "end": "memory/memory"
+    },
+    {
+      "start": "backend:memory",
+      "is": "contains",
+      "end": "memory/memory-mcp"
+    },
+    {
+      "start": "backend:event-storage",
+      "is": "contains",
+      "end": "event-storage/event-storage"
+    },
+    {
+      "start": "backend:consolidator",
+      "is": "contains",
+      "end": "consolidator/consolidator-api"
+    },
+    {
+      "start": "backend:llm",
+      "is": "contains",
+      "end": "llm/llm"
+    },
+    {
+      "start": "backend:llm-legacy",
+      "is": "contains",
+      "end": "llm-legacy/llm"
+    },
+    {
+      "start": "backend:bob-registry",
+      "is": "contains",
+      "end": "bob-registry/runtime"
+    },
+    {
+      "start": "backend:bob-registry",
+      "is": "contains",
+      "end": "bob-registry/registry"
+    },
+    {
+      "start": "backend:bob-registry",
+      "is": "contains",
+      "end": "bob-registry/registry-mcp"
+    },
+    {
+      "start": "backend:sub-bob-manager",
+      "is": "contains",
+      "end": "sub-bob-manager/runtime"
+    },
+    {
+      "start": "backend:sub-bob-manager",
+      "is": "contains",
+      "end": "sub-bob-manager/bob-queue"
+    },
+    {
+      "start": "backend:sub-bob-manager",
+      "is": "contains",
+      "end": "sub-bob-manager/manager"
+    },
+    {
+      "start": "backend:sub-bob-manager",
+      "is": "contains",
+      "end": "sub-bob-manager/manager-mcp"
+    },
+    {
+      "start": "dispatcher/dispatcher",
+      "is": "uses",
+      "end": "dispatcher/runtime"
+    },
+    {
+      "start": "backend:dispatcher",
+      "is": "uses",
+      "end": "sub-bob-manager/manager"
+    },
+    {
+      "start": "chat/chat",
+      "is": "uses",
+      "end": "chat/bus"
+    },
+    {
+      "start": "memory/memory",
+      "is": "uses",
+      "end": "memory/graph"
+    },
+    {
+      "start": "memory/memory",
+      "is": "uses",
+      "end": "queue/task-queue"
+    },
+    {
+      "start": "memory/memory",
+      "is": "uses",
+      "end": "llm/llm"
+    },
+    {
+      "start": "backend:consolidator",
+      "is": "uses",
+      "end": "memory/graph"
+    },
+    {
+      "start": "backend:consolidator",
+      "is": "uses",
+      "end": "llm/llm"
+    },
+    {
+      "start": "backend:consolidator",
+      "is": "uses",
+      "end": "queue/task-queue"
+    },
+    {
+      "start": "bob-registry/registry",
+      "is": "uses",
+      "end": "bob-registry/runtime"
+    },
+    {
+      "start": "sub-bob-manager/manager",
+      "is": "uses",
+      "end": "sub-bob-manager/bob-queue"
+    },
+    {
+      "start": "sub-bob-manager/manager",
+      "is": "uses",
+      "end": "sub-bob-manager/runtime"
+    },
+    {
+      "start": "sub-bob-manager/manager",
+      "is": "uses",
+      "end": "chat/chat"
+    },
+    {
+      "start": "sub-bob-manager/manager",
+      "is": "uses",
+      "end": "memory/memory"
+    },
+    {
+      "start": "backend:sub-bob-manager",
+      "is": "uses",
+      "end": "sub-bob-manager/bob-queue"
+    },
+    {
+      "start": "backend:sub-bob-manager",
+      "is": "uses",
+      "end": "sub-bob-manager/runtime"
+    }
+  ]
+}

@@ -1,0 +1,436 @@
+{
+  "version": 1,
+  "layout": {
+    "S": 4,
+    "cols": 6,
+    "rows": 3,
+    "lanes": {
+      "v": [
+        5,
+        5,
+        3,
+        3,
+        7,
+        3,
+        5
+      ],
+      "h": [
+        9,
+        3,
+        7,
+        5
+      ]
+    },
+    "groups": [
+      {
+        "id": "api",
+        "label": "api service",
+        "depth": 0,
+        "box": {
+          "col0": 1,
+          "row0": 0,
+          "col1": 3,
+          "row1": 1
+        },
+        "x": 12.5,
+        "y": 1.5,
+        "w": 23,
+        "h": 20,
+        "title": {
+          "text": "api service",
+          "x": 13,
+          "y": 1.75,
+          "w": 4,
+          "h": 1.5
+        }
+      },
+      {
+        "id": "store",
+        "label": "storage",
+        "depth": 0,
+        "box": {
+          "col0": 4,
+          "row0": 0,
+          "col1": 5,
+          "row1": 1
+        },
+        "x": 37.5,
+        "y": 5.5,
+        "w": 14,
+        "h": 16,
+        "title": {
+          "text": "storage",
+          "x": 38,
+          "y": 5.75,
+          "w": 3,
+          "h": 1.5
+        }
+      },
+      {
+        "id": "spare",
+        "label": "spare",
+        "depth": 0,
+        "box": {
+          "col0": 0,
+          "row0": 2,
+          "col1": 0,
+          "row1": 2
+        },
+        "x": 3.5,
+        "y": 23.5,
+        "w": 7,
+        "h": 9,
+        "title": {
+          "text": "spare",
+          "x": 4,
+          "y": 23.75,
+          "w": 3,
+          "h": 1.5
+        }
+      },
+      {
+        "id": "core",
+        "label": "core",
+        "parent": "api",
+        "depth": 1,
+        "box": {
+          "col0": 2,
+          "row0": 0,
+          "col1": 3,
+          "row1": 0
+        },
+        "x": 19.5,
+        "y": 5.5,
+        "w": 14,
+        "h": 9,
+        "title": {
+          "text": "core",
+          "x": 20,
+          "y": 5.75,
+          "w": 2,
+          "h": 1.5
+        }
+      }
+    ],
+    "nodes": [
+      {
+        "id": "user",
+        "label": "user",
+        "kind": "data",
+        "col": 0,
+        "row": 0,
+        "x": 5,
+        "y": 9,
+        "size": 4
+      },
+      {
+        "id": "api/handler",
+        "label": "handler",
+        "kind": "data",
+        "col": 1,
+        "row": 0,
+        "x": 14,
+        "y": 9,
+        "size": 4,
+        "group": "api"
+      },
+      {
+        "id": "api/core/logic",
+        "label": "logic",
+        "kind": "data",
+        "col": 2,
+        "row": 0,
+        "x": 21,
+        "y": 9,
+        "size": 4,
+        "group": "core"
+      },
+      {
+        "id": "api/core/cache",
+        "label": "cache",
+        "kind": "data",
+        "col": 3,
+        "row": 0,
+        "x": 28,
+        "y": 9,
+        "size": 4,
+        "group": "core"
+      },
+      {
+        "id": "store/db",
+        "label": "db",
+        "kind": "data",
+        "col": 5,
+        "row": 0,
+        "x": 46,
+        "y": 9,
+        "size": 4,
+        "group": "store"
+      },
+      {
+        "id": "store/blob",
+        "label": "blob",
+        "kind": "data",
+        "col": 4,
+        "row": 1,
+        "x": 39,
+        "y": 16,
+        "size": 4,
+        "group": "store"
+      }
+    ],
+    "edges": [
+      {
+        "id": 0,
+        "from": "user",
+        "to": "api",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 9,
+          "y": 11
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 2,
+          "x": 12.5,
+          "y": 6.5
+        },
+        "points": [
+          {
+            "x": 9,
+            "y": 11
+          },
+          {
+            "x": 11.5,
+            "y": 11
+          },
+          {
+            "x": 11.5,
+            "y": 6.5
+          },
+          {
+            "x": 12.5,
+            "y": 6.5
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "from": "api",
+        "to": "api/handler",
+        "kind": "data",
+        "src": {
+          "side": "left",
+          "index": 1,
+          "count": 2,
+          "inner": true,
+          "x": 12.5,
+          "y": 16.5
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 14,
+          "y": 11
+        },
+        "points": [
+          {
+            "x": 12.5,
+            "y": 16.5
+          },
+          {
+            "x": 13.5,
+            "y": 16.5
+          },
+          {
+            "x": 13.5,
+            "y": 11
+          },
+          {
+            "x": 14,
+            "y": 11
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "from": "api/handler",
+        "to": "api/core/logic",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 18,
+          "y": 11
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 21,
+          "y": 11
+        },
+        "points": [
+          {
+            "x": 18,
+            "y": 11
+          },
+          {
+            "x": 21,
+            "y": 11
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "from": "api/core/logic",
+        "to": "api/core/cache",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 2,
+          "x": 25,
+          "y": 10
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 28,
+          "y": 11
+        },
+        "points": [
+          {
+            "x": 25,
+            "y": 10
+          },
+          {
+            "x": 26.5,
+            "y": 10
+          },
+          {
+            "x": 26.5,
+            "y": 11
+          },
+          {
+            "x": 28,
+            "y": 11
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "from": "api/core/logic",
+        "to": "store/db",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 1,
+          "count": 2,
+          "x": 25,
+          "y": 12
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 46,
+          "y": 11
+        },
+        "points": [
+          {
+            "x": 25,
+            "y": 12
+          },
+          {
+            "x": 26.5,
+            "y": 12
+          },
+          {
+            "x": 26.5,
+            "y": 15.5
+          },
+          {
+            "x": 44.5,
+            "y": 15.5
+          },
+          {
+            "x": 44.5,
+            "y": 11
+          },
+          {
+            "x": 46,
+            "y": 11
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "from": "api",
+        "to": "store",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 35.5,
+          "y": 11.5
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 37.5,
+          "y": 13.5
+        },
+        "points": [
+          {
+            "x": 35.5,
+            "y": 11.5
+          },
+          {
+            "x": 36.5,
+            "y": 11.5
+          },
+          {
+            "x": 36.5,
+            "y": 13.5
+          },
+          {
+            "x": 37.5,
+            "y": 13.5
+          }
+        ]
+      }
+    ],
+    "title": "groups",
+    "description": "Synthetic nested-groups case: group endpoints, nesting, an empty group",
+    "frame": {
+      "x": 0,
+      "y": 0,
+      "w": 55,
+      "h": 36
+    }
+  },
+  "metrics": {
+    "violations": [],
+    "crossings": 0,
+    "soft": {
+      "leftward": 0,
+      "centrality": 1.5,
+      "area": 18,
+      "aspect": 2,
+      "nfBottomShare": 1,
+      "length": 55,
+      "turns": 12,
+      "groupSides": 0
+    }
+  }
+}

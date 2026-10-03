@@ -1,0 +1,746 @@
+{
+  "version": 1,
+  "layout": {
+    "S": 5,
+    "cols": 4,
+    "rows": 6,
+    "lanes": {
+      "v": [
+        5,
+        5,
+        5,
+        3,
+        5
+      ],
+      "h": [
+        5,
+        3,
+        3,
+        3,
+        3,
+        3,
+        5
+      ]
+    },
+    "groups": [],
+    "nodes": [
+      {
+        "id": "frontend",
+        "label": "@bob/frontend",
+        "kind": "data",
+        "col": 0,
+        "row": 0,
+        "x": 5,
+        "y": 5,
+        "size": 5
+      },
+      {
+        "id": "bootstrap",
+        "label": "@bob/sub-bob-bootstrap",
+        "kind": "data",
+        "col": 0,
+        "row": 3,
+        "x": 5,
+        "y": 29,
+        "size": 5
+      },
+      {
+        "id": "dispatcher",
+        "label": "dispatcher",
+        "kind": "data",
+        "col": 0,
+        "row": 2,
+        "x": 5,
+        "y": 21,
+        "size": 5
+      },
+      {
+        "id": "sub_bob_manager",
+        "label": "sub-bob-manager",
+        "kind": "data",
+        "col": 1,
+        "row": 2,
+        "x": 15,
+        "y": 21,
+        "size": 5
+      },
+      {
+        "id": "consolidator",
+        "label": "consolidator",
+        "kind": "data",
+        "col": 0,
+        "row": 4,
+        "x": 5,
+        "y": 37,
+        "size": 5
+      },
+      {
+        "id": "chat",
+        "label": "chat",
+        "kind": "data",
+        "col": 2,
+        "row": 1,
+        "x": 25,
+        "y": 13,
+        "size": 5
+      },
+      {
+        "id": "memory",
+        "label": "memory",
+        "kind": "data",
+        "col": 2,
+        "row": 2,
+        "x": 25,
+        "y": 21,
+        "size": 5
+      },
+      {
+        "id": "sub_bob",
+        "label": "sub-bob",
+        "kind": "data",
+        "col": 0,
+        "row": 5,
+        "x": 5,
+        "y": 45,
+        "size": 5
+      },
+      {
+        "id": "bob_registry",
+        "label": "bob-registry",
+        "kind": "data",
+        "col": 1,
+        "row": 1,
+        "x": 15,
+        "y": 13,
+        "size": 5
+      },
+      {
+        "id": "event_storage",
+        "label": "event-storage",
+        "kind": "data",
+        "col": 3,
+        "row": 1,
+        "x": 33,
+        "y": 13,
+        "size": 5
+      },
+      {
+        "id": "llm",
+        "label": "llm",
+        "kind": "data",
+        "col": 2,
+        "row": 3,
+        "x": 25,
+        "y": 29,
+        "size": 5
+      },
+      {
+        "id": "queue",
+        "label": "queue",
+        "kind": "data",
+        "col": 3,
+        "row": 4,
+        "x": 33,
+        "y": 37,
+        "size": 5
+      }
+    ],
+    "edges": [
+      {
+        "id": 0,
+        "from": "dispatcher",
+        "to": "sub_bob_manager",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 10,
+          "y": 23.5
+        },
+        "dst": {
+          "side": "left",
+          "index": 1,
+          "count": 2,
+          "x": 15,
+          "y": 24.75
+        },
+        "points": [
+          {
+            "x": 10,
+            "y": 23.5
+          },
+          {
+            "x": 12.5,
+            "y": 23.5
+          },
+          {
+            "x": 12.5,
+            "y": 24.75
+          },
+          {
+            "x": 15,
+            "y": 24.75
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "from": "chat",
+        "to": "event_storage",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 30,
+          "y": 15.5
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 33,
+          "y": 15.5
+        },
+        "points": [
+          {
+            "x": 30,
+            "y": 15.5
+          },
+          {
+            "x": 33,
+            "y": 15.5
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "from": "memory",
+        "to": "llm",
+        "kind": "data",
+        "src": {
+          "side": "bottom",
+          "index": 0,
+          "count": 1,
+          "x": 27.5,
+          "y": 26
+        },
+        "dst": {
+          "side": "top",
+          "index": 0,
+          "count": 1,
+          "x": 27.5,
+          "y": 29
+        },
+        "points": [
+          {
+            "x": 27.5,
+            "y": 26
+          },
+          {
+            "x": 27.5,
+            "y": 29
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "from": "memory",
+        "to": "queue",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 30,
+          "y": 23.5
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 2,
+          "x": 33,
+          "y": 38.25
+        },
+        "points": [
+          {
+            "x": 30,
+            "y": 23.5
+          },
+          {
+            "x": 31.5,
+            "y": 23.5
+          },
+          {
+            "x": 31.5,
+            "y": 38.25
+          },
+          {
+            "x": 33,
+            "y": 38.25
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "from": "consolidator",
+        "to": "llm",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 1,
+          "count": 3,
+          "x": 10,
+          "y": 39.5
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 25,
+          "y": 31.5
+        },
+        "points": [
+          {
+            "x": 10,
+            "y": 39.5
+          },
+          {
+            "x": 12.5,
+            "y": 39.5
+          },
+          {
+            "x": 12.5,
+            "y": 35.5
+          },
+          {
+            "x": 22.5,
+            "y": 35.5
+          },
+          {
+            "x": 22.5,
+            "y": 31.5
+          },
+          {
+            "x": 25,
+            "y": 31.5
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "from": "consolidator",
+        "to": "memory",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 3,
+          "x": 10,
+          "y": 37.833333333333336
+        },
+        "dst": {
+          "side": "left",
+          "index": 3,
+          "count": 4,
+          "x": 25,
+          "y": 25.375
+        },
+        "points": [
+          {
+            "x": 10,
+            "y": 37.833333333333336
+          },
+          {
+            "x": 11.5,
+            "y": 37.833333333333336
+          },
+          {
+            "x": 11.5,
+            "y": 27.5
+          },
+          {
+            "x": 22.5,
+            "y": 27.5
+          },
+          {
+            "x": 22.5,
+            "y": 25.375
+          },
+          {
+            "x": 25,
+            "y": 25.375
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "from": "consolidator",
+        "to": "queue",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 2,
+          "count": 3,
+          "x": 10,
+          "y": 41.166666666666664
+        },
+        "dst": {
+          "side": "left",
+          "index": 1,
+          "count": 2,
+          "x": 33,
+          "y": 40.75
+        },
+        "points": [
+          {
+            "x": 10,
+            "y": 41.166666666666664
+          },
+          {
+            "x": 12.5,
+            "y": 41.166666666666664
+          },
+          {
+            "x": 12.5,
+            "y": 43.5
+          },
+          {
+            "x": 31.5,
+            "y": 43.5
+          },
+          {
+            "x": 31.5,
+            "y": 40.75
+          },
+          {
+            "x": 33,
+            "y": 40.75
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "from": "sub_bob_manager",
+        "to": "chat",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 2,
+          "x": 20,
+          "y": 22.25
+        },
+        "dst": {
+          "side": "left",
+          "index": 1,
+          "count": 2,
+          "x": 25,
+          "y": 16.75
+        },
+        "points": [
+          {
+            "x": 20,
+            "y": 22.25
+          },
+          {
+            "x": 22.5,
+            "y": 22.25
+          },
+          {
+            "x": 22.5,
+            "y": 16.75
+          },
+          {
+            "x": 25,
+            "y": 16.75
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "from": "sub_bob_manager",
+        "to": "memory",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 1,
+          "count": 2,
+          "x": 20,
+          "y": 24.75
+        },
+        "dst": {
+          "side": "left",
+          "index": 1,
+          "count": 4,
+          "x": 25,
+          "y": 22.875
+        },
+        "points": [
+          {
+            "x": 20,
+            "y": 24.75
+          },
+          {
+            "x": 20.5,
+            "y": 24.75
+          },
+          {
+            "x": 20.5,
+            "y": 22.875
+          },
+          {
+            "x": 25,
+            "y": 22.875
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "from": "bootstrap",
+        "to": "memory",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 10,
+          "y": 31.5
+        },
+        "dst": {
+          "side": "left",
+          "index": 2,
+          "count": 4,
+          "x": 25,
+          "y": 24.125
+        },
+        "points": [
+          {
+            "x": 10,
+            "y": 31.5
+          },
+          {
+            "x": 10.5,
+            "y": 31.5
+          },
+          {
+            "x": 10.5,
+            "y": 26.5
+          },
+          {
+            "x": 21.5,
+            "y": 26.5
+          },
+          {
+            "x": 21.5,
+            "y": 24.125
+          },
+          {
+            "x": 25,
+            "y": 24.125
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "from": "frontend",
+        "to": "bob_registry",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 1,
+          "count": 3,
+          "x": 10,
+          "y": 7.5
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 15,
+          "y": 15.5
+        },
+        "points": [
+          {
+            "x": 10,
+            "y": 7.5
+          },
+          {
+            "x": 12.5,
+            "y": 7.5
+          },
+          {
+            "x": 12.5,
+            "y": 15.5
+          },
+          {
+            "x": 15,
+            "y": 15.5
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "from": "frontend",
+        "to": "chat",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 3,
+          "x": 10,
+          "y": 5.833333333333333
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 2,
+          "x": 25,
+          "y": 14.25
+        },
+        "points": [
+          {
+            "x": 10,
+            "y": 5.833333333333333
+          },
+          {
+            "x": 13.5,
+            "y": 5.833333333333333
+          },
+          {
+            "x": 13.5,
+            "y": 10.5
+          },
+          {
+            "x": 22.5,
+            "y": 10.5
+          },
+          {
+            "x": 22.5,
+            "y": 14.25
+          },
+          {
+            "x": 25,
+            "y": 14.25
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "from": "frontend",
+        "to": "memory",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 2,
+          "count": 3,
+          "x": 10,
+          "y": 9.166666666666668
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 4,
+          "x": 25,
+          "y": 21.625
+        },
+        "points": [
+          {
+            "x": 10,
+            "y": 9.166666666666668
+          },
+          {
+            "x": 11.5,
+            "y": 9.166666666666668
+          },
+          {
+            "x": 11.5,
+            "y": 19.5
+          },
+          {
+            "x": 21.5,
+            "y": 19.5
+          },
+          {
+            "x": 21.5,
+            "y": 21.625
+          },
+          {
+            "x": 25,
+            "y": 21.625
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "from": "frontend",
+        "to": "sub_bob_manager",
+        "kind": "data",
+        "src": {
+          "side": "bottom",
+          "index": 0,
+          "count": 1,
+          "x": 7.5,
+          "y": 10
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 2,
+          "x": 15,
+          "y": 22.25
+        },
+        "points": [
+          {
+            "x": 7.5,
+            "y": 10
+          },
+          {
+            "x": 7.5,
+            "y": 11.5
+          },
+          {
+            "x": 10.5,
+            "y": 11.5
+          },
+          {
+            "x": 10.5,
+            "y": 22.25
+          },
+          {
+            "x": 15,
+            "y": 22.25
+          }
+        ]
+      }
+    ],
+    "title": "rebob",
+    "description": "System architecture for the rebob platform",
+    "frame": {
+      "x": 0,
+      "y": 0,
+      "w": 43,
+      "h": 55
+    }
+  },
+  "metrics": {
+    "violations": [
+      {
+        "rule": "crossing",
+        "detail": "7 x 12"
+      }
+    ],
+    "crossings": 1,
+    "soft": {
+      "leftward": 0,
+      "centrality": 1,
+      "area": 24,
+      "aspect": 1.5,
+      "nfBottomShare": 1,
+      "length": 231.91666666666669,
+      "turns": 37,
+      "groupSides": 0
+    }
+  }
+}

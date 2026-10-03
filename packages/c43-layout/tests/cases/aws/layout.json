@@ -1,0 +1,587 @@
+{
+  "version": 1,
+  "layout": {
+    "S": 5,
+    "cols": 6,
+    "rows": 4,
+    "lanes": {
+      "v": [
+        5,
+        3,
+        3,
+        3,
+        3,
+        3,
+        5
+      ],
+      "h": [
+        5,
+        3,
+        3,
+        3,
+        5
+      ]
+    },
+    "groups": [],
+    "nodes": [
+      {
+        "id": "U",
+        "label": "User",
+        "kind": "data",
+        "col": 0,
+        "row": 1,
+        "x": 5,
+        "y": 13,
+        "size": 5
+      },
+      {
+        "id": "CF",
+        "label": "CloudFront",
+        "kind": "data",
+        "col": 1,
+        "row": 1,
+        "x": 13,
+        "y": 13,
+        "size": 5
+      },
+      {
+        "id": "R53",
+        "label": "Route53",
+        "kind": "nf",
+        "col": 1,
+        "row": 2,
+        "x": 13,
+        "y": 21,
+        "size": 5
+      },
+      {
+        "id": "AGW",
+        "label": "API Gateway",
+        "kind": "data",
+        "col": 2,
+        "row": 1,
+        "x": 21,
+        "y": 13,
+        "size": 5
+      },
+      {
+        "id": "LA",
+        "label": "Lambda A",
+        "kind": "data",
+        "col": 3,
+        "row": 0,
+        "x": 29,
+        "y": 5,
+        "size": 5
+      },
+      {
+        "id": "LB",
+        "label": "Lambda B",
+        "kind": "data",
+        "col": 3,
+        "row": 1,
+        "x": 29,
+        "y": 13,
+        "size": 5
+      },
+      {
+        "id": "LC",
+        "label": "Lambda C",
+        "kind": "data",
+        "col": 3,
+        "row": 2,
+        "x": 29,
+        "y": 21,
+        "size": 5
+      },
+      {
+        "id": "ATH",
+        "label": "Athena",
+        "kind": "data",
+        "col": 4,
+        "row": 2,
+        "x": 37,
+        "y": 21,
+        "size": 5
+      },
+      {
+        "id": "S3",
+        "label": "S3",
+        "kind": "data",
+        "col": 5,
+        "row": 1,
+        "x": 45,
+        "y": 13,
+        "size": 5
+      },
+      {
+        "id": "CW",
+        "label": "CloudWatch alarm",
+        "kind": "nf",
+        "col": 4,
+        "row": 3,
+        "x": 37,
+        "y": 29,
+        "size": 5
+      },
+      {
+        "id": "SES",
+        "label": "SES",
+        "kind": "data",
+        "col": 4,
+        "row": 0,
+        "x": 37,
+        "y": 5,
+        "size": 5
+      }
+    ],
+    "edges": [
+      {
+        "id": 0,
+        "from": "U",
+        "to": "CF",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 10,
+          "y": 15.5
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 13,
+          "y": 15.5
+        },
+        "points": [
+          {
+            "x": 10,
+            "y": 15.5
+          },
+          {
+            "x": 13,
+            "y": 15.5
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "from": "CF",
+        "to": "AGW",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 18,
+          "y": 15.5
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 21,
+          "y": 15.5
+        },
+        "points": [
+          {
+            "x": 18,
+            "y": 15.5
+          },
+          {
+            "x": 21,
+            "y": 15.5
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "from": "CF",
+        "to": "R53",
+        "kind": "nf",
+        "src": {
+          "side": "bottom",
+          "index": 0,
+          "count": 1,
+          "x": 15.5,
+          "y": 18
+        },
+        "dst": {
+          "side": "top",
+          "index": 0,
+          "count": 1,
+          "x": 15.5,
+          "y": 21
+        },
+        "points": [
+          {
+            "x": 15.5,
+            "y": 18
+          },
+          {
+            "x": 15.5,
+            "y": 21
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "from": "AGW",
+        "to": "LA",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 3,
+          "x": 26,
+          "y": 13.833333333333334
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 29,
+          "y": 7.5
+        },
+        "points": [
+          {
+            "x": 26,
+            "y": 13.833333333333334
+          },
+          {
+            "x": 27.5,
+            "y": 13.833333333333334
+          },
+          {
+            "x": 27.5,
+            "y": 7.5
+          },
+          {
+            "x": 29,
+            "y": 7.5
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "from": "AGW",
+        "to": "LB",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 1,
+          "count": 3,
+          "x": 26,
+          "y": 15.5
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 29,
+          "y": 15.5
+        },
+        "points": [
+          {
+            "x": 26,
+            "y": 15.5
+          },
+          {
+            "x": 29,
+            "y": 15.5
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "from": "AGW",
+        "to": "LC",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 2,
+          "count": 3,
+          "x": 26,
+          "y": 17.166666666666668
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 29,
+          "y": 23.5
+        },
+        "points": [
+          {
+            "x": 26,
+            "y": 17.166666666666668
+          },
+          {
+            "x": 27.5,
+            "y": 17.166666666666668
+          },
+          {
+            "x": 27.5,
+            "y": 23.5
+          },
+          {
+            "x": 29,
+            "y": 23.5
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "from": "LA",
+        "to": "S3",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 1,
+          "count": 2,
+          "x": 34,
+          "y": 8.75
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 3,
+          "x": 45,
+          "y": 13.833333333333334
+        },
+        "points": [
+          {
+            "x": 34,
+            "y": 8.75
+          },
+          {
+            "x": 34.5,
+            "y": 8.75
+          },
+          {
+            "x": 34.5,
+            "y": 11.5
+          },
+          {
+            "x": 43.5,
+            "y": 11.5
+          },
+          {
+            "x": 43.5,
+            "y": 13.833333333333334
+          },
+          {
+            "x": 45,
+            "y": 13.833333333333334
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "from": "LB",
+        "to": "S3",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 34,
+          "y": 15.5
+        },
+        "dst": {
+          "side": "left",
+          "index": 1,
+          "count": 3,
+          "x": 45,
+          "y": 15.5
+        },
+        "points": [
+          {
+            "x": 34,
+            "y": 15.5
+          },
+          {
+            "x": 45,
+            "y": 15.5
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "from": "LC",
+        "to": "ATH",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 34,
+          "y": 23.5
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 37,
+          "y": 23.5
+        },
+        "points": [
+          {
+            "x": 34,
+            "y": 23.5
+          },
+          {
+            "x": 37,
+            "y": 23.5
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "from": "ATH",
+        "to": "S3",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 42,
+          "y": 23.5
+        },
+        "dst": {
+          "side": "left",
+          "index": 2,
+          "count": 3,
+          "x": 45,
+          "y": 17.166666666666668
+        },
+        "points": [
+          {
+            "x": 42,
+            "y": 23.5
+          },
+          {
+            "x": 42.5,
+            "y": 23.5
+          },
+          {
+            "x": 42.5,
+            "y": 17.166666666666668
+          },
+          {
+            "x": 45,
+            "y": 17.166666666666668
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "from": "LA",
+        "to": "SES",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 2,
+          "x": 34,
+          "y": 6.25
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 2,
+          "x": 37,
+          "y": 6.25
+        },
+        "points": [
+          {
+            "x": 34,
+            "y": 6.25
+          },
+          {
+            "x": 37,
+            "y": 6.25
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "from": "CW",
+        "to": "SES",
+        "kind": "nf",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 42,
+          "y": 31.5
+        },
+        "dst": {
+          "side": "left",
+          "index": 1,
+          "count": 2,
+          "x": 37,
+          "y": 8.75
+        },
+        "points": [
+          {
+            "x": 42,
+            "y": 31.5
+          },
+          {
+            "x": 43.5,
+            "y": 31.5
+          },
+          {
+            "x": 43.5,
+            "y": 19.5
+          },
+          {
+            "x": 52.5,
+            "y": 19.5
+          },
+          {
+            "x": 52.5,
+            "y": 10.5
+          },
+          {
+            "x": 35.5,
+            "y": 10.5
+          },
+          {
+            "x": 35.5,
+            "y": 8.75
+          },
+          {
+            "x": 37,
+            "y": 8.75
+          }
+        ]
+      }
+    ],
+    "title": "Event-driven order processing on AWS",
+    "description": "Customers reach the storefront through CloudFront, which serves static assets and forwards API calls to API Gateway. Three Lambda functions handle orders, payments and reporting; order and payment data land in S3, while reporting queries run through Athena over the same bucket. Route53 provides DNS and the TLS certificate for the distribution. A CloudWatch alarm watches the Lambdas and, together with the order Lambda, sends notification emails through SES.",
+    "frame": {
+      "x": 0,
+      "y": 0,
+      "w": 55,
+      "h": 39
+    }
+  },
+  "metrics": {
+    "violations": [],
+    "crossings": 0,
+    "soft": {
+      "leftward": 0,
+      "centrality": 1,
+      "area": 24,
+      "aspect": 1.5,
+      "nfBottomShare": 1,
+      "length": 124.83333333333333,
+      "turns": 16,
+      "groupSides": 0
+    }
+  }
+}

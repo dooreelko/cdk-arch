@@ -1,0 +1,1908 @@
+{
+  "version": 1,
+  "layout": {
+    "S": 6,
+    "cols": 9,
+    "rows": 8,
+    "lanes": {
+      "v": [
+        5,
+        5,
+        9,
+        3,
+        5,
+        7,
+        3,
+        5,
+        9,
+        5
+      ],
+      "h": [
+        5,
+        7,
+        3,
+        9,
+        3,
+        3,
+        11,
+        9,
+        5
+      ]
+    },
+    "groups": [
+      {
+        "id": "backend:dispatcher",
+        "label": "dispatcher",
+        "depth": 0,
+        "box": {
+          "col0": 0,
+          "row0": 3,
+          "col1": 1,
+          "row1": 5
+        },
+        "x": 3.5,
+        "y": 38.5,
+        "w": 20,
+        "h": 29,
+        "title": {
+          "text": "dispatcher",
+          "x": 4,
+          "y": 38.75,
+          "w": 4,
+          "h": 1.5
+        }
+      },
+      {
+        "id": "backend:chat",
+        "label": "chat",
+        "depth": 0,
+        "box": {
+          "col0": 5,
+          "row0": 1,
+          "col1": 7,
+          "row1": 2
+        },
+        "x": 62.5,
+        "y": 14.5,
+        "w": 29,
+        "h": 20,
+        "title": {
+          "text": "chat",
+          "x": 63,
+          "y": 14.75,
+          "w": 2,
+          "h": 1.5
+        }
+      },
+      {
+        "id": "backend:queue",
+        "label": "queue",
+        "depth": 0,
+        "box": {
+          "col0": 8,
+          "row0": 3,
+          "col1": 8,
+          "row1": 5
+        },
+        "x": 97.5,
+        "y": 38.5,
+        "w": 9,
+        "h": 29,
+        "title": {
+          "text": "queue",
+          "x": 98,
+          "y": 38.75,
+          "w": 3,
+          "h": 1.5
+        }
+      },
+      {
+        "id": "backend:memory",
+        "label": "memory",
+        "depth": 0,
+        "box": {
+          "col0": 5,
+          "row0": 3,
+          "col1": 7,
+          "row1": 5
+        },
+        "x": 62.5,
+        "y": 38.5,
+        "w": 29,
+        "h": 29,
+        "title": {
+          "text": "memory",
+          "x": 63,
+          "y": 38.75,
+          "w": 3,
+          "h": 1.5
+        }
+      },
+      {
+        "id": "backend:event-storage",
+        "label": "event-storage",
+        "depth": 0,
+        "box": {
+          "col0": 8,
+          "row0": 0,
+          "col1": 8,
+          "row1": 0
+        },
+        "x": 97.5,
+        "y": 1.5,
+        "w": 9,
+        "h": 11,
+        "title": {
+          "text": "event-storage",
+          "x": 98,
+          "y": 1.75,
+          "w": 5,
+          "h": 1.5
+        }
+      },
+      {
+        "id": "backend:sub-bob",
+        "label": "sub-bob",
+        "depth": 0,
+        "box": {
+          "col0": 0,
+          "row0": 7,
+          "col1": 1,
+          "row1": 7
+        },
+        "x": 3.5,
+        "y": 88.5,
+        "w": 20,
+        "h": 11,
+        "title": {
+          "text": "sub-bob",
+          "x": 4,
+          "y": 88.75,
+          "w": 3,
+          "h": 1.5
+        }
+      },
+      {
+        "id": "backend:consolidator",
+        "label": "consolidator",
+        "depth": 0,
+        "box": {
+          "col0": 0,
+          "row0": 6,
+          "col1": 1,
+          "row1": 6
+        },
+        "x": 3.5,
+        "y": 73.5,
+        "w": 20,
+        "h": 11,
+        "title": {
+          "text": "consolidator",
+          "x": 4,
+          "y": 73.75,
+          "w": 5,
+          "h": 1.5
+        }
+      },
+      {
+        "id": "backend:llm",
+        "label": "llm",
+        "depth": 0,
+        "box": {
+          "col0": 8,
+          "row0": 6,
+          "col1": 8,
+          "row1": 6
+        },
+        "x": 97.5,
+        "y": 73.5,
+        "w": 9,
+        "h": 11,
+        "title": {
+          "text": "llm",
+          "x": 98,
+          "y": 73.75,
+          "w": 2,
+          "h": 1.5
+        }
+      },
+      {
+        "id": "backend:llm-legacy",
+        "label": "llm-legacy",
+        "depth": 0,
+        "box": {
+          "col0": 3,
+          "row0": 7,
+          "col1": 3,
+          "row1": 7
+        },
+        "x": 38.5,
+        "y": 88.5,
+        "w": 9,
+        "h": 11,
+        "title": {
+          "text": "llm-legacy",
+          "x": 39,
+          "y": 88.75,
+          "w": 4,
+          "h": 1.5
+        }
+      },
+      {
+        "id": "backend:bob-registry",
+        "label": "bob-registry",
+        "depth": 0,
+        "box": {
+          "col0": 2,
+          "row0": 1,
+          "col1": 4,
+          "row1": 2
+        },
+        "x": 29.5,
+        "y": 14.5,
+        "w": 29,
+        "h": 20,
+        "title": {
+          "text": "bob-registry",
+          "x": 30,
+          "y": 14.75,
+          "w": 5,
+          "h": 1.5
+        }
+      },
+      {
+        "id": "backend:sub-bob-manager",
+        "label": "sub-bob-manager",
+        "depth": 0,
+        "box": {
+          "col0": 2,
+          "row0": 3,
+          "col1": 4,
+          "row1": 5
+        },
+        "x": 29.5,
+        "y": 38.5,
+        "w": 29,
+        "h": 29,
+        "title": {
+          "text": "sub-bob-manager",
+          "x": 30,
+          "y": 38.75,
+          "w": 7,
+          "h": 1.5
+        }
+      }
+    ],
+    "nodes": [
+      {
+        "id": "@bob/sub-bob-bootstrap",
+        "label": "@bob/sub-bob-bootstrap",
+        "kind": "data",
+        "col": 0,
+        "row": 0,
+        "x": 5,
+        "y": 5,
+        "size": 6
+      },
+      {
+        "id": "@bob/frontend",
+        "label": "@bob/frontend",
+        "kind": "data",
+        "col": 0,
+        "row": 1,
+        "x": 5,
+        "y": 18,
+        "size": 6
+      },
+      {
+        "id": "dispatcher/runtime",
+        "label": "runtime",
+        "kind": "data",
+        "col": 1,
+        "row": 3,
+        "x": 16,
+        "y": 42,
+        "size": 6,
+        "group": "backend:dispatcher"
+      },
+      {
+        "id": "dispatcher/dispatcher",
+        "label": "dispatcher",
+        "kind": "data",
+        "col": 0,
+        "row": 3,
+        "x": 5,
+        "y": 42,
+        "size": 6,
+        "group": "backend:dispatcher"
+      },
+      {
+        "id": "dispatcher/dispatcher-mcp",
+        "label": "dispatcher-mcp",
+        "kind": "data",
+        "col": 0,
+        "row": 4,
+        "x": 5,
+        "y": 51,
+        "size": 6,
+        "group": "backend:dispatcher"
+      },
+      {
+        "id": "chat/bus",
+        "label": "bus",
+        "kind": "data",
+        "col": 7,
+        "row": 1,
+        "x": 84,
+        "y": 18,
+        "size": 6,
+        "group": "backend:chat"
+      },
+      {
+        "id": "chat/chat",
+        "label": "chat",
+        "kind": "data",
+        "col": 6,
+        "row": 1,
+        "x": 73,
+        "y": 18,
+        "size": 6,
+        "group": "backend:chat"
+      },
+      {
+        "id": "chat/chat-mcp",
+        "label": "chat-mcp",
+        "kind": "data",
+        "col": 5,
+        "row": 2,
+        "x": 64,
+        "y": 27,
+        "size": 6,
+        "group": "backend:chat"
+      },
+      {
+        "id": "queue/task-queue",
+        "label": "task-queue",
+        "kind": "data",
+        "col": 8,
+        "row": 4,
+        "x": 99,
+        "y": 51,
+        "size": 6,
+        "group": "backend:queue"
+      },
+      {
+        "id": "memory/graph",
+        "label": "graph",
+        "kind": "data",
+        "col": 7,
+        "row": 3,
+        "x": 84,
+        "y": 42,
+        "size": 6,
+        "group": "backend:memory"
+      },
+      {
+        "id": "memory/memory",
+        "label": "memory",
+        "kind": "data",
+        "col": 6,
+        "row": 4,
+        "x": 73,
+        "y": 51,
+        "size": 6,
+        "group": "backend:memory"
+      },
+      {
+        "id": "memory/memory-mcp",
+        "label": "memory-mcp",
+        "kind": "data",
+        "col": 5,
+        "row": 5,
+        "x": 64,
+        "y": 60,
+        "size": 6,
+        "group": "backend:memory"
+      },
+      {
+        "id": "event-storage/event-storage",
+        "label": "event-storage",
+        "kind": "data",
+        "col": 8,
+        "row": 0,
+        "x": 99,
+        "y": 5,
+        "size": 6,
+        "group": "backend:event-storage"
+      },
+      {
+        "id": "consolidator/consolidator-api",
+        "label": "consolidator-api",
+        "kind": "data",
+        "col": 0,
+        "row": 6,
+        "x": 5,
+        "y": 77,
+        "size": 6,
+        "group": "backend:consolidator"
+      },
+      {
+        "id": "llm/llm",
+        "label": "llm",
+        "kind": "data",
+        "col": 8,
+        "row": 6,
+        "x": 99,
+        "y": 77,
+        "size": 6,
+        "group": "backend:llm"
+      },
+      {
+        "id": "llm-legacy/llm",
+        "label": "llm",
+        "kind": "data",
+        "col": 3,
+        "row": 7,
+        "x": 40,
+        "y": 92,
+        "size": 6,
+        "group": "backend:llm-legacy"
+      },
+      {
+        "id": "bob-registry/runtime",
+        "label": "runtime",
+        "kind": "data",
+        "col": 3,
+        "row": 1,
+        "x": 40,
+        "y": 18,
+        "size": 6,
+        "group": "backend:bob-registry"
+      },
+      {
+        "id": "bob-registry/registry",
+        "label": "registry",
+        "kind": "data",
+        "col": 2,
+        "row": 1,
+        "x": 31,
+        "y": 18,
+        "size": 6,
+        "group": "backend:bob-registry"
+      },
+      {
+        "id": "bob-registry/registry-mcp",
+        "label": "registry-mcp",
+        "kind": "data",
+        "col": 2,
+        "row": 2,
+        "x": 31,
+        "y": 27,
+        "size": 6,
+        "group": "backend:bob-registry"
+      },
+      {
+        "id": "sub-bob-manager/runtime",
+        "label": "runtime",
+        "kind": "data",
+        "col": 3,
+        "row": 4,
+        "x": 40,
+        "y": 51,
+        "size": 6,
+        "group": "backend:sub-bob-manager"
+      },
+      {
+        "id": "sub-bob-manager/bob-queue",
+        "label": "bob-queue",
+        "kind": "data",
+        "col": 4,
+        "row": 3,
+        "x": 51,
+        "y": 42,
+        "size": 6,
+        "group": "backend:sub-bob-manager"
+      },
+      {
+        "id": "sub-bob-manager/manager",
+        "label": "manager",
+        "kind": "data",
+        "col": 3,
+        "row": 3,
+        "x": 40,
+        "y": 42,
+        "size": 6,
+        "group": "backend:sub-bob-manager"
+      },
+      {
+        "id": "sub-bob-manager/manager-mcp",
+        "label": "manager-mcp",
+        "kind": "data",
+        "col": 2,
+        "row": 5,
+        "x": 31,
+        "y": 60,
+        "size": 6,
+        "group": "backend:sub-bob-manager"
+      }
+    ],
+    "edges": [
+      {
+        "id": 0,
+        "from": "backend:dispatcher",
+        "to": "backend:sub-bob-manager",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 1,
+          "count": 2,
+          "x": 23.5,
+          "y": 60.25
+        },
+        "dst": {
+          "side": "left",
+          "index": 2,
+          "count": 4,
+          "x": 29.5,
+          "y": 56.625
+        },
+        "points": [
+          {
+            "x": 23.5,
+            "y": 60.25
+          },
+          {
+            "x": 26.5,
+            "y": 60.25
+          },
+          {
+            "x": 26.5,
+            "y": 56.625
+          },
+          {
+            "x": 29.5,
+            "y": 56.625
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "from": "backend:chat",
+        "to": "backend:event-storage",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 91.5,
+          "y": 24.5
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 97.5,
+          "y": 7
+        },
+        "points": [
+          {
+            "x": 91.5,
+            "y": 24.5
+          },
+          {
+            "x": 94.5,
+            "y": 24.5
+          },
+          {
+            "x": 94.5,
+            "y": 7
+          },
+          {
+            "x": 97.5,
+            "y": 7
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "from": "backend:memory",
+        "to": "backend:llm",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 1,
+          "count": 2,
+          "x": 91.5,
+          "y": 60.25
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 2,
+          "x": 97.5,
+          "y": 76.25
+        },
+        "points": [
+          {
+            "x": 91.5,
+            "y": 60.25
+          },
+          {
+            "x": 93.5,
+            "y": 60.25
+          },
+          {
+            "x": 93.5,
+            "y": 76.25
+          },
+          {
+            "x": 97.5,
+            "y": 76.25
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "from": "backend:memory",
+        "to": "backend:queue",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 2,
+          "x": 91.5,
+          "y": 45.75
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 2,
+          "x": 97.5,
+          "y": 45.75
+        },
+        "points": [
+          {
+            "x": 91.5,
+            "y": 45.75
+          },
+          {
+            "x": 97.5,
+            "y": 45.75
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "from": "@bob/sub-bob-bootstrap",
+        "to": "backend:memory",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 11,
+          "y": 8
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 4,
+          "x": 62.5,
+          "y": 42.125
+        },
+        "points": [
+          {
+            "x": 11,
+            "y": 8
+          },
+          {
+            "x": 13.5,
+            "y": 8
+          },
+          {
+            "x": 13.5,
+            "y": 35.5
+          },
+          {
+            "x": 59.5,
+            "y": 35.5
+          },
+          {
+            "x": 59.5,
+            "y": 42.125
+          },
+          {
+            "x": 62.5,
+            "y": 42.125
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "from": "@bob/frontend",
+        "to": "backend:bob-registry",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 1,
+          "count": 3,
+          "x": 11,
+          "y": 21
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 29.5,
+          "y": 24.5
+        },
+        "points": [
+          {
+            "x": 11,
+            "y": 21
+          },
+          {
+            "x": 14.5,
+            "y": 21
+          },
+          {
+            "x": 14.5,
+            "y": 24.5
+          },
+          {
+            "x": 29.5,
+            "y": 24.5
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "from": "@bob/frontend",
+        "to": "backend:chat",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 3,
+          "x": 11,
+          "y": 19
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 2,
+          "x": 62.5,
+          "y": 19.5
+        },
+        "points": [
+          {
+            "x": 11,
+            "y": 19
+          },
+          {
+            "x": 12.5,
+            "y": 19
+          },
+          {
+            "x": 12.5,
+            "y": 13.5
+          },
+          {
+            "x": 60.5,
+            "y": 13.5
+          },
+          {
+            "x": 60.5,
+            "y": 19.5
+          },
+          {
+            "x": 62.5,
+            "y": 19.5
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "from": "@bob/frontend",
+        "to": "backend:memory",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 2,
+          "count": 3,
+          "x": 11,
+          "y": 23
+        },
+        "dst": {
+          "side": "left",
+          "index": 1,
+          "count": 4,
+          "x": 62.5,
+          "y": 49.375
+        },
+        "points": [
+          {
+            "x": 11,
+            "y": 23
+          },
+          {
+            "x": 12.5,
+            "y": 23
+          },
+          {
+            "x": 12.5,
+            "y": 36.5
+          },
+          {
+            "x": 25.5,
+            "y": 36.5
+          },
+          {
+            "x": 25.5,
+            "y": 70.5
+          },
+          {
+            "x": 60.5,
+            "y": 70.5
+          },
+          {
+            "x": 60.5,
+            "y": 49.375
+          },
+          {
+            "x": 62.5,
+            "y": 49.375
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "from": "@bob/frontend",
+        "to": "backend:sub-bob-manager",
+        "kind": "data",
+        "src": {
+          "side": "bottom",
+          "index": 0,
+          "count": 1,
+          "x": 8,
+          "y": 24
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 4,
+          "x": 29.5,
+          "y": 42.125
+        },
+        "points": [
+          {
+            "x": 8,
+            "y": 24
+          },
+          {
+            "x": 8,
+            "y": 25.5
+          },
+          {
+            "x": 11.5,
+            "y": 25.5
+          },
+          {
+            "x": 11.5,
+            "y": 37.5
+          },
+          {
+            "x": 26.5,
+            "y": 37.5
+          },
+          {
+            "x": 26.5,
+            "y": 42.125
+          },
+          {
+            "x": 29.5,
+            "y": 42.125
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "from": "backend:consolidator",
+        "to": "backend:llm",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 4,
+          "count": 6,
+          "x": 23.5,
+          "y": 81.75
+        },
+        "dst": {
+          "side": "left",
+          "index": 1,
+          "count": 2,
+          "x": 97.5,
+          "y": 81.75
+        },
+        "points": [
+          {
+            "x": 23.5,
+            "y": 81.75
+          },
+          {
+            "x": 26.5,
+            "y": 81.75
+          },
+          {
+            "x": 26.5,
+            "y": 86.5
+          },
+          {
+            "x": 94.5,
+            "y": 86.5
+          },
+          {
+            "x": 94.5,
+            "y": 81.75
+          },
+          {
+            "x": 97.5,
+            "y": 81.75
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "from": "backend:consolidator",
+        "to": "backend:memory",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 3,
+          "count": 6,
+          "x": 23.5,
+          "y": 79.91666666666667
+        },
+        "dst": {
+          "side": "left",
+          "index": 3,
+          "count": 4,
+          "x": 62.5,
+          "y": 63.875
+        },
+        "points": [
+          {
+            "x": 23.5,
+            "y": 79.91666666666667
+          },
+          {
+            "x": 27.5,
+            "y": 79.91666666666667
+          },
+          {
+            "x": 27.5,
+            "y": 69.5
+          },
+          {
+            "x": 59.5,
+            "y": 69.5
+          },
+          {
+            "x": 59.5,
+            "y": 63.875
+          },
+          {
+            "x": 62.5,
+            "y": 63.875
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "from": "backend:consolidator",
+        "to": "backend:queue",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 1,
+          "count": 6,
+          "x": 23.5,
+          "y": 76.25
+        },
+        "dst": {
+          "side": "left",
+          "index": 1,
+          "count": 2,
+          "x": 97.5,
+          "y": 60.25
+        },
+        "points": [
+          {
+            "x": 23.5,
+            "y": 76.25
+          },
+          {
+            "x": 26.5,
+            "y": 76.25
+          },
+          {
+            "x": 26.5,
+            "y": 71.5
+          },
+          {
+            "x": 95.5,
+            "y": 71.5
+          },
+          {
+            "x": 95.5,
+            "y": 60.25
+          },
+          {
+            "x": 97.5,
+            "y": 60.25
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "from": "backend:sub-bob-manager",
+        "to": "backend:chat",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 2,
+          "x": 58.5,
+          "y": 45.75
+        },
+        "dst": {
+          "side": "left",
+          "index": 1,
+          "count": 2,
+          "x": 62.5,
+          "y": 29.5
+        },
+        "points": [
+          {
+            "x": 58.5,
+            "y": 45.75
+          },
+          {
+            "x": 61.5,
+            "y": 45.75
+          },
+          {
+            "x": 61.5,
+            "y": 29.5
+          },
+          {
+            "x": 62.5,
+            "y": 29.5
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "from": "backend:sub-bob-manager",
+        "to": "backend:memory",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 1,
+          "count": 2,
+          "x": 58.5,
+          "y": 60.25
+        },
+        "dst": {
+          "side": "left",
+          "index": 2,
+          "count": 4,
+          "x": 62.5,
+          "y": 56.625
+        },
+        "points": [
+          {
+            "x": 58.5,
+            "y": 60.25
+          },
+          {
+            "x": 59.5,
+            "y": 60.25
+          },
+          {
+            "x": 59.5,
+            "y": 56.625
+          },
+          {
+            "x": 62.5,
+            "y": 56.625
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "from": "dispatcher/dispatcher",
+        "to": "dispatcher/runtime",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 11,
+          "y": 45
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 16,
+          "y": 45
+        },
+        "points": [
+          {
+            "x": 11,
+            "y": 45
+          },
+          {
+            "x": 16,
+            "y": 45
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "from": "backend:dispatcher",
+        "to": "sub-bob-manager/manager",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 2,
+          "x": 23.5,
+          "y": 45.75
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 40,
+          "y": 45
+        },
+        "points": [
+          {
+            "x": 23.5,
+            "y": 45.75
+          },
+          {
+            "x": 26.5,
+            "y": 45.75
+          },
+          {
+            "x": 26.5,
+            "y": 49.5
+          },
+          {
+            "x": 37.5,
+            "y": 49.5
+          },
+          {
+            "x": 37.5,
+            "y": 45
+          },
+          {
+            "x": 40,
+            "y": 45
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "from": "chat/chat",
+        "to": "chat/bus",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 79,
+          "y": 21
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 84,
+          "y": 21
+        },
+        "points": [
+          {
+            "x": 79,
+            "y": 21
+          },
+          {
+            "x": 84,
+            "y": 21
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "from": "memory/memory",
+        "to": "memory/graph",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 3,
+          "x": 79,
+          "y": 52
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 2,
+          "x": 84,
+          "y": 43.5
+        },
+        "points": [
+          {
+            "x": 79,
+            "y": 52
+          },
+          {
+            "x": 79.5,
+            "y": 52
+          },
+          {
+            "x": 79.5,
+            "y": 43.5
+          },
+          {
+            "x": 84,
+            "y": 43.5
+          }
+        ]
+      },
+      {
+        "id": 18,
+        "from": "memory/memory",
+        "to": "queue/task-queue",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 1,
+          "count": 3,
+          "x": 79,
+          "y": 54
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 2,
+          "x": 99,
+          "y": 52.5
+        },
+        "points": [
+          {
+            "x": 79,
+            "y": 54
+          },
+          {
+            "x": 82.5,
+            "y": 54
+          },
+          {
+            "x": 82.5,
+            "y": 49.5
+          },
+          {
+            "x": 94.5,
+            "y": 49.5
+          },
+          {
+            "x": 94.5,
+            "y": 52.5
+          },
+          {
+            "x": 99,
+            "y": 52.5
+          }
+        ]
+      },
+      {
+        "id": 19,
+        "from": "memory/memory",
+        "to": "llm/llm",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 2,
+          "count": 3,
+          "x": 79,
+          "y": 56
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 2,
+          "x": 99,
+          "y": 78.5
+        },
+        "points": [
+          {
+            "x": 79,
+            "y": 56
+          },
+          {
+            "x": 81.5,
+            "y": 56
+          },
+          {
+            "x": 81.5,
+            "y": 70.5
+          },
+          {
+            "x": 92.5,
+            "y": 70.5
+          },
+          {
+            "x": 92.5,
+            "y": 78.5
+          },
+          {
+            "x": 99,
+            "y": 78.5
+          }
+        ]
+      },
+      {
+        "id": 20,
+        "from": "backend:consolidator",
+        "to": "memory/graph",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 6,
+          "x": 23.5,
+          "y": 74.41666666666667
+        },
+        "dst": {
+          "side": "left",
+          "index": 1,
+          "count": 2,
+          "x": 84,
+          "y": 46.5
+        },
+        "points": [
+          {
+            "x": 23.5,
+            "y": 74.41666666666667
+          },
+          {
+            "x": 24.5,
+            "y": 74.41666666666667
+          },
+          {
+            "x": 24.5,
+            "y": 68.5
+          },
+          {
+            "x": 80.5,
+            "y": 68.5
+          },
+          {
+            "x": 80.5,
+            "y": 46.5
+          },
+          {
+            "x": 84,
+            "y": 46.5
+          }
+        ]
+      },
+      {
+        "id": 21,
+        "from": "backend:consolidator",
+        "to": "llm/llm",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 5,
+          "count": 6,
+          "x": 23.5,
+          "y": 83.58333333333333
+        },
+        "dst": {
+          "side": "left",
+          "index": 1,
+          "count": 2,
+          "x": 99,
+          "y": 81.5
+        },
+        "points": [
+          {
+            "x": 23.5,
+            "y": 83.58333333333333
+          },
+          {
+            "x": 25.5,
+            "y": 83.58333333333333
+          },
+          {
+            "x": 25.5,
+            "y": 85.5
+          },
+          {
+            "x": 93.5,
+            "y": 85.5
+          },
+          {
+            "x": 93.5,
+            "y": 81.5
+          },
+          {
+            "x": 99,
+            "y": 81.5
+          }
+        ]
+      },
+      {
+        "id": 22,
+        "from": "backend:consolidator",
+        "to": "queue/task-queue",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 2,
+          "count": 6,
+          "x": 23.5,
+          "y": 78.08333333333333
+        },
+        "dst": {
+          "side": "left",
+          "index": 1,
+          "count": 2,
+          "x": 99,
+          "y": 55.5
+        },
+        "points": [
+          {
+            "x": 23.5,
+            "y": 78.08333333333333
+          },
+          {
+            "x": 28.5,
+            "y": 78.08333333333333
+          },
+          {
+            "x": 28.5,
+            "y": 72.5
+          },
+          {
+            "x": 94.5,
+            "y": 72.5
+          },
+          {
+            "x": 94.5,
+            "y": 55.5
+          },
+          {
+            "x": 99,
+            "y": 55.5
+          }
+        ]
+      },
+      {
+        "id": 23,
+        "from": "bob-registry/registry",
+        "to": "bob-registry/runtime",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 1,
+          "x": 37,
+          "y": 21
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 40,
+          "y": 21
+        },
+        "points": [
+          {
+            "x": 37,
+            "y": 21
+          },
+          {
+            "x": 40,
+            "y": 21
+          }
+        ]
+      },
+      {
+        "id": 24,
+        "from": "sub-bob-manager/manager",
+        "to": "sub-bob-manager/bob-queue",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 1,
+          "count": 3,
+          "x": 46,
+          "y": 45
+        },
+        "dst": {
+          "side": "left",
+          "index": 1,
+          "count": 2,
+          "x": 51,
+          "y": 46.5
+        },
+        "points": [
+          {
+            "x": 46,
+            "y": 45
+          },
+          {
+            "x": 49.5,
+            "y": 45
+          },
+          {
+            "x": 49.5,
+            "y": 46.5
+          },
+          {
+            "x": 51,
+            "y": 46.5
+          }
+        ]
+      },
+      {
+        "id": 25,
+        "from": "sub-bob-manager/manager",
+        "to": "sub-bob-manager/runtime",
+        "kind": "data",
+        "src": {
+          "side": "bottom",
+          "index": 0,
+          "count": 1,
+          "x": 43,
+          "y": 48
+        },
+        "dst": {
+          "side": "top",
+          "index": 0,
+          "count": 1,
+          "x": 43,
+          "y": 51
+        },
+        "points": [
+          {
+            "x": 43,
+            "y": 48
+          },
+          {
+            "x": 43,
+            "y": 51
+          }
+        ]
+      },
+      {
+        "id": 26,
+        "from": "sub-bob-manager/manager",
+        "to": "chat/chat",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 0,
+          "count": 3,
+          "x": 46,
+          "y": 43
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 73,
+          "y": 21
+        },
+        "points": [
+          {
+            "x": 46,
+            "y": 43
+          },
+          {
+            "x": 49.5,
+            "y": 43
+          },
+          {
+            "x": 49.5,
+            "y": 36.5
+          },
+          {
+            "x": 60.5,
+            "y": 36.5
+          },
+          {
+            "x": 60.5,
+            "y": 25.5
+          },
+          {
+            "x": 71.5,
+            "y": 25.5
+          },
+          {
+            "x": 71.5,
+            "y": 21
+          },
+          {
+            "x": 73,
+            "y": 21
+          }
+        ]
+      },
+      {
+        "id": 27,
+        "from": "sub-bob-manager/manager",
+        "to": "memory/memory",
+        "kind": "data",
+        "src": {
+          "side": "right",
+          "index": 2,
+          "count": 3,
+          "x": 46,
+          "y": 47
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 73,
+          "y": 54
+        },
+        "points": [
+          {
+            "x": 46,
+            "y": 47
+          },
+          {
+            "x": 49.5,
+            "y": 47
+          },
+          {
+            "x": 49.5,
+            "y": 48.5
+          },
+          {
+            "x": 71.5,
+            "y": 48.5
+          },
+          {
+            "x": 71.5,
+            "y": 54
+          },
+          {
+            "x": 73,
+            "y": 54
+          }
+        ]
+      },
+      {
+        "id": 28,
+        "from": "backend:sub-bob-manager",
+        "to": "sub-bob-manager/bob-queue",
+        "kind": "data",
+        "src": {
+          "side": "left",
+          "index": 1,
+          "count": 4,
+          "inner": true,
+          "x": 29.5,
+          "y": 49.375
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 2,
+          "x": 51,
+          "y": 43.5
+        },
+        "points": [
+          {
+            "x": 29.5,
+            "y": 49.375
+          },
+          {
+            "x": 30.5,
+            "y": 49.375
+          },
+          {
+            "x": 30.5,
+            "y": 41.5
+          },
+          {
+            "x": 48.5,
+            "y": 41.5
+          },
+          {
+            "x": 48.5,
+            "y": 43.5
+          },
+          {
+            "x": 51,
+            "y": 43.5
+          }
+        ]
+      },
+      {
+        "id": 29,
+        "from": "backend:sub-bob-manager",
+        "to": "sub-bob-manager/runtime",
+        "kind": "data",
+        "src": {
+          "side": "left",
+          "index": 3,
+          "count": 4,
+          "inner": true,
+          "x": 29.5,
+          "y": 63.875
+        },
+        "dst": {
+          "side": "left",
+          "index": 0,
+          "count": 1,
+          "x": 40,
+          "y": 54
+        },
+        "points": [
+          {
+            "x": 29.5,
+            "y": 63.875
+          },
+          {
+            "x": 30.5,
+            "y": 63.875
+          },
+          {
+            "x": 30.5,
+            "y": 58.5
+          },
+          {
+            "x": 37.5,
+            "y": 58.5
+          },
+          {
+            "x": 37.5,
+            "y": 54
+          },
+          {
+            "x": 40,
+            "y": 54
+          }
+        ]
+      }
+    ],
+    "title": "rebob",
+    "frame": {
+      "x": 0,
+      "y": 0,
+      "w": 110,
+      "h": 103
+    }
+  },
+  "metrics": {
+    "violations": [
+      {
+        "rule": "crossing",
+        "detail": "0 x 7"
+      },
+      {
+        "rule": "crossing",
+        "detail": "2 x 11"
+      },
+      {
+        "rule": "crossing",
+        "detail": "2 x 22"
+      },
+      {
+        "rule": "crossing",
+        "detail": "4 x 5"
+      },
+      {
+        "rule": "crossing",
+        "detail": "4 x 6"
+      },
+      {
+        "rule": "crossing",
+        "detail": "4 x 12"
+      },
+      {
+        "rule": "crossing",
+        "detail": "4 x 26"
+      },
+      {
+        "rule": "crossing",
+        "detail": "7 x 8"
+      },
+      {
+        "rule": "crossing",
+        "detail": "7 x 10"
+      },
+      {
+        "rule": "crossing",
+        "detail": "7 x 10"
+      },
+      {
+        "rule": "crossing",
+        "detail": "7 x 13"
+      },
+      {
+        "rule": "crossing",
+        "detail": "7 x 15"
+      },
+      {
+        "rule": "crossing",
+        "detail": "7 x 20"
+      },
+      {
+        "rule": "crossing",
+        "detail": "7 x 20"
+      },
+      {
+        "rule": "crossing",
+        "detail": "9 x 21"
+      },
+      {
+        "rule": "crossing",
+        "detail": "10 x 11"
+      },
+      {
+        "rule": "crossing",
+        "detail": "10 x 20"
+      },
+      {
+        "rule": "crossing",
+        "detail": "10 x 22"
+      },
+      {
+        "rule": "crossing",
+        "detail": "11 x 19"
+      },
+      {
+        "rule": "crossing",
+        "detail": "11 x 22"
+      },
+      {
+        "rule": "crossing",
+        "detail": "18 x 20"
+      },
+      {
+        "rule": "crossing",
+        "detail": "19 x 20"
+      },
+      {
+        "rule": "crossing",
+        "detail": "19 x 22"
+      },
+      {
+        "rule": "crossing",
+        "detail": "26 x 28"
+      }
+    ],
+    "crossings": 24,
+    "soft": {
+      "leftward": 0,
+      "centrality": 1.5,
+      "area": 72,
+      "aspect": 1.125,
+      "nfBottomShare": 1,
+      "length": 1181.3333333333333,
+      "turns": 89,
+      "groupSides": 0
+    }
+  }
+}
