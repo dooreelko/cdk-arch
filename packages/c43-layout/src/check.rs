@@ -304,7 +304,7 @@ pub fn check(l: &Layout) -> Metrics {
     by_degree.sort_by(|a, b| degree[b.id.as_str()].cmp(&degree[a.id.as_str()]));
     let top = by_degree[0];
     let nf: Vec<&LayoutNode> = l.nodes.iter().filter(|n| n.kind == Kind::Nf).collect();
-    let len = |pts: &[Pt]| segments(pts).iter().map(|(a, b)| (a.x - b.x).abs() + (a.y - b.y).abs()).sum::<f64>();
+    let len = |pts: &[Pt]| segments(pts).iter().fold(0.0, |s, (a, b)| s + (a.x - b.x).abs() + (a.y - b.y).abs());
     let (cols, rows) = (l.cols as f64, l.rows as f64);
     Metrics {
         violations: v,
@@ -315,8 +315,8 @@ pub fn check(l: &Layout) -> Metrics {
             area: cols * rows,
             aspect: cols.max(rows) / cols.min(rows),
             nf_bottom_share: if nf.is_empty() { 1.0 } else { nf.iter().filter(|n| n.row as f64 >= (rows - 1.0) / 2.0).count() as f64 / nf.len() as f64 },
-            length: l.edges.iter().map(|e| len(&e.points)).sum(),
-            turns: l.edges.iter().map(|e| e.points.len() as f64 - 2.0).sum(),
+            length: l.edges.iter().fold(0.0, |s, e| s + len(&e.points)),
+            turns: l.edges.iter().fold(0.0, |s, e| s + e.points.len() as f64 - 2.0),
             group_sides: unequal_neighbours(l) as f64,
         },
     }

@@ -9,7 +9,7 @@ swc_common = "19"
 swc_ecma_ast = "21"
 clap = { version = "4", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }
-serde_json = { version = "1", features = ["preserve_order"] }
+serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
 walkdir = "2"
 indexmap = "2"
 
