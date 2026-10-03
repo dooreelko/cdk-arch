@@ -1,7 +1,10 @@
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
-use crate::extract::{extract_from_file, BindCall, ConstructInstance, ImportInfo, ReExport, RouteEntry};
+use crate::extract::{
+    extract_from_file, BindCall, ClassInfo, ConstructInstance, ConstructKind, ImportInfo, ReExport, RouteEntry,
+};
+use crate::model::{backend_uid, child_uid};
 use crate::scan::{find_node_projects, find_ts_files};
 
 /// Metadata from package.json relevant for classification
@@ -23,6 +26,7 @@ pub struct ProjectData {
     pub imports: Vec<ImportInfo>,
     pub exported_names: Vec<String>,
     pub reexports: Vec<ReExport>,
+    pub classes: Vec<ClassInfo>,
     pub meta: PackageMeta,
 }
 
@@ -67,6 +71,7 @@ pub fn scan_projects(root: &Path) -> Vec<ProjectData> {
         result.push(pd);
     }
 
+    resolve_construct_kinds(&mut result);
     result
 }
 
@@ -80,6 +85,7 @@ pub fn scan_directory(dir: &Path) -> ProjectData {
     let mut imports = Vec::new();
     let mut exported_names = Vec::new();
     let mut reexports = Vec::new();
+    let mut classes = Vec::new();
 
     for file in &ts_files {
         let extracts = extract_from_file(file);
@@ -89,6 +95,7 @@ pub fn scan_directory(dir: &Path) -> ProjectData {
         imports.extend(extracts.imports);
         exported_names.extend(extracts.exported_names);
         reexports.extend(extracts.reexports);
+        classes.extend(extracts.classes);
     }
 
     let name = dir
@@ -107,6 +114,7 @@ pub fn scan_directory(dir: &Path) -> ProjectData {
         imports,
         exported_names,
         reexports,
+        classes,
         meta,
     }
 }
@@ -252,4 +260,252 @@ fn is_workspace_root(dir: &Path) -> bool {
         .and_then(|c| serde_json::from_str::<serde_json::Value>(&c).ok())
         .and_then(|v| v.get("workspaces").cloned())
         .is_some()
+}
+
+/// Resolves a variable name, as seen from a given package, to the construct it refers to.
+/// Lookup order: constructs defined in the package itself, then named imports
+/// (following the source package's re-exports). Variable names are never resolved
+/// globally, so same-named variables in unrelated packages do not collide.
+pub struct VarResolver<'a> {
+    projects: HashMap<&'a str, &'a ProjectData>,
+}
+
+const MAX_RESOLVE_DEPTH: usize = 8;
+
+impl<'a> VarResolver<'a> {
+    pub fn new(projects: &'a [ProjectData]) -> Self {
+        Self {
+            projects: projects.iter().map(|pd| (pd.name.as_str(), pd)).collect(),
+        }
+    }
+
+    /// Returns (defining package name, construct) for `var` as seen from package `pkg`.
+    pub fn resolve(&self, pkg: &str, var: &str) -> Option<(&'a str, &'a ConstructInstance)> {
+        self.resolve_depth(pkg, var, 0)
+    }
+
+    /// Enclosing Architecture of `c` and the ids of the constructs between them (outermost first).
+    fn scope_path(&self, pkg: &str, c: &ConstructInstance) -> Option<(&'a ConstructInstance, Vec<&'a str>)> {
+        let mut path = Vec::new();
+        let (mut pkg, mut parent) = self.resolve(pkg, c.scope_var.as_deref()?)?;
+        for _ in 0..MAX_RESOLVE_DEPTH {
+            if parent.kind.is_architecture() {
+                path.reverse();
+                return Some((parent, path));
+            }
+            path.push(parent.id.as_str());
+            (pkg, parent) = self.resolve(pkg, parent.scope_var.as_deref()?)?;
+        }
+        None
+    }
+
+    /// The Architecture `c` belongs to: itself if it is one, else its enclosing Architecture.
+    pub fn architecture_of(&self, pkg: &str, c: &'a ConstructInstance) -> Option<&'a ConstructInstance> {
+        if c.kind.is_architecture() {
+            return Some(c);
+        }
+        self.scope_path(pkg, c).map(|(arch, _)| arch)
+    }
+
+    /// Node uid of construct `c` (defined in package `pkg`):
+    /// `backend:<id>` for an Architecture, `<arch id>/<scope ids...>/<id>` for anything
+    /// inside an Architecture, the bare id otherwise.
+    pub fn uid(&self, pkg: &str, c: &ConstructInstance) -> String {
+        if c.kind.is_architecture() {
+            return backend_uid(&c.id);
+        }
+        match self.scope_path(pkg, c) {
+            Some((arch, path)) => {
+                let mut uid = arch.id.clone();
+                for id in path {
+                    uid = child_uid(&uid, id);
+                }
+                child_uid(&uid, &c.id)
+            }
+            None => c.id.clone(),
+        }
+    }
+
+    fn resolve_depth(&self, pkg: &str, var: &str, depth: usize) -> Option<(&'a str, &'a ConstructInstance)> {
+        if depth > MAX_RESOLVE_DEPTH {
+            return None;
+        }
+        let pd = self.projects.get(pkg)?;
+
+        if let Some(c) = pd.constructs.iter().find(|c| c.var_name.as_deref() == Some(var)) {
+            return Some((pd.name.as_str(), c));
+        }
+
+        if let Some(imp) = pd.imports.iter().find(|i| i.local_name == var) {
+            let name = imp.imported_name.as_deref().unwrap_or(var);
+            if name != "*" && name != "default" {
+                if let Some(found) = self.resolve_depth(&imp.source, name, depth + 1) {
+                    return Some(found);
+                }
+            }
+        }
+
+        if let Some(found) = pd
+            .reexports
+            .iter()
+            .filter(|r| r.local_name == var || r.local_name == "*")
+            .find_map(|r| self.resolve_depth(&r.source, var, depth + 1))
+        {
+            return Some(found);
+        }
+
+        // `inst.field`: resolve the instance, then its class-template construct in that field
+        let (head, field) = var.split_once('.')?;
+        let (ipkg, inst) = self.resolve_depth(pkg, head, depth + 1)?;
+        let qualified = format!("{}.{}", inst.var_name.as_deref()?, field);
+        self.resolve_depth(ipkg, &qualified, depth + 1)
+    }
+}
+
+/// Packages that export the cdk-arch base classes. Classes reached here are not followed
+/// further: their name is the base kind.
+const CDK_ARCH_PACKAGES: &[&str] = &["@arinoto/cdk-arch"];
+
+const MAX_CLASS_DEPTH: usize = 16;
+
+fn base_kind(name: &str) -> ConstructKind {
+    match name {
+        "Architecture" => ConstructKind::Architecture,
+        "ApiContainer" => ConstructKind::ApiContainer,
+        "Function" | "TBDFunction" => ConstructKind::Function,
+        _ => ConstructKind::Construct,
+    }
+}
+
+/// Where a class name, as seen from a package, is declared.
+enum ClassRef<'a> {
+    /// Declared in a scanned package
+    Declared(&'a str, &'a ClassInfo),
+    /// A cdk-arch base class (by exported name)
+    CdkArch(String),
+    /// Imported from a package that is not scanned: cannot be inspected
+    External,
+    /// Not declared nor imported (a global such as `Error` or `Map`)
+    Unknown,
+}
+
+struct ClassResolver<'a> {
+    projects: HashMap<&'a str, &'a ProjectData>,
+}
+
+impl<'a> ClassResolver<'a> {
+    fn find(&self, pkg: &str, name: &str, depth: usize) -> ClassRef<'a> {
+        if CDK_ARCH_PACKAGES.contains(&pkg) {
+            return ClassRef::CdkArch(name.to_string());
+        }
+        if depth > MAX_CLASS_DEPTH {
+            return ClassRef::Unknown;
+        }
+        let Some(pd) = self.projects.get(pkg) else {
+            return ClassRef::External;
+        };
+        if let Some(ci) = pd.classes.iter().find(|c| c.name == name) {
+            return ClassRef::Declared(pd.name.as_str(), ci);
+        }
+        if let Some(imp) = pd.imports.iter().find(|i| i.local_name == name) {
+            let imported = imp.imported_name.as_deref().unwrap_or(name);
+            // Relative imports stay inside the package, where the class was not found
+            if imp.source.starts_with('.') {
+                return ClassRef::Unknown;
+            }
+            return self.find(&imp.source, imported, depth + 1);
+        }
+        for r in pd.reexports.iter().filter(|r| r.local_name == name || r.local_name == "*") {
+            match self.find(&r.source, name, depth + 1) {
+                ClassRef::Unknown => continue,
+                found => return found,
+            }
+        }
+        ClassRef::Unknown
+    }
+
+    /// Classes from `name` up its `extends` chain (scanned ones only), and the resulting kind.
+    fn chain(&self, pkg: &str, name: &str) -> (Vec<(&'a str, &'a ClassInfo)>, ConstructKind) {
+        let mut chain = Vec::new();
+        let (mut pkg, mut name) = (pkg.to_string(), name.to_string());
+        for _ in 0..MAX_CLASS_DEPTH {
+            match self.find(&pkg, &name, 0) {
+                ClassRef::Declared(p, ci) => {
+                    chain.push((p, ci));
+                    match &ci.extends {
+                        Some(ext) => (pkg, name) = (p.to_string(), ext.clone()),
+                        None => return (chain, ConstructKind::NotConstruct),
+                    }
+                }
+                ClassRef::CdkArch(n) => return (chain, base_kind(&n)),
+                // Unknowable: keep it as a generic construct
+                ClassRef::External => return (chain, ConstructKind::Construct),
+                ClassRef::Unknown => return (chain, ConstructKind::NotConstruct),
+            }
+        }
+        (chain, ConstructKind::NotConstruct)
+    }
+}
+
+/// Resolve every construct's kind through its class hierarchy, drop instances of classes that
+/// do not derive from a cdk-arch Construct, and instantiate class templates: constructs and
+/// routes a class creates in its constructor become constructs/routes of each instance
+/// (including instances of subclasses). A template construct stored in `this.<field>` of an
+/// instance held in variable `v` gets variable name `v.<field>` and scope `v`.
+pub fn resolve_construct_kinds(projects: &mut [ProjectData]) {
+    let mut resolved: Vec<(Vec<ConstructInstance>, Vec<(String, Vec<RouteEntry>)>)> = Vec::new();
+    {
+        let resolver = ClassResolver {
+            projects: projects.iter().map(|pd| (pd.name.as_str(), pd)).collect(),
+        };
+        for pd in projects.iter() {
+            let mut constructs = Vec::new();
+            let mut routes = Vec::new();
+            // (construct, package its class name is resolved in)
+            let mut work: Vec<(ConstructInstance, &str)> =
+                pd.constructs.iter().rev().map(|c| (c.clone(), pd.name.as_str())).collect();
+            let mut budget = 10_000;
+            while let Some((mut c, class_pkg)) = work.pop() {
+                budget -= 1;
+                if budget == 0 {
+                    break;
+                }
+                let (chain, kind) = resolver.chain(class_pkg, &c.class_name);
+                if kind == ConstructKind::NotConstruct {
+                    continue;
+                }
+                c.kind = kind;
+                if let Some(var) = c.var_name.clone() {
+                    for (cls_pkg, cls) in &chain {
+                        for (field, tc) in cls.constructs.iter().rev() {
+                            let mut t = tc.clone();
+                            t.scope_var = Some(var.clone());
+                            t.var_name = Some(format!("{}.{}", var, field));
+                            work.push((t, cls_pkg));
+                        }
+                        if !cls.routes.is_empty() {
+                            let entries = cls
+                                .routes
+                                .iter()
+                                .map(|r| RouteEntry {
+                                    handler_var: match r.handler_var.strip_prefix("this.") {
+                                        Some(field) => format!("{}.{}", var, field),
+                                        None => r.handler_var.clone(),
+                                    },
+                                    ..r.clone()
+                                })
+                                .collect();
+                            routes.push((c.id.clone(), entries));
+                        }
+                    }
+                }
+                constructs.push(c);
+            }
+            resolved.push((constructs, routes));
+        }
+    }
+    for (pd, (constructs, routes)) in projects.iter_mut().zip(resolved) {
+        pd.constructs = constructs;
+        pd.routes.extend(routes);
+    }
 }

@@ -3,16 +3,66 @@ use swc_ecma_ast::*;
 
 use crate::parse::parse_ts_file;
 
+/// What a construct is, by its cdk-arch base class (resolved through `extends` chains
+/// and import aliases after scanning; see `analysis::resolve_construct_kinds`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum ConstructKind {
+    /// Not resolved yet (fresh from the extractor)
+    #[default]
+    Unresolved,
+    /// The class does not derive from a cdk-arch Construct
+    NotConstruct,
+    Architecture,
+    ApiContainer,
+    /// Function or TBDFunction
+    Function,
+    /// Any other Construct (McpContainer, ...)
+    Construct,
+}
+
+impl ConstructKind {
+    pub fn is_function(self) -> bool {
+        self == ConstructKind::Function
+    }
+    pub fn is_architecture(self) -> bool {
+        self == ConstructKind::Architecture
+    }
+    pub fn as_str(self) -> &'static str {
+        match self {
+            ConstructKind::Unresolved => "unresolved",
+            ConstructKind::NotConstruct => "none",
+            ConstructKind::Architecture => "architecture",
+            ConstructKind::ApiContainer => "apicontainer",
+            ConstructKind::Function => "function",
+            ConstructKind::Construct => "construct",
+        }
+    }
+}
+
 /// A construct instantiation found in TS source
 #[derive(Debug, Clone)]
 pub struct ConstructInstance {
+    /// Class name as written at the `new` site (display type)
     pub class_name: String,
+    pub kind: ConstructKind,
     pub id: String,
     pub scope_var: Option<String>,
     pub var_name: Option<String>,
     pub file: String,
-    /// Variables used as objects in method calls within the handler body (Function only)
+    /// Variables used as objects in method calls within the handler body (function-bodied constructs)
     pub called_vars: Vec<String>,
+}
+
+/// A class declaration: its base class and what its constructor creates.
+/// Constructs and routes inside are templates, instantiated for every instance of the class
+/// (and of its subclasses). `this.<field>` handler references are kept as `this.<field>`.
+#[derive(Debug, Clone)]
+pub struct ClassInfo {
+    pub name: String,
+    pub extends: Option<String>,
+    /// (field name, construct created with `this` as scope)
+    pub constructs: Vec<(String, ConstructInstance)>,
+    pub routes: Vec<RouteEntry>,
 }
 
 /// A route entry: { path: 'GET /v1/api/hello/{name}', handler: someVar }
@@ -94,7 +144,6 @@ fn parse_bind_call(args: &[ExprOrSpread], file: &str) -> Option<BindCall> {
 pub struct ImportInfo {
     pub local_name: String,
     pub source: String,
-    #[allow(dead_code)]
     pub imported_name: Option<String>,
 }
 
@@ -117,6 +166,7 @@ pub struct FileExtracts {
     pub exported_names: Vec<String>,
     /// Re-exports: `export { x } from 'source'` or `export * from 'source'`
     pub reexports: Vec<ReExport>,
+    pub classes: Vec<ClassInfo>,
 }
 
 pub fn extract_from_file(path: &Path) -> FileExtracts {
@@ -256,9 +306,9 @@ fn extract_from_decl_inner(decl: &Decl, file: &str, result: &mut FileExtracts) {
                     if let Some(ci) = extract_new_expr(init, file) {
                         let mut ci = ci;
                         ci.var_name = var_name.clone();
-                        // Check for routes in ApiContainer
-                        if ci.class_name == "ApiContainer" {
-                            if let Some(routes) = extract_api_routes(init) {
+                        // Constructor route literal (ApiContainer and subclasses; kind checked later)
+                        if let Some(routes) = extract_api_routes(init) {
+                            if !routes.is_empty() {
                                 result.routes.push((ci.id.clone(), routes));
                             }
                         }
@@ -276,38 +326,61 @@ fn extract_from_decl_inner(decl: &Decl, file: &str, result: &mut FileExtracts) {
             }
         }
         Decl::Class(class_decl) => {
-            extract_from_class(&class_decl.class, file, result);
+            extract_from_class(&class_decl.ident.sym, &class_decl.class, file, result);
         }
         _ => {}
     }
 }
 
-fn extract_from_class(class: &Class, file: &str, result: &mut FileExtracts) {
+fn extract_from_class(name: &str, class: &Class, file: &str, result: &mut FileExtracts) {
+    let mut info = ClassInfo {
+        name: name.to_string(),
+        extends: class.super_class.as_deref().and_then(expr_to_ident_name),
+        constructs: Vec::new(),
+        routes: Vec::new(),
+    };
     for member in &class.body {
-        if let ClassMember::Constructor(ctor) = member {
-            if let Some(body) = &ctor.body {
-                for stmt in &body.stmts {
-                    extract_from_class_stmt(stmt, file, result);
+        match member {
+            ClassMember::Constructor(ctor) => {
+                if let Some(body) = &ctor.body {
+                    for stmt in &body.stmts {
+                        extract_from_class_stmt(stmt, file, &mut info, result);
+                    }
                 }
             }
+            // private readonly x = new SomeConstruct(this, 'id')
+            ClassMember::ClassProp(prop) => {
+                if let (Some(field), Some(value)) = (prop_name_to_string(&prop.key), &prop.value) {
+                    if let Some(ci) = extract_new_expr(value, file) {
+                        info.constructs.push((field, ci));
+                    }
+                }
+            }
+            _ => {}
         }
     }
+    result.classes.push(info);
 }
 
-fn extract_from_class_stmt(stmt: &Stmt, file: &str, result: &mut FileExtracts) {
+fn extract_from_class_stmt(stmt: &Stmt, file: &str, info: &mut ClassInfo, result: &mut FileExtracts) {
     match stmt {
         Stmt::Expr(expr_stmt) => {
-            // Handle this.field = new SomeClass(this, 'id')
-            if let Expr::Assign(assign) = expr_stmt.expr.as_ref() {
-                if let Some(ci) = extract_new_expr(&assign.right, file) {
-                    result.constructs.push(ci);
+            match expr_stmt.expr.as_ref() {
+                // this.field = new SomeClass(this, 'id')
+                Expr::Assign(assign) => {
+                    if let Some(ci) = extract_new_expr(&assign.right, file) {
+                        if let Some(field) = this_field_of_target(&assign.left) {
+                            info.constructs.push((field, ci));
+                        }
+                    }
                 }
-                // Handle this.addRoute('name', 'path', this.field)
-                extract_add_route_calls(&assign.right, result);
-            }
-            // Handle direct method calls like this.addRoute(...)
-            if let Expr::Call(call) = expr_stmt.expr.as_ref() {
-                extract_add_route_from_call(call, result);
+                // this.addRoute('name', 'path', handler)
+                Expr::Call(call) => {
+                    if let Some(route) = extract_add_route_from_call(call) {
+                        info.routes.push(route);
+                    }
+                }
+                _ => {}
             }
             extract_bind_calls(&expr_stmt.expr, file, result);
         }
@@ -316,52 +389,36 @@ fn extract_from_class_stmt(stmt: &Stmt, file: &str, result: &mut FileExtracts) {
     }
 }
 
-fn extract_add_route_calls(expr: &Expr, result: &mut FileExtracts) {
-    if let Expr::Call(call) = expr {
-        extract_add_route_from_call(call, result);
-    }
-}
-
-fn extract_add_route_from_call(call: &CallExpr, result: &mut FileExtracts) {
-    if let Callee::Expr(callee) = &call.callee {
-        if let Expr::Member(member) = callee.as_ref() {
-            if let MemberProp::Ident(prop) = &member.prop {
-                if prop.sym.as_ref() == "addRoute" && call.args.len() >= 3 {
-                    let name = call.args.get(0).and_then(|a| expr_to_string(&a.expr));
-                    let path = call.args.get(1).and_then(|a| expr_to_string(&a.expr));
-                    let handler_var = call.args.get(2).and_then(|a| {
-                        // Could be this.someField or a direct ident
-                        match a.expr.as_ref() {
-                            Expr::Member(m) => {
-                                if let MemberProp::Ident(p) = &m.prop {
-                                    Some(p.sym.to_string())
-                                } else {
-                                    None
-                                }
-                            }
-                            Expr::Ident(id) => Some(id.sym.to_string()),
-                            _ => None,
-                        }
-                    });
-                    // We need to find the container id — for class-internal routes we need
-                    // to figure out which construct this belongs to. For now, collect them
-                    // and associate later.
-                    if let (Some(name), Some(path)) = (name, path) {
-                        // Use a sentinel container id that we'll resolve later
-                        let handler = handler_var.unwrap_or_default();
-                        result.routes.push((
-                            "__class__".to_string(),
-                            vec![RouteEntry {
-                                name,
-                                path,
-                                handler_var: handler,
-                            }],
-                        ));
-                    }
-                }
-            }
+/// `this.field` as an assignment target -> "field"
+fn this_field_of_target(target: &AssignTarget) -> Option<String> {
+    if let AssignTarget::Simple(SimpleAssignTarget::Member(m)) = target {
+        if let (Expr::This(_), MemberProp::Ident(p)) = (m.obj.as_ref(), &m.prop) {
+            return Some(p.sym.to_string());
         }
     }
+    None
+}
+
+/// `this.addRoute('name', 'path', handler)`. The handler is kept as `this.<field>`
+/// or as a plain identifier.
+fn extract_add_route_from_call(call: &CallExpr) -> Option<RouteEntry> {
+    let Callee::Expr(callee) = &call.callee else { return None };
+    let Expr::Member(member) = callee.as_ref() else { return None };
+    let MemberProp::Ident(prop) = &member.prop else { return None };
+    if prop.sym.as_ref() != "addRoute" || call.args.len() < 3 || !matches!(member.obj.as_ref(), Expr::This(_)) {
+        return None;
+    }
+    let name = expr_to_string(&call.args[0].expr)?;
+    let path = expr_to_string(&call.args[1].expr)?;
+    let handler_var = match call.args[2].expr.as_ref() {
+        Expr::Member(m) => match (m.obj.as_ref(), &m.prop) {
+            (Expr::This(_), MemberProp::Ident(p)) => format!("this.{}", p.sym),
+            _ => return None,
+        },
+        Expr::Ident(id) => id.sym.to_string(),
+        _ => return None,
+    };
+    Some(RouteEntry { name, path, handler_var })
 }
 
 fn extract_new_expr(expr: &Expr, file: &str) -> Option<ConstructInstance> {
@@ -375,14 +432,12 @@ fn extract_new_expr(expr: &Expr, file: &str) -> Option<ConstructInstance> {
     let class_name = expr_to_ident_name(&new_expr.callee)?;
     let args = new_expr.args.as_ref()?;
 
-    // Pattern 1: new Architecture('id') — single string arg
-    if class_name == "Architecture" {
-        let id = args
-            .first()
-            .and_then(|a| expr_to_string(&a.expr))
-            .unwrap_or_else(|| "architecture".to_string());
+    // Pattern 1: new Architecture('id') — single string arg (any class; kind decides later)
+    if args.len() == 1 {
+        let id = expr_to_string(&args[0].expr)?;
         return Some(ConstructInstance {
             class_name,
+            kind: ConstructKind::Unresolved,
             id,
             scope_var: None,
             var_name: None,
@@ -396,14 +451,13 @@ fn extract_new_expr(expr: &Expr, file: &str) -> Option<ConstructInstance> {
         let scope_var = expr_to_ident_name(&args[0].expr);
         let id = expr_to_string(&args[1].expr);
         if let Some(id) = id {
-            // For Function (not TBDFunction), extract variables called in the handler body
-            let called_vars = if class_name == "Function" && args.len() >= 3 {
-                collect_handler_called_vars(&args[2].expr)
-            } else {
-                vec![]
-            };
+            // For function-bodied constructs, extract variables called in the handler body
+            let called_vars = args
+                .get(2)
+                .map_or_else(Vec::new, |a| collect_handler_called_vars(&a.expr));
             return Some(ConstructInstance {
                 class_name,
+                kind: ConstructKind::Unresolved,
                 id,
                 scope_var,
                 var_name: None,
@@ -562,9 +616,8 @@ fn collect_calls_in_expr(expr: &Expr, vars: &mut Vec<String>) {
         Expr::Call(call) => {
             if let Callee::Expr(callee) = &call.callee {
                 if let Expr::Member(member) = callee.as_ref() {
-                    if let Expr::Ident(id) = member.obj.as_ref() {
-                        let name = id.sym.to_string();
-                        if name != "this" {
+                    if let Some(name) = member_path(&member.obj) {
+                        if !name.starts_with("this") {
                             vars.push(name);
                         }
                     }
@@ -638,6 +691,18 @@ fn collect_calls_in_stmt(stmt: &Stmt, vars: &mut Vec<String>) {
 
 fn str_value(s: &Str) -> String {
     s.value.to_string_lossy().into_owned()
+}
+
+/// `a` or `a.b.c` (identifiers and plain property names only).
+fn member_path(expr: &Expr) -> Option<String> {
+    match expr {
+        Expr::Ident(id) => Some(id.sym.to_string()),
+        Expr::Member(m) => match &m.prop {
+            MemberProp::Ident(prop) => Some(format!("{}.{}", member_path(&m.obj)?, prop.sym)),
+            _ => None,
+        },
+        _ => None,
+    }
 }
 
 fn expr_to_ident_name(expr: &Expr) -> Option<String> {

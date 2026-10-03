@@ -40,11 +40,8 @@ pub fn render(doc: &C4Document) -> String {
     let mut contained: std::collections::HashSet<&str> = std::collections::HashSet::new();
     for rel in &doc.relations {
         if rel.is == "contains" {
-            let child_type = nodes
-                .get(rel.end.as_str())
-                .map(|n| n.node_type.as_str())
-                .unwrap_or("");
-            if child_type != "function" && child_type != "tbdfunction" {
+            let child_is_function = nodes.get(rel.end.as_str()).map_or(false, |n| n.is_function());
+            if !child_is_function {
                 children_map
                     .entry(rel.start.as_str())
                     .or_default()
@@ -81,9 +78,7 @@ pub fn render(doc: &C4Document) -> String {
         .nodes
         .iter()
         .filter(|n| {
-            !contained.contains(n.uid.as_str())
-                && n.node_type != "function"
-                && n.node_type != "tbdfunction"
+            !contained.contains(n.uid.as_str()) && !n.is_function()
         })
         .collect();
 

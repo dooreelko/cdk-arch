@@ -62,7 +62,7 @@ pub fn run(root: &Path, all: bool) -> ListOutput {
             let architectures: Vec<ArchSummary> = pd
                 .constructs
                 .iter()
-                .filter(|c| c.class_name == "Architecture")
+                .filter(|c| c.kind.is_architecture())
                 .map(|c| ArchSummary {
                     id: c.id.clone(),
                     var_name: c.var_name.clone(),
@@ -72,7 +72,7 @@ pub fn run(root: &Path, all: bool) -> ListOutput {
             let components: Vec<ComponentSummary> = pd
                 .constructs
                 .iter()
-                .filter(|c| c.class_name != "Architecture")
+                .filter(|c| !c.kind.is_architecture())
                 .map(|c| ComponentSummary {
                     id: c.id.clone(),
                     component_type: c.class_name.clone(),

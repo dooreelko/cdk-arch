@@ -50,13 +50,13 @@ fn test_implementation_package_lifting() {
     // - my-dispatcher should HAVE a 'uses' relation to dummy.
 
     let node_ids: Vec<_> = doc.nodes.iter().map(|n| n.uid.as_str()).collect();
-    assert!(node_ids.contains(&"my-dispatcher"), "Architecture node 'my-dispatcher' missing");
-    assert!(node_ids.contains(&"dummy"), "Architecture node 'dummy' missing");
+    assert!(node_ids.contains(&"backend:my-dispatcher"), "Architecture node 'my-dispatcher' missing");
+    assert!(node_ids.contains(&"backend:dummy"), "Architecture node 'dummy' missing");
     assert!(!node_ids.contains(&"my-server"), "Implementation package should be omitted");
-    assert!(!node_ids.contains(&"my-memory"), "Container node should be omitted");
+    assert!(!node_ids.contains(&"dummy/my-memory"), "Container node should be omitted");
 
     let has_lifted_relation = doc.relations.iter().any(|r| 
-        r.start == "my-dispatcher" && r.is == "uses" && r.end == "dummy"
+        r.start == "backend:my-dispatcher" && r.is == "uses" && r.end == "backend:dummy"
     );
     assert!(has_lifted_relation, "Relation should be lifted from my-server to my-dispatcher, pointing to dummy architecture ID");
 }

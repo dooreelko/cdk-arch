@@ -1,8 +1,9 @@
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
 
-use crate::analysis::{build_exported_constructs_map, find_consumers, scan_projects, ProjectData};
-use crate::model::{C4Document, NodeAttributes};
+use crate::analysis::{build_exported_constructs_map, find_consumers, scan_projects, ProjectData, VarResolver};
+use crate::extract::ConstructInstance;
+use crate::model::{backend_uid, C4Document, NodeAttributes};
 
 const WEB_FRAMEWORK_DEPS: &[&str] = &[
     "react", "vue", "svelte", "angular", "@angular/core",
@@ -42,10 +43,120 @@ pub fn run(root: &Path) -> C4Document {
         project: None,
         file: None,
         variable: None,
+        kind: None,
     });
 
     let project_data = scan_projects(&root);
-    let exported_constructs = build_exported_constructs_map(&project_data);
+    let resolver = VarResolver::new(&project_data);
+    let packages = classify_packages(&project_data);
+    let test_packages: HashSet<&str> = packages
+        .iter()
+        .filter(|(_, role)| *role == PackageRole::TestPackage)
+        .map(|(pd, _)| pd.name.as_str())
+        .collect();
+    let is_test_pkg = |name: &str| test_packages.contains(name);
+    let is_test_construct = |c: &ConstructInstance| is_test_pattern(&c.id) || is_test_pattern(&c.file);
+
+    // Find which Architectures exist (for linking consumers to backends)
+    let mut seen_architectures = HashSet::new();
+    let mut arch_by_definer: HashMap<&str, Vec<String>> = HashMap::new();
+    for pd in &project_data {
+        if is_test_pkg(&pd.name) { continue; }
+        for c in &pd.constructs {
+            if is_test_construct(c) { continue; }
+            if c.kind.is_architecture() && seen_architectures.insert(c.id.clone()) {
+                let rel_file = rel_path(&c.file, root_str);
+                let uid = backend_uid(&c.id);
+                doc.add_node(&uid, &c.id, "Backend", NodeAttributes {
+                    project: Some(pd.name.clone()),
+                    file: Some(rel_file),
+                    variable: c.var_name.clone(),
+                    kind: Some(c.kind.as_str().to_string()),
+                });
+                doc.add_relation(&system_name, "contains", &uid);
+                arch_by_definer.entry(&pd.name).or_default().push(uid);
+            }
+        }
+    }
+
+    let arch_defining_packages: HashSet<&str> = arch_by_definer.keys().copied().collect();
+
+    // Emit consumer packages by role
+    for (pd, role) in &packages {
+        match role {
+            PackageRole::Frontend | PackageRole::Client => {
+                let type_name = if *role == PackageRole::Frontend { "Frontend" } else { "Client" };
+                doc.add_node(&pd.name, &pd.name, type_name, NodeAttributes {
+                    project: Some(pd.name.clone()),
+                    file: None,
+                    variable: None,
+                    kind: None,
+                });
+                doc.add_relation(&system_name, "contains", &pd.name);
+
+                let used_archs = find_used_architectures(pd, &project_data, &arch_defining_packages, &arch_by_definer);
+                for arch_uid in used_archs {
+                    if !is_test_pattern(&arch_uid) {
+                        doc.add_relation(&pd.name, "uses", &arch_uid);
+                    }
+                }
+            }
+            PackageRole::ClientServer | PackageRole::Infrastructure => {
+                // Lift uses to implemented architectures
+                let implemented_archs = find_used_architectures(pd, &project_data, &arch_defining_packages, &arch_by_definer);
+
+                // Lift relations to the Architectures owning the bound constructs
+                for bind in pd.binds.iter().filter(|b| !b.has_overloads) {
+                    let Some((cpkg, bound)) = resolver.resolve(&pd.name, &bind.component_var) else { continue };
+                    if is_test_pkg(cpkg) || is_test_construct(bound) { continue; }
+                    let Some(arch) = resolver.architecture_of(cpkg, bound) else { continue };
+                    if is_test_pattern(&arch.id) { continue; }
+                    let target = backend_uid(&arch.id);
+                    for arch_uid in &implemented_archs {
+                        if arch_uid != &target {
+                            doc.add_relation(arch_uid, "uses", &target);
+                        }
+                    }
+                }
+            }
+            PackageRole::ArchDefiner => {
+                // Link Architecture to other architectures it imports
+                if let Some(my_uids) = arch_by_definer.get(pd.name.as_str()) {
+                    let used_archs = find_used_architectures(pd, &project_data, &arch_defining_packages, &arch_by_definer);
+                    for my_uid in my_uids {
+                        for used_uid in &used_archs {
+                            if my_uid != used_uid && !is_test_pattern(used_uid) {
+                                doc.add_relation(my_uid, "uses", used_uid);
+                            }
+                        }
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
+    doc
+}
+
+/// Packages that consume architecture constructs (directly or transitively) and are
+/// classified as Frontend or Client. They are internal to the system: they use its Architectures.
+/// Returns (package, node type).
+pub fn frontend_and_client_packages(project_data: &[ProjectData]) -> Vec<(&ProjectData, &'static str)> {
+    classify_packages(project_data)
+        .into_iter()
+        .filter_map(|(pd, role)| match role {
+            PackageRole::Frontend => Some((pd, "Frontend")),
+            PackageRole::Client => Some((pd, "Client")),
+            _ => None,
+        })
+        .collect()
+}
+
+/// Role of every package relevant to the system view: consumers of architecture constructs
+/// (directly or transitively) and packages with constructs or bindings of their own.
+fn classify_packages(project_data: &[ProjectData]) -> Vec<(&ProjectData, PackageRole)> {
+    let exported_constructs = build_exported_constructs_map(project_data);
 
     // Packages imported by others (for library detection)
     let imported_packages: HashSet<&str> = project_data
@@ -55,9 +166,8 @@ pub fn run(root: &Path) -> C4Document {
 
     // Identify direct consumers of architecture constructs
     let mut is_consumer: HashSet<&str> = HashSet::new();
-    for pd in &project_data {
-        let entries = find_consumers(&pd.imports, &exported_constructs);
-        if !entries.is_empty() {
+    for pd in project_data {
+        if !find_consumers(&pd.imports, &exported_constructs).is_empty() {
             is_consumer.insert(&pd.name);
         }
     }
@@ -74,7 +184,7 @@ pub fn run(root: &Path) -> C4Document {
     // Expand to transitive consumers
     loop {
         let mut new_consumers = Vec::new();
-        for pd in &project_data {
+        for pd in project_data {
             if is_consumer.contains(pd.name.as_str()) { continue; }
             if let Some(sources) = import_sources.get(pd.name.as_str()) {
                 if sources.iter().any(|s| is_consumer.contains(s)) {
@@ -86,183 +196,26 @@ pub fn run(root: &Path) -> C4Document {
         for name in new_consumers { is_consumer.insert(name); }
     }
 
-    // Pre-calculate roles for all packages
-    let mut package_roles: HashMap<&str, PackageRole> = HashMap::new();
-    for pd in &project_data {
-        let has_binds = !pd.binds.is_empty();
-        let consumer = is_consumer.contains(pd.name.as_str());
-        let role = classify_package(pd, has_binds, consumer, &imported_packages);
-        package_roles.insert(pd.name.as_str(), role);
-    }
+    project_data
+        .iter()
+        .map(|pd| {
+            let consumer = is_consumer.contains(pd.name.as_str());
+            (pd, consumer, classify_package(pd, !pd.binds.is_empty(), consumer, &imported_packages))
+        })
+        .filter(|(pd, consumer, role)| {
+            *role == PackageRole::TestPackage
+                || *consumer
+                || pd.constructs.iter().any(|c| !c.kind.is_architecture())
+                || !pd.binds.is_empty()
+        })
+        .map(|(pd, _, role)| (pd, role))
+        .collect()
+}
 
-    // Helper to skip test packages and IDs/Files
-    let is_test_pattern = |s: &str| {
-        let s_lower = s.to_lowercase();
-        TEST_NAME_PATTERNS.iter().any(|p| s_lower.contains(p))
-    };
-    let is_test_pkg = |name: &str| package_roles.get(name) == Some(&PackageRole::TestPackage);
-
-    // Collect all valid architectural IDs (Architectures and Constructs)
-    let mut arch_ids = HashSet::new();
-    let mut construct_id_by_var: HashMap<&str, HashMap<String, String>> = HashMap::new(); // pkg -> var -> id
-    
-    for pd in &project_data {
-        if is_test_pkg(&pd.name) { continue; }
-        let mut vars = HashMap::new();
-        for c in &pd.constructs {
-            if is_test_pattern(&c.id) || is_test_pattern(&c.file) { continue; }
-            if c.class_name == "Architecture" {
-                arch_ids.insert(c.id.clone());
-            }
-            if let Some(var_name) = &c.var_name {
-                vars.insert(var_name.clone(), c.id.clone());
-            }
-        }
-        construct_id_by_var.insert(pd.name.as_str(), vars);
-    }
-
-    // Map: Construct ID -> Architecture ID
-    let mut construct_to_arch: HashMap<String, String> = HashMap::new();
-    for pd in &project_data {
-        if is_test_pkg(&pd.name) { continue; }
-        let local_vars = construct_id_by_var.get(pd.name.as_str()).unwrap();
-        let consumers = find_consumers(&pd.imports, &exported_constructs);
-
-        for c in &pd.constructs {
-            if c.class_name == "Architecture" { continue; }
-            if is_test_pattern(&c.id) || is_test_pattern(&c.file) { continue; }
-            
-            if let Some(scope_var) = &c.scope_var {
-                // Resolve scope_var to an Architecture ID
-                let arch_id = if let Some(id) = local_vars.get(scope_var) {
-                    if arch_ids.contains(id) { Some(id.clone()) } else { None }
-                } else {
-                    consumers.iter()
-                        .find(|cons| &cons.name == scope_var && cons.construct_type == "Architecture")
-                        .map(|cons| cons.construct_id.clone())
-                };
-
-                if let Some(aid) = arch_id {
-                    construct_to_arch.insert(c.id.clone(), aid);
-                }
-            }
-        }
-    }
-
-    // Find which Architectures exist (for linking consumers to backends)
-    let mut seen_architectures = HashSet::new();
-    let mut arch_by_definer: HashMap<&str, Vec<String>> = HashMap::new();
-    for pd in &project_data {
-        if is_test_pkg(&pd.name) { continue; }
-        for c in &pd.constructs {
-            if is_test_pattern(&c.id) || is_test_pattern(&c.file) { continue; }
-            if c.class_name == "Architecture" && seen_architectures.insert(c.id.clone()) {
-                let rel_file = rel_path(&c.file, root_str);
-                doc.add_node(&c.id, &c.id, "Backend", NodeAttributes {
-                    project: Some(pd.name.clone()),
-                    file: Some(rel_file),
-                    variable: c.var_name.clone(),
-                });
-                doc.add_relation(&system_name, "contains", &c.id);
-                arch_by_definer
-                    .entry(&pd.name)
-                    .or_default()
-                    .push(c.id.clone());
-            }
-        }
-    }
-
-    let arch_defining_packages: HashSet<&str> = arch_by_definer.keys().copied().collect();
-
-    // Classify and emit consumer packages
-    for pd in &project_data {
-        if is_test_pkg(&pd.name) { continue; }
-        if !is_consumer.contains(pd.name.as_str()) {
-            let has_non_arch = pd.constructs.iter().any(|c| c.class_name != "Architecture");
-            if !has_non_arch && pd.binds.is_empty() {
-                continue;
-            }
-        }
-
-        let role = package_roles.get(pd.name.as_str()).unwrap();
-
-        match role {
-            PackageRole::Frontend | PackageRole::Client => {
-                let type_name = if *role == PackageRole::Frontend { "Frontend" } else { "Client" };
-                doc.add_node(&pd.name, &pd.name, type_name, NodeAttributes {
-                    project: Some(pd.name.clone()),
-                    file: None,
-                    variable: None,
-                });
-                doc.add_relation(&system_name, "contains", &pd.name);
-
-                let used_archs = find_used_architectures(pd, &project_data, &arch_defining_packages, &arch_by_definer);
-                for arch_id in used_archs {
-                    if !is_test_pattern(&arch_id) {
-                        doc.add_relation(&pd.name, "uses", &arch_id);
-                    }
-                }
-            }
-            PackageRole::ClientServer | PackageRole::Infrastructure => {
-                // Lift uses to implemented architectures
-                let implemented_archs = find_used_architectures(pd, &project_data, &arch_defining_packages, &arch_by_definer);
-                
-                // 1. Lift relations to bound constructs
-                for bind in &pd.binds {
-                    if !bind.has_overloads {
-                        // Find the construct ID for this variable
-                        let mut target_id = None;
-                        
-                        // Check local constructs first
-                        if let Some(local_vars) = construct_id_by_var.get(pd.name.as_str()) {
-                            if let Some(id) = local_vars.get(&bind.component_var) {
-                                target_id = Some(id.clone());
-                            }
-                        }
-                        
-                        // Check imports
-                        if target_id.is_none() {
-                            let consumers = find_consumers(&pd.imports, &exported_constructs);
-                            if let Some(c) = consumers.iter().find(|c| c.name == bind.component_var) {
-                                target_id = Some(c.construct_id.clone());
-                            }
-                        }
-
-                        if let Some(tid) = target_id {
-                            // Map construct ID to parent architecture ID
-                            let final_target = construct_to_arch.get(&tid).unwrap_or(&tid);
-                            
-                            if is_test_pattern(final_target) { continue; }
-                            
-                            for arch_id in &implemented_archs {
-                                // Skip if the target is an architecture ID (handled by transitive arch lift)
-                                // or if it's the arch itself
-                                if arch_id != final_target {
-                                    doc.add_relation(arch_id, "uses", final_target);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            PackageRole::ArchDefiner => {
-                // Link Architecture to other architectures it imports
-                if let Some(my_ids) = arch_by_definer.get(pd.name.as_str()) {
-                    let used_archs = find_used_architectures(pd, &project_data, &arch_defining_packages, &arch_by_definer);
-                    for my_id in my_ids {
-                        for used_id in &used_archs {
-                            if my_id != used_id && !is_test_pattern(used_id) {
-                                doc.add_relation(my_id, "uses", used_id);
-                            }
-                        }
-                    }
-                }
-            }
-            _ => {}
-        }
-    }
-
-    doc
+/// Test ids, files and package names are excluded from the system view.
+fn is_test_pattern(s: &str) -> bool {
+    let s_lower = s.to_lowercase();
+    TEST_NAME_PATTERNS.iter().any(|p| s_lower.contains(p))
 }
 
 /// Trace the import chain from a consumer package to find which Architecture(s) it uses.
@@ -327,7 +280,7 @@ fn classify_package(
     }
 
     // 2. Architecture definer
-    if pd.constructs.iter().any(|c| c.class_name == "Architecture") {
+    if pd.constructs.iter().any(|c| c.kind.is_architecture()) {
         return PackageRole::ArchDefiner;
     }
 
