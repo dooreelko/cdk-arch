@@ -27,7 +27,7 @@ pub fn doc_from_json(v: &serde_json::Value) -> C4Document {
     doc
 }
 
-/// the system node becomes the title, `contains` becomes group membership (every container and every backend is a group),
+/// the system node becomes the title, `contains` becomes group membership (whatever contains something is a group),
 /// any other relation an edge labelled with its kind (labels shown only when there is more than one kind)
 pub fn build(doc: &C4Document) -> Built {
     let mut warnings: Vec<String> = Vec::new();
@@ -35,11 +35,7 @@ pub fn build(doc: &C4Document) -> Built {
     let title = doc.nodes.iter().find(|n| n.node_type == "system").map(|n| n.name.clone());
     let known: IndexSet<&str> = doc.nodes.iter().map(|n| n.uid.as_str()).collect();
     let contains: Vec<_> = doc.relations.iter().filter(|r| r.is == "contains" && !systems.contains(r.start.as_str())).collect();
-    let group_ids: IndexSet<&str> = contains
-        .iter()
-        .map(|r| r.start.as_str())
-        .chain(doc.nodes.iter().filter(|n| n.node_type == "backend").map(|n| n.uid.as_str()))
-        .collect();
+    let group_ids: IndexSet<&str> = contains.iter().map(|r| r.start.as_str()).collect();
     let mut parent: IndexMap<&str, &str> = IndexMap::new();
     for r in &contains {
         if !known.contains(r.start.as_str()) || !known.contains(r.end.as_str()) {
