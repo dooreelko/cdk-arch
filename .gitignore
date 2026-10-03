@@ -16,3 +16,6 @@ __pycache__/
 
 # drawio backups
 .$*.bkp
+
+# rust
+/target

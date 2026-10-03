@@ -20,7 +20,7 @@
 #
 # Env overrides:
 #   C43_BIN    path to the c43 binary to test  (default: the release build in
-#              this repo: packages/c43/target/release/c43)
+#              this repo: target/release/c43)
 #   CLAUDE_BIN claude executable               (default: claude on PATH)
 #   KEEP=1     keep an existing /tmp/<case> dir instead of wiping it
 
@@ -32,14 +32,14 @@ PLUGIN_DIR="$(cd "$UAT_DIR/.." && pwd -P)"          # claude-plugin/c43
 # repo root = up from claude-plugin/c43/uat -> claude-plugin/c43 -> claude-plugin -> repo
 REPO_ROOT="$(cd "$PLUGIN_DIR/../.." && pwd -P)"
 
-C43_BIN="${C43_BIN:-$REPO_ROOT/packages/c43/target/release/c43}"
+C43_BIN="${C43_BIN:-$REPO_ROOT/target/release/c43}"
 CLAUDE_BIN="${CLAUDE_BIN:-claude}"
 
 # --- preflight ----------------------------------------------------------------
 fail_pre() { echo "UAT preflight error: $*" >&2; exit 2; }
 
 [ -x "$C43_BIN" ] || fail_pre "c43 binary not found/executable at: $C43_BIN
-  build it first:  cargo build --release --manifest-path packages/c43/Cargo.toml
+  build it first:  cargo build --release
   or set C43_BIN=/path/to/c43"
 command -v "$CLAUDE_BIN" >/dev/null 2>&1 || fail_pre "claude CLI not found (set CLAUDE_BIN=...)"
 [ -f "$PLUGIN_DIR/.claude-plugin/plugin.json" ] || fail_pre "plugin.json not found under $PLUGIN_DIR"
