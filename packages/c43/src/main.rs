@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 use clap::{CommandFactory, Parser, Subcommand};
-use c43::{ascii, cmd};
+use c43::{ascii, cmd, drawio};
 
 #[derive(Parser)]
 #[command(name = "c43", about = "C4 model extractor for cdk-arch TypeScript projects")]
@@ -8,6 +8,9 @@ struct Cli {
     /// Output as ASCII tree instead of JSON
     #[arg(long, global = true)]
     ascii: bool,
+    /// Output a laid-out drawio diagram instead of JSON (system and container); warnings go to stderr
+    #[arg(long, global = true, conflicts_with = "ascii")]
+    drawio: bool,
     /// Print a recursive overview of all commands and options (for LLM agents)
     #[arg(long)]
     agent_help: bool,
@@ -27,23 +30,6 @@ enum Commands {
         /// Path to the repository root
         path: PathBuf,
     },
-    /// Extract component-level C4 view (Functions within architecture containers)
-    Component {
-        /// Path to the repository root
-        path: PathBuf,
-        /// Optional container name filter
-        #[arg(long)]
-        container: Option<String>,
-    },
-    /// Extract deployment view (architectureBinding.bind calls)
-    Deployment {
-        /// Path to architecture package
-        #[arg(long)]
-        arch: PathBuf,
-        /// Path to infrastructure package
-        #[arg(long)]
-        infra: PathBuf,
-    },
     /// List all detected architectures, components, and bindings per node project
     List {
         /// Path to walk
@@ -54,23 +40,6 @@ enum Commands {
         /// Include node projects without any architectural components
         #[arg(long)]
         all: bool,
-    },
-    /// Render an ASCII C43 diagram from a layout.json (grid + edges)
-    Layout {
-        /// Path to layout.json
-        layout: std::path::PathBuf,
-        /// Iterate on engine feedback to settle ports/order automatically
-        #[arg(long)]
-        auto: bool,
-        /// Eval budget for --auto
-        #[arg(long, default_value_t = 200)]
-        max_evals: usize,
-        /// Output path for the ASCII diagram (default: result.txt)
-        #[arg(long, default_value = "result.txt")]
-        out_txt: std::path::PathBuf,
-        /// Output path for the JSON result (default: result.json)
-        #[arg(long, default_value = "result.json")]
-        out_json: std::path::PathBuf,
     },
 }
 
@@ -91,12 +60,12 @@ fn main() {
         }
     };
 
-    if let Commands::Layout { layout, auto, max_evals, out_txt, out_json } = &command {
-        std::process::exit(cmd::layout::run(layout, *auto, *max_evals, out_txt, out_json));
-    }
-
     match command {
         Commands::List { path, json, all } => {
+            if cli.drawio {
+                eprintln!("error: --drawio applies to system and container");
+                std::process::exit(2);
+            }
             let output = cmd::list::run(&path, all);
             if json {
                 println!("{}", serde_json::to_string_pretty(&output).unwrap());
@@ -108,14 +77,20 @@ fn main() {
             let doc = match other {
                 Commands::System { path } => cmd::system::run(&path),
                 Commands::Container { path } => cmd::container::run(&path),
-                Commands::Component { path, container } => {
-                    cmd::component::run(&path, container.as_deref())
-                }
-                Commands::Deployment { arch, infra } => cmd::deployment::run(&arch, &infra),
                 Commands::List { .. } => unreachable!(),
-                Commands::Layout { .. } => unreachable!(),
             };
-            if cli.ascii {
+            if cli.drawio {
+                match drawio::render(&doc) {
+                    Ok(r) => {
+                        r.warnings.iter().for_each(|w| eprintln!("warning: {w}"));
+                        print!("{}", r.xml);
+                    }
+                    Err(e) => {
+                        eprintln!("error: {e}");
+                        std::process::exit(1);
+                    }
+                }
+            } else if cli.ascii {
                 println!("{}", ascii::render(&doc));
             } else {
                 println!("{}", serde_json::to_string_pretty(&doc).unwrap());
