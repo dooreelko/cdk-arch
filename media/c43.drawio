@@ -1,0 +1,124 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.8.0 Safari/537.36" version="29.0.3">
+  <diagram name="Page-1" id="784M3cr1F58Fyx_porS3">
+    <mxGraphModel dx="4112" dy="1398" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <object label="" placeholders="1" title="System context / Title" description="Diagram description bla bla buh laa&#xa;even a second line" id="Lbq0y8EJVfoxVaYD_3Id-21">
+          <mxCell style="group" vertex="1" connectable="0" parent="1">
+            <mxGeometry x="-798" y="82" width="630" height="998" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-28" value="" style="group" vertex="1" connectable="0" parent="Lbq0y8EJVfoxVaYD_3Id-21">
+          <mxGeometry x="-18" y="-26" width="630" height="998" as="geometry" />
+        </mxCell>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-9" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="Lbq0y8EJVfoxVaYD_3Id-28">
+          <mxGeometry width="630" height="998" as="geometry" />
+        </mxCell>
+        <object label="&lt;div style=&quot;line-height: 70%;&quot;&gt;&lt;h1 style=&quot;margin-top: 0px; line-height: 70%;&quot;&gt;&lt;font face=&quot;Helvetica&quot;&gt;%title%&lt;/font&gt;&lt;/h1&gt;&lt;h1 style=&quot;margin-top: 0px; line-height: 70%;&quot;&gt;&lt;span style=&quot;font-size: 12px; font-weight: 400;&quot;&gt;&lt;font face=&quot;Helvetica&quot;&gt;%description%&lt;/font&gt;&lt;/span&gt;&lt;/h1&gt;&lt;/div&gt;" placeholders="1" id="Lbq0y8EJVfoxVaYD_3Id-10">
+          <mxCell style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="Lbq0y8EJVfoxVaYD_3Id-28">
+            <mxGeometry x="40" y="38" width="560" height="120" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="" placeholders="1" title="Group name" description="a short but possibly even&#xa;multiline description" id="Lbq0y8EJVfoxVaYD_3Id-50">
+          <mxCell style="group" vertex="1" connectable="0" parent="1">
+            <mxGeometry x="-160" y="46" width="630" height="998" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-54" value="" style="group" vertex="1" connectable="0" parent="Lbq0y8EJVfoxVaYD_3Id-50">
+          <mxGeometry x="6" y="12" width="630" height="998" as="geometry" />
+        </mxCell>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-51" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;" vertex="1" parent="Lbq0y8EJVfoxVaYD_3Id-54">
+          <mxGeometry width="630" height="998" as="geometry" />
+        </mxCell>
+        <object label="&lt;div style=&quot;line-height: 70%;&quot;&gt;&lt;h1 style=&quot;margin-top: 0px; line-height: 70%;&quot;&gt;&lt;font style=&quot;font-size: 22px;&quot; face=&quot;Helvetica&quot;&gt;%title%&lt;/font&gt;&lt;/h1&gt;&lt;h1 style=&quot;margin-top: 0px; line-height: 70%;&quot;&gt;&lt;span style=&quot;font-size: 12px; font-weight: 400;&quot;&gt;&lt;font face=&quot;Helvetica&quot;&gt;%description%&lt;/font&gt;&lt;/span&gt;&lt;/h1&gt;&lt;/div&gt;" placeholders="1" id="Lbq0y8EJVfoxVaYD_3Id-52">
+          <mxCell style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="Lbq0y8EJVfoxVaYD_3Id-54">
+            <mxGeometry x="40" y="873" width="560" height="87" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-64" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="526" y="60" width="242.25" height="228" as="geometry" />
+        </mxCell>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-61" value="" style="shape=image;aspect=fixed;image=data:image/svg+xml,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB3aWR0aD0iNjQuMzc3MjUxbW0iCiAgIGhlaWdodD0iNTQuNTcwNTA3bW0iCiAgIHZpZXdCb3g9IjAgMCA2NC4zNzcyNTEgNTQuNTcwNTA3IgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmcxIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxkZWZzCiAgICAgaWQ9ImRlZnMxIiAvPgogIDxnCiAgICAgaWQ9ImxheWVyMSIKICAgICB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMjguODUyMjg0LC0xMzAuMjI0MTgpIj4KICAgIDxnCiAgICAgICBpZD0iZzU1IgogICAgICAgdHJhbnNmb3JtPSJtYXRyaXgoMSwwLDAsMS4yODkxNTE3LDAsLTQ4LjEwMjI0NikiCiAgICAgICBzdHlsZT0ic3Ryb2tlLXdpZHRoOjAuODgwNzQiPgogICAgICA8cGF0aAogICAgICAgICBpZD0iZWxsaXBzZTEiCiAgICAgICAgIHN0eWxlPSJmaWxsOm5vbmU7ZmlsbC1vcGFjaXR5OjE7c3Ryb2tlOiMwMDAyMDM7c3Ryb2tlLXdpZHRoOjAuODgwNzQ7c3Ryb2tlLWxpbmVjYXA6YnV0dDtzdHJva2UtbGluZWpvaW46cm91bmQ7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjEiCiAgICAgICAgIGQ9Im0gOTIuNzY2MzUxLDE3Ny43OTE2OCBjIDAuMzAxNjcyLDIuNDk5MzYgLTE0LjIwMzY1NSwyLjQyNjY3IC0zMS43MjQ3NTQsMi40MjY2NyAtMTcuNTIxMDk4LDAgLTMxLjcyNDc1MSwwLjA4MjYgLTMxLjcyNDc1MywtMi40MjY2NyAwLC0xLjI1NDYyIC0wLjAyNDE5LC0yNC4xMzMzNiAtMC4wMjQxOSwtMzYuNzQwMTkgMC4zOTgwMjIsMS40MjI3OSAxNi4wODgyODksMi40MzQwNiAzMS42OTIwOTMsMi40MjMyOCAxNS42MDM4MDQsLTAuMDEwOCAzMS41OTQ0NzQsLTAuOTkxMDIgMzEuODA0NDIsLTIuMzkzNTggMCwxMS43NDgyNCAtMC4wMjI4MiwzNi43MTA1MyAtMC4wMjI4MiwzNi43MTA1MyB6IiAvPgogICAgICA8ZWxsaXBzZQogICAgICAgICBzdHlsZT0iZmlsbDpub25lO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTojMDAwMjAzO3N0cm9rZS13aWR0aDowLjg4MDc0O3N0cm9rZS1kYXNoYXJyYXk6bm9uZTtzdHJva2Utb3BhY2l0eToxIgogICAgICAgICBpZD0icGF0aDEiCiAgICAgICAgIGN4PSI2MS4wNDE1OTkiCiAgICAgICAgIGN5PSIxNDEuMDg3MDQiCiAgICAgICAgIHJ4PSIzMS43MjQ3NTQiCiAgICAgICAgIHJ5PSIyLjMxODE2NTgiIC8+CiAgICA8L2c+CiAgPC9nPgo8L3N2Zz4K;imageBackground=none;" vertex="1" parent="Lbq0y8EJVfoxVaYD_3Id-64">
+          <mxGeometry x="-0.75" width="243" height="206" as="geometry" />
+        </mxCell>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-68" value="" style="group" vertex="1" connectable="0" parent="Lbq0y8EJVfoxVaYD_3Id-64">
+          <mxGeometry x="0.75" width="240" height="190" as="geometry" />
+        </mxCell>
+        <object label="&lt;div style=&quot;line-height: 100%;&quot;&gt;&lt;h1 style=&quot;margin-top: 0px; line-height: 100%;&quot;&gt;&lt;span style=&quot;font-size: 16px; line-height: 60%;&quot;&gt;%name%&lt;br&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;%role%&lt;br&gt;&lt;/span&gt;&lt;/span&gt;&lt;/h1&gt;&lt;/div&gt;" placeholders="1" name="Container name" role="[Container role]" id="Lbq0y8EJVfoxVaYD_3Id-65">
+          <mxCell style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;align=center;spacing=0;verticalAlign=bottom;spacingBottom=-4;spacingLeft=8;spacingRight=8;spacingTop=8;" vertex="1" parent="Lbq0y8EJVfoxVaYD_3Id-68">
+            <mxGeometry width="240" height="90" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="%description%" placeholders="1" description="Container&#39;s short description sometimes multiline" id="Lbq0y8EJVfoxVaYD_3Id-66">
+          <mxCell style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=top;rounded=0;spacing=0;spacingLeft=16;spacingRight=16;" vertex="1" parent="Lbq0y8EJVfoxVaYD_3Id-68">
+            <mxGeometry y="100" width="240" height="90" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-75" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="512.6266666666668" y="364" width="269" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-69" value="" style="shape=image;aspect=fixed;image=data:image/svg+xml,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB3aWR0aD0iNzEuMDQzNDQ5bW0iCiAgIGhlaWdodD0iNDAuMDc4NTIybW0iCiAgIHZpZXdCb3g9IjAgMCA3MS4wNDM0NDkgNDAuMDc4NTIyIgogICB2ZXJzaW9uPSIxLjEiCiAgIGlkPSJzdmcxIgogICB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciCiAgIHhtbG5zOnN2Zz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDxkZWZzCiAgICAgaWQ9ImRlZnMxIiAvPgogIDxnCiAgICAgaWQ9ImxheWVyMSIKICAgICB0cmFuc2Zvcm09InRyYW5zbGF0ZSgtMjQzLjYzOTQ3LC02Ny41MDMzMjUpIj4KICAgIDxnCiAgICAgICBpZD0iZzYiCiAgICAgICB0cmFuc2Zvcm09Im1hdHJpeCgwLjk4MTU0NzM1LDAsMCwwLjk4MTM0NzQxLDE2Mi40ODAzMywyOC40MTA0NzcpIgogICAgICAgc3R5bGU9ImZpbGw6bm9uZTtzdHJva2Utd2lkdGg6MS4wMTg5Ij4KICAgICAgPHBhdGgKICAgICAgICAgaWQ9InBhdGgyIgogICAgICAgICBzdHlsZT0iZmlsbDpub25lO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTojMDAwMjAzO3N0cm9rZS13aWR0aDoxLjAxODk7c3Ryb2tlLWxpbmVjYXA6YnV0dDtzdHJva2UtbGluZWpvaW46cm91bmQ7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjEiCiAgICAgICAgIGQ9Im0gODcuMTI0NDA2LDgwLjE1MjQxOSBjIC0yLjE2MTk4NSwwLjE4OTE5MyAtMy45MzAwNTcsLTguOTA3NzIzIC0zLjkzMDA1NywtMTkuODk1OTU5IDAsLTEwLjk4ODIzNiAxLjc1OTU0NywtMTkuODk1OTU5IDMuOTMwMDU3LC0xOS44OTU5NiAxLjA4NTI1NSwwIDUyLjYyNTY3NCwtMC4wMTUxNiA2My41MzA3NDQsLTAuMDE1MTYgLTUuMjgyMDIsMC42MzExNjMgLTUuMTgxNzIsMzkuMDk2MzA4IC0wLjAyNTYsMzkuODIxMzk5IC0xMC4xNjIzOSwwIC02My41MDUwOTcsLTAuMDE0MzEgLTYzLjUwNTA5NywtMC4wMTQzMSB6IiAvPgogICAgICA8ZWxsaXBzZQogICAgICAgICBzdHlsZT0iZmlsbDpub25lO2ZpbGwtb3BhY2l0eToxO3N0cm9rZTojMDAwMjAzO3N0cm9rZS13aWR0aDoxLjAxODk7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjEiCiAgICAgICAgIGlkPSJlbGxpcHNlMiIKICAgICAgICAgY3g9IjYwLjI1NjQ2MiIKICAgICAgICAgY3k9Ii0xNTAuNjI0NDIiCiAgICAgICAgIHJ4PSIxOS44OTU5NiIKICAgICAgICAgcnk9IjMuOTMwMDU2OCIKICAgICAgICAgdHJhbnNmb3JtPSJyb3RhdGUoOTApIiAvPgogICAgPC9nPgogIDwvZz4KPC9zdmc+Cg==;" vertex="1" parent="Lbq0y8EJVfoxVaYD_3Id-75">
+          <mxGeometry y="8" width="269" height="151" as="geometry" />
+        </mxCell>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-72" value="" style="group" vertex="1" connectable="0" parent="Lbq0y8EJVfoxVaYD_3Id-75">
+          <mxGeometry x="3.373333333333221" width="240" height="190" as="geometry" />
+        </mxCell>
+        <object label="&lt;div style=&quot;line-height: 100%;&quot;&gt;&lt;h1 style=&quot;margin-top: 0px; line-height: 100%;&quot;&gt;&lt;span style=&quot;font-size: 16px; line-height: 60%;&quot;&gt;%name%&lt;br&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;%role%&lt;br&gt;&lt;/span&gt;&lt;/span&gt;&lt;/h1&gt;&lt;/div&gt;" placeholders="1" name="Message bus" role="[Bus details]" id="Lbq0y8EJVfoxVaYD_3Id-73">
+          <mxCell style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;align=center;spacing=0;verticalAlign=bottom;spacingBottom=-4;spacingLeft=8;spacingRight=8;spacingTop=8;" vertex="1" parent="Lbq0y8EJVfoxVaYD_3Id-72">
+            <mxGeometry width="240" height="90" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="%description%" placeholders="1" description=" Bus&#39; short description sometimes multiline" id="Lbq0y8EJVfoxVaYD_3Id-74">
+          <mxCell style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=top;rounded=0;spacing=0;spacingLeft=16;spacingRight=16;" vertex="1" parent="Lbq0y8EJVfoxVaYD_3Id-72">
+            <mxGeometry y="100" width="240" height="90" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-46" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=4;fillColor=default;" vertex="1" parent="1">
+          <mxGeometry x="-911" y="396" width="56" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-41" value="" style="group;spacing=8;fillColor=#EDEDED;" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="-1245" y="576" width="240" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-42" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeWidth=4;" vertex="1" parent="Lbq0y8EJVfoxVaYD_3Id-41">
+          <mxGeometry width="240" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-43" value="" style="group" vertex="1" connectable="0" parent="Lbq0y8EJVfoxVaYD_3Id-41">
+          <mxGeometry width="240" height="190" as="geometry" />
+        </mxCell>
+        <object label="&lt;div style=&quot;line-height: 100%;&quot;&gt;&lt;h1 style=&quot;margin-top: 0px; line-height: 100%;&quot;&gt;&lt;span style=&quot;font-size: 16px; line-height: 60%;&quot;&gt;%name%&lt;br&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;%role%&lt;br&gt;&lt;/span&gt;&lt;/span&gt;&lt;/h1&gt;&lt;/div&gt;" placeholders="1" name="System" role="[External System]" id="Lbq0y8EJVfoxVaYD_3Id-44">
+          <mxCell style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;align=center;spacing=0;verticalAlign=bottom;spacingBottom=-4;spacingLeft=8;spacingRight=8;spacingTop=8;" vertex="1" parent="Lbq0y8EJVfoxVaYD_3Id-43">
+            <mxGeometry width="240" height="90" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="%description%" placeholders="1" description="System&#39;s short description sometimes multiline" id="Lbq0y8EJVfoxVaYD_3Id-45">
+          <mxCell style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=top;rounded=0;spacing=0;spacingLeft=16;spacingRight=16;" vertex="1" parent="Lbq0y8EJVfoxVaYD_3Id-43">
+            <mxGeometry y="100" width="240" height="90" as="geometry" />
+          </mxCell>
+        </object>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-47" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=4;fillColor=#EDEDED;" vertex="1" parent="1">
+          <mxGeometry x="-1166" y="395" width="56" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-29" value="" style="group;spacing=8;" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="-1164" y="109" width="240" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-22" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeWidth=4;" vertex="1" parent="Lbq0y8EJVfoxVaYD_3Id-29">
+          <mxGeometry width="240" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="Lbq0y8EJVfoxVaYD_3Id-40" value="" style="group" vertex="1" connectable="0" parent="Lbq0y8EJVfoxVaYD_3Id-29">
+          <mxGeometry width="240" height="190" as="geometry" />
+        </mxCell>
+        <object label="&lt;div style=&quot;line-height: 100%;&quot;&gt;&lt;h1 style=&quot;margin-top: 0px; line-height: 100%;&quot;&gt;&lt;span style=&quot;font-size: 16px; line-height: 60%;&quot;&gt;%name%&lt;br&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;%role%&lt;br&gt;&lt;/span&gt;&lt;/span&gt;&lt;/h1&gt;&lt;/div&gt;" placeholders="1" name="System" role="[System]" id="Lbq0y8EJVfoxVaYD_3Id-23">
+          <mxCell style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;align=center;spacing=0;verticalAlign=bottom;spacingBottom=-4;spacingLeft=8;spacingRight=8;spacingTop=8;" vertex="1" parent="Lbq0y8EJVfoxVaYD_3Id-40">
+            <mxGeometry width="240" height="90" as="geometry" />
+          </mxCell>
+        </object>
+        <object label="%description%" placeholders="1" description="System&#39;s short description sometimes multiline" id="Lbq0y8EJVfoxVaYD_3Id-39">
+          <mxCell style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=left;verticalAlign=top;rounded=0;spacing=0;spacingLeft=16;spacingRight=16;" vertex="1" parent="Lbq0y8EJVfoxVaYD_3Id-40">
+            <mxGeometry y="100" width="240" height="90" as="geometry" />
+          </mxCell>
+        </object>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

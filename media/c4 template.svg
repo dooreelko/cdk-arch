@@ -1,0 +1,642 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="420mm"
+   height="297mm"
+   viewBox="0 0 420 297"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
+   sodipodi:docname="c4 template.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showguides="true"
+     inkscape:connector-spacing="10"
+     inkscape:zoom="0.81996705"
+     inkscape:cx="313.42723"
+     inkscape:cy="509.1668"
+     inkscape:window-width="2544"
+     inkscape:window-height="1355"
+     inkscape:window-x="20"
+     inkscape:window-y="20"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="layer1">
+    <sodipodi:guide
+       position="78.768911,278.08742"
+       orientation="0,-1"
+       id="guide57"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="67.66706,286.03292"
+       orientation="0,-1"
+       id="guide58"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="16.140837,272.37881"
+       orientation="1,0"
+       id="guide59"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="25.788128,78.045453"
+       orientation="1,0"
+       id="guide60"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="23.050261,81.846615"
+       orientation="0,-1"
+       id="guide61"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="241.43291,75.26719"
+       orientation="1,0"
+       id="guide62"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1">
+    <marker
+       style="overflow:visible"
+       id="marker55"
+       refX="5"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path55" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Triangle"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135" />
+    </marker>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g17"
+       inkscape:export-filename="system box.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <rect
+         style="fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         id="rect3"
+         width="161.8429"
+         height="172.25314"
+         x="17.774853"
+         y="50.901253" />
+      <text
+         xml:space="preserve"
+         style="font-size:6.35px;line-height:1;font-family:'Baseball Club Solid';-inkscape-font-specification:'Baseball Club Solid, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         x="25.718782"
+         y="207.65512"
+         id="text3"><tspan
+           sodipodi:role="line"
+           id="tspan3"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.35px;line-height:1;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.2"
+           x="25.718782"
+           y="207.65512"><tspan
+   style="font-weight:bold;line-height:1"
+   id="tspan5">System name</tspan> </tspan><tspan
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.2"
+           x="25.718782"
+           y="214.07805"
+           id="tspan4">[Software system]</tspan></text>
+    </g>
+    <g
+       id="g21"
+       inkscape:export-filename="diagram box.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <rect
+         style="opacity:1;fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         id="rect5"
+         width="404.14511"
+         height="276.83859"
+         x="8.177248"
+         y="10.982125" />
+      <text
+         xml:space="preserve"
+         style="font-size:8.46667px;line-height:1;font-family:'Baseball Club Solid';-inkscape-font-specification:'Baseball Club Solid, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         x="16.091421"
+         y="25.870935"
+         id="text9"><tspan
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:8.46667px;line-height:1;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.2"
+           x="16.091421"
+           y="25.870935"
+           id="tspan9">System context / Title</tspan><tspan
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444px;line-height:1;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.2"
+           x="16.091421"
+           y="34.434834"
+           id="tspan10">Short description bla bla</tspan></text>
+    </g>
+    <g
+       id="g19"
+       inkscape:export-filename="container box.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <rect
+         style="fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         id="rect10"
+         width="161.8429"
+         height="172.25314"
+         x="233.41051"
+         y="50.901253" />
+      <text
+         xml:space="preserve"
+         style="font-size:6.35px;line-height:1;font-family:'Baseball Club Solid';-inkscape-font-specification:'Baseball Club Solid, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         x="241.21416"
+         y="208.14755"
+         id="text13"><tspan
+           sodipodi:role="line"
+           id="tspan12"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:6.35px;line-height:1;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.2"
+           x="241.21416"
+           y="208.14755"><tspan
+   style="font-weight:bold;line-height:1"
+   id="tspan11">Container name</tspan> </tspan><tspan
+           sodipodi:role="line"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93889px;line-height:1;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.2"
+           x="241.21416"
+           y="214.57048"
+           id="tspan13">[Container]</tspan></text>
+    </g>
+    <g
+       id="g18"
+       transform="translate(-5.2916667)"
+       inkscape:connector-avoid="true"
+       inkscape:export-filename="person.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <rect
+         style="opacity:1;fill:none;fill-opacity:1;stroke:#000203;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         id="rect13"
+         width="63.559013"
+         height="48.713692"
+         x="34.620403"
+         y="68.746223" />
+      <circle
+         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000203;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         id="path13"
+         cx="66.39991"
+         cy="64.79744"
+         r="6.2046909" />
+      <text
+         xml:space="preserve"
+         style="font-size:4.93889px;line-height:1;font-family:'Baseball Club Solid';-inkscape-font-specification:'Baseball Club Solid, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;white-space:pre;inline-size:50.17;display:inline;fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         x="58.854687"
+         y="86.097519"
+         id="text16"
+         transform="translate(7.602569,-3.6840991)"><tspan
+           x="58.854687"
+           y="86.097519"
+           id="tspan18"><tspan
+             style="font-weight:bold;font-size:5.64444px"
+             id="tspan16">Person's name </tspan><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan17">
+</tspan></tspan><tspan
+           x="58.854687"
+           y="91.248937"
+           id="tspan20"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan19">[Person]
+</tspan></tspan><tspan
+           x="58.854687"
+           y="96.244543"
+           id="tspan22"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan21">
+</tspan></tspan><tspan
+           x="58.854687"
+           y="101.24015"
+           id="tspan25"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan23">Person's short</tspan><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan24"></tspan><tspan
+             y="101.24015"
+             id="tspan26"> </tspan></tspan><tspan
+           x="58.854687"
+           y="106.23575"
+           id="tspan28"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan27">description</tspan><tspan
+             y="106.23575"
+             id="tspan29"> </tspan></tspan><tspan
+           x="58.854687"
+           y="111.23136"
+           id="tspan31"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan30">sometimes multiline</tspan></tspan></text>
+    </g>
+    <g
+       id="g50"
+       inkscape:connector-avoid="true"
+       inkscape:export-filename="person ext.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <rect
+         style="fill:#ededed;fill-opacity:1;stroke:#000203;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         id="rect18"
+         width="63.559013"
+         height="48.713692"
+         x="103.25428"
+         y="68.746223" />
+      <circle
+         style="fill:#ededed;fill-opacity:1;stroke:#000203;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         id="circle18"
+         cx="135.03378"
+         cy="64.79744"
+         r="6.2046909" />
+      <text
+         xml:space="preserve"
+         style="font-size:4.93889px;line-height:1;font-family:'Baseball Club Solid';-inkscape-font-specification:'Baseball Club Solid, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;white-space:pre;inline-size:43.0711;display:inline;fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         x="58.854687"
+         y="86.097519"
+         id="text23"
+         transform="translate(76.23645,-3.6840991)"><tspan
+           x="58.854687"
+           y="86.097519"
+           id="tspan34"><tspan
+             style="font-weight:bold;font-size:5.64444px"
+             id="tspan32">Person's name </tspan><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan33">
+</tspan></tspan><tspan
+           x="58.854687"
+           y="91.248937"
+           id="tspan36"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan35">[External Person]
+</tspan></tspan><tspan
+           x="58.854687"
+           y="96.244543"
+           id="tspan38"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan37">
+</tspan></tspan><tspan
+           x="58.854687"
+           y="101.24015"
+           id="tspan41"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan39">Person's short</tspan><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan40"></tspan><tspan
+             y="101.24015"
+             id="tspan42"> </tspan></tspan><tspan
+           x="58.854687"
+           y="106.23575"
+           id="tspan45"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan43">description</tspan><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan44"></tspan><tspan
+             y="106.23575"
+             id="tspan46"> </tspan></tspan><tspan
+           x="58.854687"
+           y="111.23136"
+           id="tspan48"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan47">sometimes</tspan><tspan
+             y="111.23136"
+             id="tspan49"> </tspan></tspan><tspan
+           x="58.854687"
+           y="116.22696"
+           id="tspan51"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan50">multiline</tspan></tspan></text>
+    </g>
+    <g
+       id="g55"
+       transform="matrix(1,0,0,1.2891517,0,-48.102246)"
+       style="stroke-width:0.88074"
+       inkscape:export-filename="container shape.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <path
+         id="ellipse1"
+         style="fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.88074;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 92.766351,177.79168 c 0.301672,2.49936 -14.203655,2.42667 -31.724754,2.42667 -17.521098,0 -31.724751,0.0826 -31.724753,-2.42667 0,-1.25462 -0.02419,-24.13336 -0.02419,-36.74019 0.398022,1.42279 16.088289,2.43406 31.692093,2.42328 15.603804,-0.0108 31.594474,-0.99102 31.80442,-2.39358 0,11.74824 -0.02282,36.71053 -0.02282,36.71053 z"
+         sodipodi:nodetypes="ssscscss" />
+      <ellipse
+         style="fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.88074;stroke-dasharray:none;stroke-opacity:1"
+         id="path1"
+         cx="61.041599"
+         cy="141.08704"
+         rx="31.724754"
+         ry="2.3181658" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:4.93889px;line-height:1;font-family:'Baseball Club Solid';-inkscape-font-specification:'Baseball Club Solid, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;white-space:pre;inline-size:51.4607;display:inline;fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       x="58.854687"
+       y="86.097519"
+       id="text28"
+       transform="translate(2.2435696,63.968547)"><tspan
+         x="58.854687"
+         y="86.097519"
+         id="tspan54"><tspan
+           style="font-weight:bold;font-size:5.64444px"
+           id="tspan52">Container name </tspan><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan53">
+</tspan></tspan><tspan
+         x="58.854687"
+         y="91.248937"
+         id="tspan58"><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan55">[Container details]
+</tspan></tspan><tspan
+         x="58.854687"
+         y="96.244543"
+         id="tspan60"><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan59">
+</tspan></tspan><tspan
+         x="58.854687"
+         y="101.24015"
+         id="tspan63"><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan61">Container's short</tspan><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan62"></tspan><tspan
+           y="101.24015"
+           id="tspan64"> </tspan></tspan><tspan
+         x="58.854687"
+         y="106.23575"
+         id="tspan66"><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan65">description sometimes</tspan><tspan
+           y="106.23575"
+           id="tspan67"> </tspan></tspan><tspan
+         x="58.854687"
+         y="111.23136"
+         id="tspan69"><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan68">multiline</tspan></tspan></text>
+    <g
+       id="g6"
+       transform="matrix(0.98154735,0,0,0.98134741,162.48033,28.410477)"
+       style="fill:none;stroke-width:1.0189"
+       inkscape:export-filename="bus shape.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <path
+         id="path2"
+         style="fill:none;fill-opacity:1;stroke:#000203;stroke-width:1.0189;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 87.124406,80.152419 c -2.161985,0.189193 -3.930057,-8.907723 -3.930057,-19.895959 0,-10.988236 1.759547,-19.895959 3.930057,-19.89596 1.085255,0 52.625674,-0.01516 63.530744,-0.01516 -5.28202,0.631163 -5.18172,39.096308 -0.0256,39.821399 -10.16239,0 -63.505097,-0.01431 -63.505097,-0.01431 z"
+         sodipodi:nodetypes="sssccss" />
+      <ellipse
+         style="fill:none;fill-opacity:1;stroke:#000203;stroke-width:1.0189;stroke-dasharray:none;stroke-opacity:1"
+         id="ellipse2"
+         cx="60.256462"
+         cy="-150.62442"
+         rx="19.89596"
+         ry="3.9300568"
+         transform="rotate(90)" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:4.93889px;line-height:1;font-family:'Baseball Club Solid';-inkscape-font-specification:'Baseball Club Solid, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;white-space:pre;inline-size:52.106;display:inline;fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       x="58.854687"
+       y="86.097519"
+       id="text33"
+       transform="translate(217.18886,-6.6121555)"><tspan
+         x="58.854687"
+         y="86.097519"
+         id="tspan72"><tspan
+           style="font-weight:bold;font-size:5.64444px"
+           id="tspan70">Message bus </tspan><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan71">
+</tspan></tspan><tspan
+         x="58.854687"
+         y="91.248937"
+         id="tspan74"><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan73">[Bus details]
+</tspan></tspan><tspan
+         x="58.854687"
+         y="96.244543"
+         id="tspan76"><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan75">
+</tspan></tspan><tspan
+         x="58.854687"
+         y="101.24015"
+         id="tspan79"><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan77">Bus' short description</tspan><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan78"></tspan><tspan
+           y="101.24015"
+           id="tspan80"> </tspan></tspan><tspan
+         x="58.854687"
+         y="106.23575"
+         id="tspan82"><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan81">sometimes multiline</tspan></tspan></text>
+    <rect
+       style="fill:#ededed;fill-opacity:1;stroke:#000203;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       id="rect37"
+       width="63.559013"
+       height="48.713692"
+       x="245.9133"
+       y="127.58997"
+       inkscape:connector-avoid="true" />
+    <text
+       xml:space="preserve"
+       style="font-size:4.93889px;line-height:1;font-family:'Baseball Club Solid';-inkscape-font-specification:'Baseball Club Solid, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;white-space:pre;inline-size:51.4607;display:inline;fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+       x="58.854687"
+       y="86.097519"
+       id="text41"
+       transform="translate(218.89547,55.159655)"><tspan
+         x="58.854687"
+         y="86.097519"
+         id="tspan85"><tspan
+           style="font-weight:bold;font-size:5.64444px"
+           id="tspan83">System </tspan><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan84">
+</tspan></tspan><tspan
+         x="58.854687"
+         y="91.248937"
+         id="tspan87"><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan86">[External System]
+</tspan></tspan><tspan
+         x="58.854687"
+         y="96.244543"
+         id="tspan89"><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan88">
+</tspan></tspan><tspan
+         x="58.854687"
+         y="101.24015"
+         id="tspan92"><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan90">System's short</tspan><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan91"></tspan><tspan
+           y="101.24015"
+           id="tspan93"> </tspan></tspan><tspan
+         x="58.854687"
+         y="106.23575"
+         id="tspan97"><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan94">description</tspan><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan95"> </tspan><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan96">sometimes</tspan><tspan
+           y="106.23575"
+           id="tspan98"> </tspan></tspan><tspan
+         x="58.854687"
+         y="111.23136"
+         id="tspan101"><tspan
+           style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+           id="tspan100">multiline</tspan></tspan></text>
+    <g
+       id="g52"
+       inkscape:connector-avoid="true"
+       inkscape:export-filename="system.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:#000203;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         id="rect42"
+         width="63.559013"
+         height="48.713692"
+         x="106.96292"
+         y="133.5238" />
+      <text
+         xml:space="preserve"
+         style="font-size:4.93889px;line-height:1;font-family:'Baseball Club Solid';-inkscape-font-specification:'Baseball Club Solid, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;white-space:pre;inline-size:53.3967;display:inline;fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         x="58.854687"
+         y="86.097519"
+         id="text47"
+         transform="translate(79.945094,61.093479)"><tspan
+           x="58.854687"
+           y="86.097519"
+           id="tspan104"><tspan
+             style="font-weight:bold;font-size:5.64444px"
+             id="tspan102">System </tspan><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan103">
+</tspan></tspan><tspan
+           x="58.854687"
+           y="91.248937"
+           id="tspan106"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan105">[System]
+</tspan></tspan><tspan
+           x="58.854687"
+           y="96.244543"
+           id="tspan108"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan107">
+</tspan></tspan><tspan
+           x="58.854687"
+           y="101.24015"
+           id="tspan111"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan109">System's short</tspan><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan110"></tspan><tspan
+             y="101.24015"
+             id="tspan112"> </tspan></tspan><tspan
+           x="58.854687"
+           y="106.23575"
+           id="tspan117"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan113">description</tspan><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan114"> </tspan><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan116">sometimes</tspan><tspan
+             y="106.23575"
+             id="tspan118"> </tspan></tspan><tspan
+           x="58.854687"
+           y="111.23136"
+           id="tspan120"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan119">multiline</tspan></tspan></text>
+    </g>
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker55)"
+       d="M 170.52193,157.88065 H 279.1612 v -50.80486"
+       id="path54"
+       inkscape:connector-type="orthogonal"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#g52" />
+    <g
+       id="g20"
+       inkscape:export-filename="arrow.svg"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:0.265;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Triangle)"
+         d="M 40.547795,255.64891 H 149.82905"
+         id="path47"
+         inkscape:connector-type="polyline"
+         inkscape:connector-curvature="0" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:5.64444px;line-height:1;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000203;stroke-width:0.264999;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         x="90.292931"
+         y="254.66466"
+         id="text56"><tspan
+           sodipodi:role="line"
+           id="tspan56"
+           style="font-weight:bold;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.265"
+           x="90.292931"
+           y="254.66466">Connection name</tspan><tspan
+           sodipodi:role="line"
+           style="font-weight:normal;font-size:4.23333px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.265"
+           x="90.292931"
+           y="260.30911"
+           id="tspan57">[second optional line of details]</tspan></text>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="64.377251mm"
+   height="54.570507mm"
+   viewBox="0 0 64.377251 54.570507"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <g
+     id="layer1"
+     transform="translate(-28.852284,-130.22418)">
+    <g
+       id="g16">
+      <g
+         id="g55"
+         transform="matrix(1,0,0,1.2891517,0,-48.102246)"
+         style="stroke-width:0.88074">
+        <path
+           id="ellipse1"
+           style="fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.88074;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+           d="m 92.766351,177.79168 c 0.301672,2.49936 -14.203655,2.42667 -31.724754,2.42667 -17.521098,0 -31.724751,0.0826 -31.724753,-2.42667 0,-1.25462 -0.02419,-24.13336 -0.02419,-36.74019 0.398022,1.42279 16.088289,2.43406 31.692093,2.42328 15.603804,-0.0108 31.594474,-0.99102 31.80442,-2.39358 0,11.74824 -0.02282,36.71053 -0.02282,36.71053 z" />
+        <ellipse
+           style="fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.88074;stroke-dasharray:none;stroke-opacity:1"
+           id="path1"
+           cx="61.041599"
+           cy="141.08704"
+           rx="31.724754"
+           ry="2.3181658" />
+      </g>
+      <text
+         xml:space="preserve"
+         style="font-size:4.93889px;line-height:1;font-family:'Baseball Club Solid';-inkscape-font-specification:'Baseball Club Solid, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;white-space:pre;inline-size:51.4607;display:inline;fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         x="58.854687"
+         y="86.097519"
+         id="text28"
+         transform="translate(2.2435696,63.968547)"><tspan
+           x="58.854687"
+           y="86.097519"
+           id="tspan3"><tspan
+             style="font-weight:bold;font-size:5.64444px"
+             id="tspan1">Container name </tspan><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan2">
+</tspan></tspan><tspan
+           x="58.854687"
+           y="91.248937"
+           id="tspan5"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan4">[Container details]
+</tspan></tspan><tspan
+           x="58.854687"
+           y="96.244543"
+           id="tspan8"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan6">
+</tspan></tspan><tspan
+           x="58.854687"
+           y="101.24015"
+           id="tspan11"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan9">Container's short</tspan><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan10"></tspan><tspan
+             y="101.24015"
+             id="tspan12"> </tspan></tspan><tspan
+           x="58.854687"
+           y="106.23575"
+           id="tspan14"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan13">description sometimes</tspan><tspan
+             y="106.23575"
+             id="tspan15"> </tspan></tspan><tspan
+           x="58.854687"
+           y="111.23136"
+           id="tspan17"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan16">multiline</tspan></tspan></text>
+    </g>
+  </g>
+</svg>

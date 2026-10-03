@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="64.559029mm"
+   height="49.713692mm"
+   viewBox="0 0 64.559029 49.713692"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <g
+     id="layer1"
+     transform="translate(-245.41328,-127.08999)">
+    <g
+       id="g54">
+      <rect
+         style="fill:#ededed;fill-opacity:1;stroke:#000203;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         id="rect37"
+         width="63.559013"
+         height="48.713692"
+         x="245.9133"
+         y="127.58997" />
+      <text
+         xml:space="preserve"
+         style="font-size:4.93889px;line-height:1;font-family:'Baseball Club Solid';-inkscape-font-specification:'Baseball Club Solid, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;direction:ltr;text-anchor:middle;white-space:pre;inline-size:51.4607;display:inline;fill:none;fill-opacity:1;stroke:#000203;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         x="58.854687"
+         y="86.097519"
+         id="text41"
+         transform="translate(218.89547,55.159655)"><tspan
+           x="58.854687"
+           y="86.097519"
+           id="tspan3"><tspan
+             style="font-weight:bold;font-size:5.64444px"
+             id="tspan1">System </tspan><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan2">
+</tspan></tspan><tspan
+           x="58.854687"
+           y="91.248937"
+           id="tspan5"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan4">[External System]
+</tspan></tspan><tspan
+           x="58.854687"
+           y="96.244543"
+           id="tspan7"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan6">
+</tspan></tspan><tspan
+           x="58.854687"
+           y="101.24015"
+           id="tspan10"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan8">System's short</tspan><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan9"></tspan><tspan
+             y="101.24015"
+             id="tspan11"> </tspan></tspan><tspan
+           x="58.854687"
+           y="106.23575"
+           id="tspan16"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan12">description</tspan><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan13"> </tspan><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan14">sometimes</tspan><tspan
+             y="106.23575"
+             id="tspan17"> </tspan></tspan><tspan
+           x="58.854687"
+           y="111.23136"
+           id="tspan19"><tspan
+             style="font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Normal';fill:#000000;stroke:none"
+             id="tspan18">multiline</tspan></tspan></text>
+    </g>
+  </g>
+</svg>

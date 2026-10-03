@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="71.043449mm"
+   height="40.078522mm"
+   viewBox="0 0 71.043449 40.078522"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <g
+     id="layer1"
+     transform="translate(-243.63947,-67.503325)">
+    <g
+       id="g6"
+       transform="matrix(0.98154735,0,0,0.98134741,162.48033,28.410477)"
+       style="fill:none;stroke-width:1.0189">
+      <path
+         id="path2"
+         style="fill:none;fill-opacity:1;stroke:#000203;stroke-width:1.0189;stroke-linecap:butt;stroke-linejoin:round;stroke-dasharray:none;stroke-opacity:1"
+         d="m 87.124406,80.152419 c -2.161985,0.189193 -3.930057,-8.907723 -3.930057,-19.895959 0,-10.988236 1.759547,-19.895959 3.930057,-19.89596 1.085255,0 52.625674,-0.01516 63.530744,-0.01516 -5.28202,0.631163 -5.18172,39.096308 -0.0256,39.821399 -10.16239,0 -63.505097,-0.01431 -63.505097,-0.01431 z" />
+      <ellipse
+         style="fill:none;fill-opacity:1;stroke:#000203;stroke-width:1.0189;stroke-dasharray:none;stroke-opacity:1"
+         id="ellipse2"
+         cx="60.256462"
+         cy="-150.62442"
+         rx="19.89596"
+         ry="3.9300568"
+         transform="rotate(90)" />
+    </g>
+  </g>
+</svg>
