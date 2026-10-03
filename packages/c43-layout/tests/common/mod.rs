@@ -32,3 +32,17 @@ pub fn placement_of(cells: &[(&str, (i32, i32))]) -> Placement {
         groups: None,
     }
 }
+
+/// router-style input (node kinds given) normalized
+pub fn internal(v: serde_json::Value) -> c43_layout::model::Graph {
+    c43_layout::normalize::normalize_internal(&serde_json::from_value(v).unwrap()).unwrap()
+}
+
+pub fn case_graph(name: &str) -> c43_layout::model::Graph {
+    let (g, h) = load_case(name);
+    c43_layout::normalize::normalize(&g, &h).unwrap()
+}
+
+pub fn cells(pairs: &[(&str, (i32, i32))]) -> IndexMap<String, (i32, i32)> {
+    pairs.iter().map(|(id, c)| (id.to_string(), *c)).collect()
+}
