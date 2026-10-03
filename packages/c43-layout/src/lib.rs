@@ -8,5 +8,6 @@ pub mod model;
 pub mod normalize;
 pub mod place;
 pub mod ports;
+pub mod route;
 pub mod skeleton;
 pub mod tracks;
