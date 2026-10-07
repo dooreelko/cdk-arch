@@ -1,5 +1,5 @@
 // One-off generator of the c43-layout golden fixtures from the TypeScript engine it was translated from.
-// Ran against c43-router@48b6428:  node packages/c43-layout/tests/gen/gen-goldens.ts <path to c43-router>
+// Ran against c43-router@48b6428 (working copy: cases/container.json edits uncommitted there): node packages/c43-layout/tests/gen/gen-goldens.ts <path to c43-router>
 // Per case: graph.json + hints.json (engine input), layout.json (engine output), expected.drawio (c43 renderer output).
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';

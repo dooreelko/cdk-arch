@@ -39,7 +39,7 @@ there's a new layout engine at ../c43-router we
 - Empty document (nothing besides the system node, e.g. local-docker): drawio with only the frame and title, `warning: nothing to lay out`, exit 0.
 - Relations the engine would reject (self-loop, member → own ancestor group, unknown endpoint, a second `contains` parent) are dropped or kept-first, with a stderr warning.
 - `component` and `deployment` are removed from the CLI only. Their library code stays because the uid tests (mx8pk) run extraction through it.
-- Golden fixtures were generated once from c43-router@48b6428 (`packages/c43-layout/tests/gen/gen-goldens.ts`). Engine JSON and drawio XML are bit-equal to the TS output on all 5 cases.
+- Golden fixtures were generated once from the c43-router@48b6428 working copy, which also held uncommitted edits to `cases/container.json` (`packages/c43-layout/tests/gen/gen-goldens.ts`). The checked-in fixtures are the record. Engine JSON and drawio XML are bit-equal to the TS output on all 5 cases.
 
 ## Implementation (abstract)
 
@@ -47,3 +47,6 @@ there's a new layout engine at ../c43-router we
 - Text-dependent sizes enter as unit hints (`sizes.node`, `sizes.groupTitle`, `sizes.titleHeight`). The header band, label wrapping, fonts and pixel scale live in `c43::drawio`.
 - `c43::drawio`: `graph` (C4 doc → graph + hints), `text` (width estimate and wrapping), `header`, `export` (drawio XML), `render`/`render_layout`.
 - `c43 system|container --drawio`: XML on stdout, warnings and violations on stderr.
+- Containment cycles in the C4 doc (`a contains b`, `b contains a`) are broken by dropping the closing relation with the warning `dropped X contains Y: containment cycle`.
+- `scripts/render.sh` (dev aid): renders generated drawio files (default: the golden cases) to `out/<name>.{png,svg}` with the drawio CLI. `out/` is gitignored.
+- Deferred follow-ups: plugin skill rewrite (t1yse), placement hints (m1ei4).
