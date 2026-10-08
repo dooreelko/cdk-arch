@@ -122,7 +122,7 @@ pub fn build(doc: &C4Document) -> Built {
     };
     Built {
         graph: InputGraph { title, description: None, groups, nodes, edges },
-        hints: Hints { kinds: vec![], placement: vec![], sizes },
+        hints: Hints { kinds: vec![], placement: vec![], sizes, gravity: false },
         warnings,
     }
 }

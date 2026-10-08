@@ -1,4 +1,5 @@
 use crate::geom::cell_key;
+use crate::hints::apply_rows;
 use crate::js;
 use crate::model::{Cell, Graph, Kind, Placement};
 use crate::skeleton::Skeleton;
@@ -38,6 +39,9 @@ pub fn place(g: &Graph, sk: &Skeleton) -> Placement {
     }
 
     place_secondary(g, &mut cells);
+    if !g.placement.is_empty() {
+        apply_rows(g, &mut cells);
+    }
     compact(&cells)
 }
 

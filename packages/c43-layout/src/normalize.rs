@@ -112,14 +112,13 @@ pub fn normalize_internal(input: &RawGraph) -> Result<Graph, String> {
         parent,
         data_nodes,
         degree,
+        placement: input.placement.clone(),
+        gravity: input.gravity,
     })
 }
 
 /// public input: edge kinds from hints (default data); a node is nf when it has edges and none of them is data
 pub fn normalize(input: &InputGraph, hints: &Hints) -> Result<Graph, String> {
-    if !hints.placement.is_empty() {
-        return Err("placement hints not supported yet".into());
-    }
     let is_node = |id: &String| input.nodes.iter().any(|n| &n.id == id);
     let is_group = |id: &String| input.groups.iter().any(|g| &g.id == id);
     if let Some(id) = hints.sizes.node.keys().find(|id| !is_node(id)) {
@@ -134,6 +133,18 @@ pub fn normalize(input: &InputGraph, hints: &Hints) -> Result<Graph, String> {
     let kind_of = |e: &InputEdge| {
         hints.kinds.iter().rev().find(|k| k.from == e.from && k.to == e.to).map_or(Kind::Data, |k| k.kind)
     };
+    let known = |id: &String| is_node(id) || is_group(id);
+    for h in &hints.placement {
+        if let Some(id) = [Some(&h.a), h.b.as_ref()].into_iter().flatten().find(|id| !known(id)) {
+            return Err(format!("hint references unknown id: {id}"));
+        }
+        if (h.rel == Rel::Leftmost) != h.b.is_none() || h.b.as_ref() == Some(&h.a) {
+            return Err(format!("placement hint on {}: needs a second, different id (only leftmost takes one)", h.a));
+        }
+    }
+    if hints.placement.iter().filter(|h| h.priority).count() > 1 {
+        return Err("more than one priority placement hint".into());
+    }
     let edges: Vec<RawEdge> = input
         .edges
         .iter()
@@ -153,6 +164,8 @@ pub fn normalize(input: &InputGraph, hints: &Hints) -> Result<Graph, String> {
             .map(|n| RawNode { id: n.id.clone(), label: n.label.clone(), kind: Some(node_kind(&n.id)), group: n.group.clone() })
             .collect(),
         edges,
+        placement: hints.placement.clone(),
+        gravity: hints.gravity,
     };
     normalize_internal(&raw)
 }

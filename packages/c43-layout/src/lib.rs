@@ -4,6 +4,7 @@ pub mod engine;
 pub mod geom;
 pub mod groups;
 pub mod hier;
+pub mod hints;
 pub mod js;
 pub mod lanes;
 pub mod layout;

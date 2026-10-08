@@ -319,6 +319,7 @@ pub fn check(l: &Layout) -> Metrics {
             turns: l.edges.iter().fold(0.0, |s, e| s + e.points.len() as f64 - 2.0),
             group_sides: unequal_neighbours(l) as f64,
         },
+        ignored_hints: vec![],
     }
 }
 

@@ -1,0 +1,12 @@
+[package]
+name = "clarc"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+c43 = { path = "../c43" }
+c43-layout = { path = "../c43-layout" }
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
+indexmap = "2"

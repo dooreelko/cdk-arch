@@ -1,5 +1,5 @@
 use crate::groups::{child_of, contains, owner, parent_of, ROOT};
-use crate::model::{Box as GBox, Cell, Graph, Group, Kind, Placement, RawEdge, RawGraph, RawNode, SizeHints};
+use crate::model::{Box as GBox, Cell, Graph, Group, Kind, Placement, PlacementHint, Rel, RawEdge, RawGraph, RawNode, SizeHints};
 use crate::normalize::normalize_internal;
 use indexmap::{IndexMap, IndexSet};
 
@@ -36,6 +36,22 @@ pub fn title_cols_for(min_s: f64, sizes: &SizeHints) -> impl Fn(&Group) -> i32 +
 
 fn inside(g: &Graph, level: &str, id: &str) -> bool {
     level == ROOT || contains(g, level, id)
+}
+
+/// hints seen from `level`: each end becomes the child holding it; hints inside one child are that child's business
+fn lifted_hints(g: &Graph, level: &str, kids: &[String]) -> Vec<PlacementHint> {
+    let lift = |id: &String| child_of(g, level, id).filter(|c| kids.contains(c));
+    g.placement
+        .iter()
+        .filter_map(|h| {
+            let a = lift(&h.a)?;
+            let b = match &h.b {
+                Some(b) => Some(lift(b)?),
+                None => None,
+            };
+            (b.as_ref() != Some(&a)).then(|| PlacementHint { a, b, ..h.clone() })
+        })
+        .collect()
 }
 
 /// the level's children as a small graph: child groups are unit super-nodes, edges lifted, outside = IN/OUT
@@ -76,7 +92,7 @@ fn macro_graph(g: &Graph, level: &str, kids: &[String]) -> RawGraph {
             RawNode { id, label: None, kind: Some(kind), group: None }
         })
         .collect();
-    RawGraph { title: None, description: None, groups: vec![], nodes, edges }
+    RawGraph { title: None, description: None, groups: vec![], nodes, edges, placement: lifted_hints(g, level, kids), gravity: g.gravity }
 }
 
 /// lay out the level's children by the diagram rules, then expand macro cells into cell spans
@@ -140,6 +156,38 @@ fn expand(g: &Graph, level: &str, kids: &[String], solve: &Solve, title_cols: &T
             block.boxes.insert(h.clone(), GBox { col0: b.col0 + dc, row0: b.row0 + dr, col1: b.col1 + dc, row1: b.row1 + dr });
         }
     }
+    // a plain node with a same-row hint to a member of a sibling block lines up with that member, within its row span;
+    // plain nodes lined up with it follow
+    let span = |id: &String| {
+        let r = cell_of(id).row;
+        (y0[&r], y0[&r] + row_h[&r] - 1)
+    };
+    let peers = |id: &String| -> Vec<String> {
+        g.placement
+            .iter()
+            .filter(|h| h.rel == Rel::SameRow)
+            .filter_map(|h| match &h.b {
+                Some(b) if h.a == *id => Some(b.clone()),
+                Some(b) if b == id => Some(h.a.clone()),
+                _ => None,
+            })
+            .collect()
+    };
+    for id in kids.iter().filter(|id| !sub.contains_key(*id)) {
+        let anchor = peers(id).into_iter().find(|p| sub.values().any(|s| s.cells.contains_key(p)));
+        let Some(row) = anchor.and_then(|p| block.cells.get(&p)).map(|c| c.row) else { continue };
+        let mut work = vec![(id.clone(), row)];
+        let mut done: IndexSet<String> = IndexSet::new();
+        while let Some((n, row)) = work.pop() {
+            if !done.insert(n.clone()) {
+                continue;
+            }
+            let (lo, hi) = span(&n);
+            block.cells.get_mut(&n).unwrap().row = row.clamp(lo, hi);
+            let row = block.cells[&n].row;
+            work.extend(peers(&n).into_iter().filter(|p| kids.contains(p) && !sub.contains_key(p)).map(|p| (p, row)));
+        }
+    }
     block
 }
 
@@ -171,6 +219,49 @@ fn block_of(g: &Graph, level: &str, solve: &Solve, title_cols: &TitleCols) -> Bl
 
 /// bottom-up: every group's children laid out by the diagram rules, then expanded into one global grid
 pub fn hier_place(g: &Graph, solve: &Solve, title_cols: &TitleCols) -> Placement {
-    let b = block_of(g, ROOT, solve, title_cols);
+    let mut b = block_of(g, ROOT, solve, title_cols);
+    if g.gravity {
+        gravitate(g, &mut b);
+    }
     Placement { cols: b.cols, rows: b.rows, cells: b.cells, groups: Some(b.boxes) }
+}
+
+/// gravity: a top-level node with only nf edges moves to the nearest free cell outside every group frame,
+/// at or right of and at or below the member of a group that points at it (nf runs downward); hinted nodes stay as hinted
+fn gravitate(g: &Graph, b: &mut Block) {
+    let nodes: Vec<String> = g
+        .nodes
+        .iter()
+        .map(|n| n.id.clone())
+        .filter(|id| !g.data_nodes.contains(id) && parent_of(g, id) == ROOT && !g.placement.iter().any(|h| h.a == *id))
+        .collect();
+    for id in nodes {
+        let Some(from) = g.edges.iter().find(|e| e.to == id && g.parent.contains_key(&e.from) && b.cells.contains_key(&e.from)).map(|e| b.cells[&e.from]) else { continue };
+        let dist = |c: &Cell| (c.col - from.col) + (c.row - from.row);
+        let free = |c: &Cell| {
+            !b.cells.values().any(|o| o == c) && !b.boxes.values().any(|x| x.col0 <= c.col && c.col <= x.col1 && x.row0 <= c.row && c.row <= x.row1)
+        };
+        let best = (from.col..b.cols).flat_map(|col| (from.row..b.rows).map(move |row| Cell { col, row })).filter(|c| free(c)).min_by_key(|c| (dist(c), c.row));
+        let here = b.cells[&id];
+        if let Some(c) = best.filter(|c| dist(c) < (here.col - from.col).abs() + (here.row - from.row).abs()) {
+            b.cells.insert(id, c);
+        }
+    }
+    drop_empty_lines(b);
+}
+
+/// renumber so that no row or column is empty (a row or column is used by a node or a group frame)
+fn drop_empty_lines(b: &mut Block) {
+    let used = |nodes: Vec<i32>, frames: Vec<(i32, i32)>| -> Vec<i32> {
+        let mut v: Vec<i32> = nodes.into_iter().chain(frames.into_iter().flat_map(|(lo, hi)| lo..=hi)).collect::<IndexSet<_>>().into_iter().collect();
+        v.sort();
+        v
+    };
+    let cols = used(b.cells.values().map(|c| c.col).collect(), b.boxes.values().map(|x| (x.col0, x.col1)).collect());
+    let rows = used(b.cells.values().map(|c| c.row).collect(), b.boxes.values().map(|x| (x.row0, x.row1)).collect());
+    let at = |v: &[i32], x: i32| v.iter().position(|y| *y == x).unwrap() as i32;
+    b.cells.values_mut().for_each(|c| *c = Cell { col: at(&cols, c.col), row: at(&rows, c.row) });
+    b.boxes.values_mut().for_each(|x| *x = GBox { col0: at(&cols, x.col0), col1: at(&cols, x.col1), row0: at(&rows, x.row0), row1: at(&rows, x.row1) });
+    b.cols = cols.len() as i32;
+    b.rows = rows.len() as i32;
 }

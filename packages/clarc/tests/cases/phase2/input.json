@@ -1,0 +1,44 @@
+{
+  "title": "Phase 2: managed, containerized, stateless",
+  "description": "the-well-architected-cloud.com/blog",
+  "nodes": [
+    { "id": "viewer", "label": "Viewer (browser)", "service": "client" },
+    { "id": "cf", "label": "CloudFront", "service": "cloudfront" },
+    { "id": "site", "label": "S3 (existing site)", "service": "s3" },
+    { "id": "ecr", "label": "ECR ghost-phase2 repo", "service": "ecr" },
+    { "id": "ls", "label": "Lightsail Container Service (Ghost)", "service": "lightsail" },
+    { "id": "smtp", "label": "Proton SMTP smtp.protonmail.ch:587", "service": "external" },
+    { "id": "r53", "label": "Route53 hosted zone", "service": "route53" },
+    { "id": "data", "label": "S3 (data bucket)", "service": "s3" },
+    { "id": "role", "label": "IAM Role ghost-phase2-app-runtime", "service": "iam-role" },
+    { "id": "params", "label": "SSM Parameter Store (mail cred, admin key)", "service": "ssm-parameter-store" },
+    { "id": "cw", "label": "CloudWatch custom metrics + 3 alarms", "service": "cloudwatch" },
+    { "id": "sns", "label": "SNS Topic checkpoint-alarms", "service": "sns" },
+    { "id": "subscriber", "label": "Email subscriber", "service": "email" },
+    { "id": "note", "label": "No SSH, no VPC, no EC2 to patch. Lightsail bundles LB + HTTPS + outbound IPv4. Container never receives a static credential." }
+  ],
+  "edges": [
+    { "from": "viewer", "to": "cf", "label": "HTTPS" },
+    { "from": "cf", "to": "site", "label": "/ (default)" },
+    { "from": "cf", "to": "ls", "label": "/blog*" },
+    { "from": "cf", "to": "data", "label": "/blog/content/images/* (via OAC)" },
+    { "from": "r53", "to": "cf", "label": "DNS" },
+    { "from": "ecr", "to": "ls", "label": "pull image" },
+    { "from": "ls", "to": "smtp", "label": "SMTP:587", "kind": "data", "style": "dashed" },
+    { "from": "ls", "to": "role", "label": "AssumeRole (own account, no ExternalId)" },
+    { "from": "role", "to": "data", "label": "GetObject/PutObject", "kind": "data", "style": "dashed" },
+    { "from": "role", "to": "params", "label": "GetParameter + Decrypt", "kind": "data", "style": "dashed" },
+    { "from": "role", "to": "cw", "label": "PutMetricData" },
+    { "from": "cw", "to": "sns", "label": "alarm", "kind": "data", "style": "dashed" },
+    { "from": "sns", "to": "subscriber", "label": "email", "kind": "data", "style": "dashed" }
+  ],
+  "hints": {
+    "viewer": { "start": true },
+    "site": { "above": "cf" },
+    "ecr": { "above": "ls" },
+    "r53": { "below": "cf" },
+    "data": { "rightOf": "site", "sameRow": "site" },
+    "role": { "below": "ls" },
+    "cw": { "below": "role" }
+  }
+}

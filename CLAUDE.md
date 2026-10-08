@@ -12,6 +12,10 @@ a task cannot be completed before
 - prefer passing a function instead of using an OO overload
 - use `npm run ...` for building, testing, etc.
 
+# bug fixing
+
+a detected bug always gets a test that breaks before the fix and green after.
+
 ---
 
 # Moth Agent Guide

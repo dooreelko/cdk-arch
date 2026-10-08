@@ -93,16 +93,43 @@ impl Default for SizeHints {
     }
 }
 
+/// relative placement; `Leftmost` is unary (`b` absent)
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum Rel {
+    LeftOf,
+    RightOf,
+    Above,
+    Below,
+    SameRow,
+    SameCol,
+    Leftmost,
+}
+
+/// `a <rel> b`; a suggestion, the one with `priority` wins over the others
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct PlacementHint {
+    pub rel: Rel,
+    pub a: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub b: Option<String>,
+    #[serde(default)]
+    pub priority: bool,
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct Hints {
     /// edge kinds; edges without a hint are data
     #[serde(default)]
     pub kinds: Vec<KindHint>,
-    /// relative placement suggestions (not supported yet)
+    /// relative placement suggestions
     #[serde(default)]
-    pub placement: Vec<serde_json::Value>,
+    pub placement: Vec<PlacementHint>,
     #[serde(default)]
     pub sizes: SizeHints,
+    /// connected nodes gravitate: a node with only nf edges sits next to its source instead of in the bottom band
+    #[serde(default)]
+    pub gravity: bool,
 }
 
 // ---- internal input (node kinds given), the router's InputGraph ----
@@ -139,6 +166,10 @@ pub struct RawGraph {
     pub nodes: Vec<RawNode>,
     #[serde(default)]
     pub edges: Vec<RawEdge>,
+    #[serde(default)]
+    pub placement: Vec<PlacementHint>,
+    #[serde(default)]
+    pub gravity: bool,
 }
 
 // ---- normalized graph ----
@@ -181,6 +212,10 @@ pub struct Graph {
     /// nodes touching at least one data edge; all others are secondary
     pub data_nodes: IndexSet<String>,
     pub degree: IndexMap<String, usize>,
+    /// placement suggestions (empty: the layout is exactly the hint-free one)
+    pub placement: Vec<PlacementHint>,
+    /// see `Hints::gravity`
+    pub gravity: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -421,6 +456,9 @@ pub struct Metrics {
     pub violations: Vec<Violation>,
     pub crossings: usize,
     pub soft: Soft,
+    /// placement hints the final layout does not satisfy, one line each
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub ignored_hints: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]

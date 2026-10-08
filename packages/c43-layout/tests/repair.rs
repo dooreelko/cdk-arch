@@ -109,6 +109,7 @@ fn score_follows_idea_priority() {
         violations: (0..crossings).map(|_| Violation { rule: "crossing".into(), detail: String::new() }).collect(),
         crossings,
         soft: Soft { leftward, centrality: 0., area: 0., aspect: 1., nf_bottom_share, length: 0., turns: 0., group_sides: 0. },
+        ignored_hints: vec![],
     };
     assert!(less(&score(&m(0., 1., 5)), &score(&m(1., 1., 0))));
     assert!(less(&score(&m(0., 1., 5)), &score(&m(0., 0.5, 0))));

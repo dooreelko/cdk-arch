@@ -1,5 +1,6 @@
 use crate::check::{less, score};
 use crate::model::{Cell, End, Graph, Kind, LayoutResult, PortRef, Side, State, SIDES};
+use crate::hints;
 use crate::place::compact;
 use crate::ports::assign_ports;
 use indexmap::{IndexMap, IndexSet};
@@ -37,8 +38,8 @@ pub fn candidates<'a>(g: &'a Graph, s: &'a State, move_nodes: bool) -> std::boxe
     if !move_nodes {
         return std::boxed::Box::new(swaps.chain(exchanges));
     }
-    // data sources (initiators) start the story on the left: a move may never push one rightwards
-    let fed: IndexSet<&String> = g.edges.iter().filter(|e| e.kind == Kind::Data).map(|e| &e.to).collect();
+    // sources (no incoming edge of either kind) start the story on the left: a move may never push one rightwards
+    let fed: IndexSet<&String> = g.edges.iter().map(|e| &e.to).collect();
     let sources: Vec<String> = g.nodes.iter().map(|n| n.id.clone()).filter(|id| g.data_nodes.contains(id) && !fed.contains(id)).collect();
     let moves = g.nodes.iter().flat_map(move |n| {
         let c = s.placement.cells[&n.id];
@@ -53,6 +54,9 @@ pub fn candidates<'a>(g: &'a Graph, s: &'a State, move_nodes: bool) -> std::boxe
             }
             cells.insert(n.id.clone(), target);
             let placement = compact(&cells);
+            if hints::violated(&g.placement, &placement) > hints::violated(&g.placement, &s.placement) {
+                return None;
+            }
             if sources.iter().any(|id| placement.cells[id].col > s.placement.cells[id].col) {
                 return None;
             }

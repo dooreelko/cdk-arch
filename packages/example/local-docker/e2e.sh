@@ -35,6 +35,10 @@ echo "Testing c43 drawio..."
 DRAWIO=$(../../../target/release/c43 --drawio container ..)
 [[ "$DRAWIO" == "<mxfile"* ]] || { echo "c43 --drawio produced no drawio"; exit 1; }
 
+echo "Testing clarc (stdin to stdout)..."
+CLARC=$(../../../target/release/clarc --azure < ../../clarc/tests/cases/azure-phase2/input.json)
+[[ "$CLARC" == "<mxfile"* ]] || { echo "clarc produced no drawio"; exit 1; }
+
 npm run deploy || fail
 
 echo "Waiting for services to start..."

@@ -1,0 +1,175 @@
+{
+  "title": "Azure replica of phase 2: managed, containerized, stateless",
+  "description": "the-well-architected-cloud.com/blog",
+  "nodes": [
+    {
+      "id": "viewer",
+      "label": "Viewer (browser)",
+      "service": "client"
+    },
+    {
+      "id": "cf",
+      "label": "Azure Front Door",
+      "service": "cdn"
+    },
+    {
+      "id": "site",
+      "label": "Blob Storage (existing site)",
+      "service": "object-storage"
+    },
+    {
+      "id": "ecr",
+      "label": "Container Registry ghost-phase2",
+      "service": "container-registry"
+    },
+    {
+      "id": "ls",
+      "label": "Container Apps (Ghost)",
+      "service": "container-service"
+    },
+    {
+      "id": "smtp",
+      "label": "Proton SMTP smtp.protonmail.ch:587",
+      "service": "external"
+    },
+    {
+      "id": "r53",
+      "label": "Azure DNS zone",
+      "service": "dns"
+    },
+    {
+      "id": "data",
+      "label": "Blob Storage (data)",
+      "service": "object-storage"
+    },
+    {
+      "id": "role",
+      "label": "Managed Identity ghost-phase2-app",
+      "service": "role"
+    },
+    {
+      "id": "params",
+      "label": "Key Vault (mail cred, admin key)",
+      "service": "parameter-store"
+    },
+    {
+      "id": "cw",
+      "label": "Azure Monitor custom metrics + 3 alerts",
+      "service": "monitoring"
+    },
+    {
+      "id": "sns",
+      "label": "Event Grid topic checkpoint-alarms",
+      "service": "topic"
+    },
+    {
+      "id": "subscriber",
+      "label": "Email subscriber",
+      "service": "email"
+    },
+    {
+      "id": "note",
+      "label": "No SSH, no VNet, no VM to patch. Container Apps bundles ingress + HTTPS + outbound IP. Container never receives a static credential."
+    }
+  ],
+  "edges": [
+    {
+      "from": "viewer",
+      "to": "cf",
+      "label": "HTTPS"
+    },
+    {
+      "from": "cf",
+      "to": "site",
+      "label": "/ (default)"
+    },
+    {
+      "from": "cf",
+      "to": "ls",
+      "label": "/blog*"
+    },
+    {
+      "from": "cf",
+      "to": "data",
+      "label": "/blog/content/images/* (via Front Door origin)"
+    },
+    {
+      "from": "r53",
+      "to": "cf",
+      "label": "DNS"
+    },
+    {
+      "from": "ecr",
+      "to": "ls",
+      "label": "pull image"
+    },
+    {
+      "from": "ls",
+      "to": "smtp",
+      "label": "SMTP:587",
+      "kind": "data",
+      "style": "dashed"
+    },
+    {
+      "from": "ls",
+      "to": "role",
+      "label": "Managed identity token (no secret)"
+    },
+    {
+      "from": "role",
+      "to": "data",
+      "label": "Blob read/write",
+      "kind": "data",
+      "style": "dashed"
+    },
+    {
+      "from": "role",
+      "to": "params",
+      "label": "Get secret",
+      "kind": "data",
+      "style": "dashed"
+    },
+    {
+      "from": "role",
+      "to": "cw",
+      "label": "Custom metrics"
+    },
+    {
+      "from": "cw",
+      "to": "sns",
+      "label": "alert",
+      "kind": "data",
+      "style": "dashed"
+    },
+    {
+      "from": "sns",
+      "to": "subscriber",
+      "label": "email",
+      "kind": "data",
+      "style": "dashed"
+    }
+  ],
+  "hints": {
+    "viewer": {
+      "start": true
+    },
+    "site": {
+      "above": "cf"
+    },
+    "ecr": {
+      "above": "ls"
+    },
+    "r53": {
+      "below": "cf"
+    },
+    "data": {
+      "below": "cf"
+    },
+    "role": {
+      "below": "ls"
+    },
+    "cw": {
+      "below": "role"
+    }
+  }
+}

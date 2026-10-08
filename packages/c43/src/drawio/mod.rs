@@ -6,7 +6,7 @@ pub mod text;
 
 use crate::model::C4Document;
 use c43_layout::model::{Lanes, Layout, Rect};
-use export::{to_drawio, Drawing};
+use export::{to_drawio, Drawing, Styler};
 use header::header;
 use text::{label_lines, LABEL_PX, TITLE_PX, UNIT_PX};
 
@@ -18,10 +18,15 @@ pub struct Rendered {
 
 /// a laid-out diagram as drawio: label lines, header band and frame are added here, at 20 px per grid unit
 pub fn render_layout(l: &Layout, title: Option<&str>, description: Option<&str>) -> String {
+    render_styled(l, title, description, Styler::plain(LABEL_PX))
+}
+
+/// as `render_layout`, with the node, group and edge drawing given
+pub fn render_styled(l: &Layout, title: Option<&str>, description: Option<&str>, style: Styler) -> String {
     let head = header(title, description, l.frame.w, UNIT_PX);
     let frame = head.as_ref().map_or(l.frame, |h| Rect { x: 0.0, y: h.rect.y, w: h.rect.w, h: h.rect.h + l.frame.h });
     let node_lines = l.nodes.iter().map(|n| label_lines(&n.label, n.size * UNIT_PX).unwrap_or_else(|| vec![n.label.clone()])).collect();
-    to_drawio(&Drawing { layout: l, unit_px: UNIT_PX, node_lines, header: head, frame, label_font: LABEL_PX, title_font: TITLE_PX })
+    to_drawio(&Drawing { layout: l, unit_px: UNIT_PX, node_lines, header: head, frame, style, title_font: TITLE_PX })
 }
 
 /// an empty grid: only the frame (and the title above it) is drawn

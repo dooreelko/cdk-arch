@@ -1,4 +1,4 @@
-use crate::model::{Graph, Kind};
+use crate::model::{Graph, Kind, Rel};
 use indexmap::{IndexMap, IndexSet};
 use std::collections::VecDeque;
 
@@ -11,6 +11,20 @@ fn mean(xs: &[f64]) -> f64 {
     xs.iter().sum::<f64>() / xs.len() as f64
 }
 
+fn reaches(succ: &IndexMap<String, Vec<String>>, from: &str, to: &str) -> bool {
+    let mut seen: IndexSet<&str> = IndexSet::new();
+    let mut stack = vec![from];
+    while let Some(v) = stack.pop() {
+        if v == to {
+            return true;
+        }
+        if seen.insert(v) {
+            stack.extend(succ[v].iter().map(String::as_str));
+        }
+    }
+    false
+}
+
 pub fn skeleton(g: &Graph) -> Skeleton {
     let ids: Vec<String> = g.nodes.iter().map(|n| n.id.clone()).filter(|id| g.data_nodes.contains(id)).collect();
     let mut succ: IndexMap<String, Vec<String>> = ids.iter().map(|id| (id.clone(), vec![])).collect();
@@ -18,6 +32,24 @@ pub fn skeleton(g: &Graph) -> Skeleton {
     for e in g.edges.iter().filter(|e| e.kind == Kind::Data) {
         succ.get_mut(&e.from).unwrap().push(e.to.clone());
         has_in.insert(e.to.clone());
+    }
+
+    // placement hints: the leftmost node takes no incoming layering edge; left/right hints are extra layering edges unless they close a cycle
+    for h in crate::hints::priority_first(g) {
+        match (h.rel, &h.b) {
+            (Rel::Leftmost, _) if succ.contains_key(&h.a) => {
+                succ.values_mut().for_each(|ws| ws.retain(|w| *w != h.a));
+                has_in.shift_remove(&h.a);
+            }
+            (Rel::LeftOf | Rel::RightOf, Some(b)) if succ.contains_key(&h.a) && succ.contains_key(b) => {
+                let (from, to) = if h.rel == Rel::LeftOf { (&h.a, b) } else { (b, &h.a) };
+                if !reaches(&succ, to, from) && !succ[from].contains(to) {
+                    succ.get_mut(from).unwrap().push(to.clone());
+                    has_in.insert(to.clone());
+                }
+            }
+            _ => {}
+        }
     }
 
     // break cycles: DFS from true sources first, back edges are ignored for layering
@@ -66,6 +98,42 @@ pub fn skeleton(g: &Graph) -> Skeleton {
             if *d == 0 {
                 queue.push_back(w);
             }
+        }
+    }
+
+    // a node with no data predecessor but an incoming nf edge is not a source: nf runs downward, so it joins its
+    // nf predecessor's column and whatever it feeds moves on to keep data edges pointing right
+    let lifted: Vec<&String> = ids.iter().filter(|id| preds[*id].is_empty()).collect();
+    for _ in 0..ids.len() {
+        let mut changed = false;
+        for id in &lifted {
+            let into = g.edges.iter().filter(|e| e.kind == Kind::Nf && e.to == **id).filter_map(|e| layer.get(&e.from)).max().copied();
+            if let Some(l) = into.filter(|l| *l > layer[*id]) {
+                layer.insert((*id).clone(), l);
+                let mut stack = vec![(*id).clone()];
+                while let Some(v) = stack.pop() {
+                    for w in fwd(&v) {
+                        if layer[&w] <= layer[&v] {
+                            layer.insert(w.clone(), layer[&v] + 1);
+                            stack.push(w);
+                        }
+                    }
+                }
+                changed = true;
+            }
+        }
+        if !changed {
+            break;
+        }
+    }
+
+    // same-col hints: pull the second node into the first one's layer when its edges allow
+    for h in crate::hints::priority_last(g).into_iter().filter(|h| h.rel == Rel::SameCol) {
+        let Some(b) = &h.b else { continue };
+        let (Some(la), true) = (layer.get(&h.a).copied(), layer.contains_key(b)) else { continue };
+        let fits = preds[b].iter().all(|p| layer[p] < la) && fwd(b).iter().all(|w| layer[w] > la);
+        if fits {
+            layer.insert(b.clone(), la);
         }
     }
 

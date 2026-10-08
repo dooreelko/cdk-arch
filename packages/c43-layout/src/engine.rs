@@ -1,10 +1,11 @@
 use crate::check::check;
+use crate::hints;
 use crate::hier::{hier_place, title_cols_for};
 use crate::lanes::{borders, lane_plan, title_slots};
 use crate::layout::{build_layout, edge_polyline, frame_for, lane_keys};
-use crate::model::{Graph, Hints, InputGraph, LayoutResult, SizeHints, State};
+use crate::model::{Cell, Edge, Graph, Hints, InputGraph, Kind, LayoutResult, Placement, Rel, SizeHints, State};
 use crate::normalize::normalize;
-use crate::place::place;
+use crate::place::{compact, place};
 use crate::ports::{assign_ports, side_count};
 use crate::repair::{repair, RepairOptions};
 use crate::route::route_all;
@@ -57,17 +58,60 @@ pub fn flat_state(g: &Graph, sizes: &SizeHints, min_s: f64, patience: usize) -> 
     repair(g, State { placement, ports }, &|s| build(g, s, sizes, min_s), patience, RepairOptions::default())
 }
 
+/// the story reads left to right: a start node with a single direct data edge moves onto its target's row when that cell is free
+fn align_start(g: &Graph, st: &State) -> State {
+    let mut cells = st.placement.cells.clone();
+    for h in g.placement.iter().filter(|h| h.rel == Rel::Leftmost) {
+        let out: Vec<&Edge> = g.edges.iter().filter(|e| e.from == h.a && e.kind == Kind::Data).collect();
+        let [only] = out[..] else { continue };
+        let (Some(from), Some(to)) = (cells.get(&h.a).copied(), cells.get(&only.to).copied()) else { continue };
+        if from.row == to.row {
+            continue;
+        }
+        let occupant = cells.iter().find(|(_, c)| c.col == from.col && c.row == to.row).map(|(id, _)| id.clone());
+        if let Some(o) = occupant {
+            // flat grids swap the two; with group boxes only a free cell will do
+            if st.placement.groups.is_some() {
+                continue;
+            }
+            cells.insert(o, from);
+        }
+        // group boxes are in grid coordinates: leave the grid alone, so the row left behind must stay in use
+        let row_kept = cells.iter().any(|(id, c)| *id != h.a && c.row == from.row)
+            || st.placement.groups.iter().flat_map(|b| b.values()).any(|b| b.row0 <= from.row && from.row <= b.row1);
+        if st.placement.groups.is_some() && !row_kept {
+            continue;
+        }
+        cells.insert(h.a.clone(), Cell { col: from.col, row: to.row });
+    }
+    if cells == st.placement.cells {
+        return st.clone();
+    }
+    let placement = match &st.placement.groups {
+        Some(_) => Placement { cells, ..st.placement.clone() },
+        None => compact(&cells),
+    };
+    let ports = assign_ports(g, &placement);
+    State { placement, ports }
+}
+
 pub fn layout(input: &InputGraph, hints: &Hints, opts: &Options) -> Result<LayoutResult, String> {
     let g = normalize(input, hints)?;
     let sizes = &hints.sizes;
     let min_s = min_side(&g, sizes);
+    let finish = |st: &State| {
+        let st = &align_start(&g, st);
+        let mut r = build(&g, st, sizes, min_s);
+        r.metrics.ignored_hints = hints::ignored(&g.placement, &st.placement);
+        r
+    };
     if g.groups.is_empty() {
-        return Ok(build(&g, &flat_state(&g, sizes, min_s, opts.patience), sizes, min_s));
+        return Ok(finish(&flat_state(&g, sizes, min_s, opts.patience)));
     }
     // groups: every level placed by the flat pipeline, then a global port-only repair on a bounded budget
     let placement = hier_place(&g, &|mg| flat_state(mg, sizes, 1.0, opts.patience).placement, &title_cols_for(min_s, sizes));
     let ports = assign_ports(&g, &placement);
     let best = repair(&g, State { placement, ports }, &|s| build(&g, s, sizes, min_s), opts.patience,
         RepairOptions { move_nodes: false, max_evals: GROUP_EVALS });
-    Ok(build(&g, &best, sizes, min_s))
+    Ok(finish(&best))
 }

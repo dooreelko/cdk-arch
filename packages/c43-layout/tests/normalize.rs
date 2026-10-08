@@ -156,10 +156,14 @@ fn node_kind_is_derived_from_edges() {
 }
 
 #[test]
-fn placement_hints_rejected_until_m1ei4() {
-    let g = graph(json!({"nodes":[{"id":"a"}]}));
-    let h = hints(json!({"placement":[{"a":"left-of"}]}));
-    assert_eq!(normalize(&g, &h).unwrap_err(), "placement hints not supported yet");
+fn placement_hint_errors() {
+    let g = graph(json!({"nodes":[{"id":"a"},{"id":"b"}]}));
+    let err = |h: serde_json::Value| normalize(&g, &hints(json!({"placement":[h]}))).unwrap_err();
+    assert_eq!(err(json!({"rel":"left-of","a":"a","b":"zz"})), "hint references unknown id: zz");
+    assert!(err(json!({"rel":"left-of","a":"a"})).contains("second, different id"));
+    assert!(err(json!({"rel":"leftmost","a":"a","b":"b"})).contains("second, different id"));
+    let two = hints(json!({"placement":[{"rel":"leftmost","a":"a","priority":true},{"rel":"left-of","a":"b","b":"a","priority":true}]}));
+    assert_eq!(normalize(&g, &two).unwrap_err(), "more than one priority placement hint");
 }
 
 #[test]
