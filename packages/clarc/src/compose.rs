@@ -1,5 +1,5 @@
-//! Input document → engine graph and hints (kinds from services, sizes from labels, placement from node hints).
-use crate::catalog::{group_look, service, GroupLook, Look, Service};
+//! Input document → engine graph and hints (sizes from labels, placement from node hints).
+use crate::catalog::{group_look, resolve, GroupLook, Look, Theme};
 use crate::input::{EdgeKind, Input, LineStyle};
 use c43::drawio::text::{text_width, wrap, LABEL_PX, LINE_H, UNIT_PX};
 use c43_layout::model::{Hints, InputEdge, InputGraph, InputGroup, InputNode, Kind, KindHint, PlacementHint, Rel, SizeHints};
@@ -20,7 +20,8 @@ pub const GROUP_ICON_PX: f64 = 30.0;
 pub struct Composed {
     pub graph: InputGraph,
     pub hints: Hints,
-    pub nodes: IndexMap<String, Option<&'static Service>>,
+    /// the glyph of each node; a note when it has no service
+    pub nodes: IndexMap<String, Look>,
     pub groups: IndexMap<String, &'static GroupLook>,
     pub warnings: Vec<String>,
     /// explicit line style per edge `from->to`
@@ -50,22 +51,13 @@ fn side_for(label: &str, icon: bool) -> f64 {
     side.unwrap_or(NOTE_MAX_SIDE)
 }
 
-pub fn compose(input: &Input) -> Composed {
+pub fn compose(input: &Input, theme: Theme) -> Result<Composed, String> {
     let mut warnings = vec![];
-    let nodes: IndexMap<String, Option<&'static Service>> = input
+    let nodes: IndexMap<String, Look> = input
         .nodes
         .iter()
-        .map(|n| {
-            let svc = n.service.as_deref().and_then(|s| {
-                let found = service(s);
-                if found.is_none() {
-                    warnings.push(format!("node {}: unknown service {s}, drawn as a note", n.id));
-                }
-                found
-            });
-            (n.id.clone(), svc)
-        })
-        .collect();
+        .map(|n| Ok((n.id.clone(), n.service.as_deref().map_or(Ok(Look::Note), |s| resolve(theme, s).map_err(|e| format!("node {}: {e}", n.id)))?)))
+        .collect::<Result<_, String>>()?;
     let groups: IndexMap<String, &'static GroupLook> = input
         .groups
         .iter()
@@ -80,19 +72,10 @@ pub fn compose(input: &Input) -> Composed {
             (g.id.clone(), look.unwrap_or_else(|| group_look("group").unwrap()))
         })
         .collect();
-    let nf_end = |id: &String| nodes.get(id).copied().flatten().is_some_and(|s| s.nf);
     let kinds: Vec<KindHint> = input
         .edges
         .iter()
-        .map(|e| {
-            let kind = match e.kind {
-                Some(EdgeKind::Data) => Kind::Data,
-                Some(EdgeKind::Nf) => Kind::Nf,
-                None if nf_end(&e.from) || nf_end(&e.to) => Kind::Nf,
-                None => Kind::Data,
-            };
-            KindHint { from: e.from.clone(), to: e.to.clone(), kind }
-        })
+        .map(|e| KindHint { from: e.from.clone(), to: e.to.clone(), kind: if matches!(e.kind, Some(EdgeKind::Nf)) { Kind::Nf } else { Kind::Data } })
         .collect();
     let placement: Vec<PlacementHint> = input
         .hints
@@ -118,7 +101,7 @@ pub fn compose(input: &Input) -> Composed {
             .nodes
             .iter()
             .map(|n| {
-                let icon = !matches!(nodes[&n.id].map(|s| s.aws), Some(Look::Note) | None);
+                let icon = nodes[&n.id] != Look::Note;
                 (n.id.clone(), side_for(label_of(&n.id, &n.label), icon))
             })
             .collect(),
@@ -141,5 +124,5 @@ pub fn compose(input: &Input) -> Composed {
         .iter()
         .filter_map(|e| e.style.as_ref().map(|s| ((e.from.clone(), e.to.clone()), matches!(s, LineStyle::Dashed))))
         .collect();
-    Composed { graph, hints: Hints { kinds, placement, sizes, gravity: true }, nodes, groups, warnings, line }
+    Ok(Composed { graph, hints: Hints { kinds, placement, sizes, gravity: true }, nodes, groups, warnings, line })
 }

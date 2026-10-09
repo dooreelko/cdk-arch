@@ -29,8 +29,8 @@ fn golden_drawio() {
 
 #[test]
 fn start_node_is_leftmost_and_hints_hold() {
-    CASES.iter().for_each(|(name, _, start)| {
-        let c = compose(&input(name));
+    CASES.iter().for_each(|(name, theme, start)| {
+        let c = compose(&input(name), *theme).unwrap();
         let r = clarc::lay_out(&c).unwrap();
         let col = |id: &str| r.layout.nodes.iter().find(|n| n.id == id).unwrap().col;
         assert!(r.layout.nodes.iter().all(|n| col(start) <= n.col), "{name}: {start} is not left-most");
@@ -41,29 +41,48 @@ fn start_node_is_leftmost_and_hints_hold() {
 
 #[test]
 fn azure_uses_azure_icons_and_aws_uses_aws_icons() {
-    let i = input("phase2");
-    let aws = clarc::render(&i, Theme::Aws).unwrap().xml;
-    let azure = clarc::render(&i, Theme::Azure).unwrap().xml;
+    let aws = clarc::render(&input("phase2"), Theme::Aws).unwrap().xml;
+    let azure = clarc::render(&input("azure-phase2"), Theme::Azure).unwrap().xml;
     assert!(aws.contains("mxgraph.aws4.resourceIcon") && !aws.contains("azure2"));
     assert!(azure.contains("img/lib/azure2/") && !azure.contains("aws4"));
 }
 
 #[test]
-fn services_are_provider_neutral_with_native_aliases() {
-    use clarc::catalog::service;
-    assert_eq!(service("cloudfront").unwrap().key, "cdn");
-    assert_eq!(service("front-door").unwrap().key, "cdn");
-    assert!(service("nope").is_none());
+fn glyph_names_ignore_case_dash_and_underscore() {
+    use clarc::catalog::{resolve, Look};
+    let r53 = Look::AwsRes("route_53", "#8C4FFF");
+    ["route_53", "route53", "Route-53", "ROUTE_53"].iter().for_each(|n| assert_eq!(resolve(Theme::Aws, n).unwrap(), r53, "{n}"));
+    assert!(matches!(resolve(Theme::Aws, "role").unwrap(), Look::AwsShape("role", _)), "standalone shapes keep their kind");
+    assert_eq!(resolve(Theme::Azure, "compute/Function_Apps").unwrap(), Look::AzureImg("compute/Function_Apps"));
+    assert_eq!(resolve(Theme::Azure, "compute/function-apps").unwrap(), Look::AzureImg("compute/Function_Apps"));
+    assert_eq!(resolve(Theme::Azure, "Browser").unwrap(), Look::AzureImg("general/Browser"), "a bare azure name that only one category has");
+    assert_eq!(resolve(Theme::Aws, "note").unwrap(), Look::Note);
 }
 
 #[test]
-fn nf_services_default_their_edges_to_nf_and_notes_are_isolated() {
-    let c = compose(&input("phase2"));
-    let kind = |from: &str, to: &str| c.hints.kinds.iter().find(|k| k.from == from && k.to == to).unwrap().kind;
+fn unknown_and_ambiguous_glyph_names_are_errors_with_help() {
+    use clarc::catalog::resolve;
+    let typo = resolve(Theme::Aws, "lamda").unwrap_err();
+    assert!(typo.contains("unknown aws glyph \"lamda\"") && typo.contains("lambda") && typo.contains("github.com"), "{typo}");
+    assert!(resolve(Theme::Aws, "cloudwatch").unwrap_err().contains("cloudwatch_2"), "the old stencil name is not a glyph name");
+    let amb = resolve(Theme::Azure, "App_Services").unwrap_err();
+    assert!(amb.contains("ambiguous") && amb.contains("compute/App_Services") && amb.contains("app_services/App_Services"), "{amb}");
+    assert!(resolve(Theme::Azure, "nope/Nothing").unwrap_err().contains("unknown azure glyph"));
+    // an aws name is not an azure glyph and vice versa
+    assert!(resolve(Theme::Azure, "lambda").is_err() && resolve(Theme::Aws, "compute/Function_Apps").is_err());
+}
+
+#[test]
+fn edges_are_data_unless_marked_nf_so_one_service_has_both() {
+    let i = clarc::parse(
+        r#"{"nodes":[{"id":"f","service":"fargate"},{"id":"b","service":"s3"},{"id":"w","service":"cloudwatch_2"}],
+            "edges":[{"from":"f","to":"b"},{"from":"f","to":"w","kind":"nf"},{"from":"w","to":"b"}]}"#,
+    )
+    .unwrap();
+    let c = compose(&i, Theme::Aws).unwrap();
     use c43_layout::model::Kind::*;
-    assert_eq!(kind("r53", "cf"), Nf);
-    assert_eq!(kind("viewer", "cf"), Data);
-    assert_eq!(kind("role", "data"), Data, "explicit kind wins");
+    let kinds: Vec<_> = c.hints.kinds.iter().map(|k| (k.from.as_str(), k.to.as_str(), k.kind)).collect();
+    assert_eq!(kinds, vec![("f", "b", Data), ("f", "w", Nf), ("w", "b", Data)], "a monitoring service does not make its edges nf by itself");
 }
 
 #[test]
@@ -77,10 +96,10 @@ fn bad_input_is_an_error() {
 }
 
 #[test]
-fn unknown_service_is_a_warning_and_a_note() {
+fn unknown_service_fails_the_render_naming_the_node() {
     let i = clarc::parse(r#"{"nodes":[{"id":"a","service":"quantum-db"}]}"#).unwrap();
-    let r = clarc::render(&i, Theme::Aws).unwrap();
-    assert!(r.warnings.iter().any(|w| w.contains("unknown service quantum-db")));
+    let e = clarc::render(&i, Theme::Aws).unwrap_err();
+    assert!(e.contains("node a: unknown aws glyph \"quantum-db\""), "{e}");
 }
 
 /// first number following `key` inside `s`
@@ -173,8 +192,89 @@ fn level_pair_with_a_node_between_keeps_the_engine_route() {
     )
     .unwrap();
     let r = clarc::render(&i, Theme::Aws).unwrap();
-    let lay = clarc::lay_out(&compose(&i)).unwrap();
+    let lay = clarc::lay_out(&compose(&i, Theme::Aws).unwrap()).unwrap();
     let pos = |id: &str| lay.layout.nodes.iter().find(|n| n.id == id).map(|n| (n.col, n.row)).unwrap();
     assert!(pos("a").1 == pos("b").1 && pos("b").1 == pos("c").1 && pos("a").0 < pos("b").0 && pos("b").0 < pos("c").0, "premise: b between a and c on one row");
     assert!(edge_between(&r.xml, "a", "c").contains("<mxPoint"), "must route around b");
+}
+
+const THEMES: [Theme; 2] = [Theme::Aws, Theme::Azure];
+
+#[test]
+fn example_json_is_a_small_valid_input_that_renders_cleanly_in_each_theme() {
+    THEMES.iter().for_each(|t| {
+        let i = clarc::parse(&clarc::example::example_json(*t)).unwrap();
+        assert!(i.title.is_some() && i.description.is_some());
+        assert!((2..=4).contains(&i.nodes.len()) && (2..=3).contains(&i.edges.len()) && i.hints.len() == 2);
+        assert!(!i.groups.is_empty() && i.nodes.iter().any(|n| n.group.is_some()), "example shows a group with a member");
+        let r = clarc::render(&i, *t).unwrap();
+        assert!(r.warnings.is_empty(), "{t}: {:?}", r.warnings);
+    });
+}
+
+#[test]
+fn example_text_lists_every_hint_directive_the_input_accepts() {
+    // serde names all valid keys when it meets an unknown one
+    let err = clarc::parse(r#"{"nodes":[],"hints":{"a":{"bogus":1}}}"#).unwrap_err();
+    let listed = clarc::example::HINT_DIRECTIVES.iter().map(|(n, _)| *n).collect::<Vec<_>>();
+    assert!(listed.iter().all(|n| err.contains(&format!("`{n}`"))), "listed but not accepted: {err}");
+    assert!(err.matches('`').count() / 2 - 1 == listed.len(), "accepted but not listed: {err}");
+    THEMES.iter().for_each(|t| {
+        let text = clarc::example::example_text(*t);
+        assert!(text.starts_with(&clarc::example::example_json(*t)) && listed.iter().all(|n| text.contains(&format!("  {n}: "))));
+    });
+}
+
+#[test]
+fn example_text_names_real_common_glyphs_a_link_to_all_and_the_group_frames() {
+    use clarc::catalog;
+    THEMES.iter().for_each(|t| {
+        let text = clarc::example::example_text(*t);
+        assert!(catalog::common(*t).len() >= 10);
+        catalog::common(*t).iter().for_each(|(n, p)| {
+            assert!(catalog::resolve(*t, n).is_ok() && !p.is_empty(), "{t}: {n}");
+            assert!(text.contains(&format!("  {n}: {p}")), "{t}: {n} not listed");
+        });
+        THEMES.iter().for_each(|l| assert!(text.contains(catalog::glyph_list_url(*l)), "{t}: no link to the {l} list"));
+        assert!(text.lines().count() < 80, "the full glyph list must not be dumped");
+    });
+    catalog::GROUPS.iter().for_each(|g| assert!(clarc::example::GROUP_PURPOSES.iter().any(|(k, p)| *k == g.key && !p.is_empty()), "no purpose for group {}", g.key));
+    assert_eq!(clarc::example::GROUP_PURPOSES.len(), catalog::GROUPS.len());
+    // azure help speaks azure names and aws help speaks aws names
+    assert!(clarc::example::example_text(Theme::Azure).contains("compute/Function_Apps") && !clarc::example::example_text(Theme::Aws).contains("compute/Function_Apps"));
+}
+
+fn run(args: &[&str], stdin: &str) -> std::process::Output {
+    use std::io::Write;
+    let mut child = std::process::Command::new(env!("CARGO_BIN_EXE_clarc"))
+        .args(args)
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()
+        .unwrap();
+    child.stdin.take().unwrap().write_all(stdin.as_bytes()).unwrap();
+    child.wait_with_output().unwrap()
+}
+
+#[test]
+fn file_dash_reads_stdin_and_no_file_is_an_error() {
+    let text = std::fs::read_to_string(format!("{}/input.json", dir("phase2"))).unwrap();
+    let ok = run(&["--file", "-"], &text);
+    assert!(ok.status.success() && String::from_utf8_lossy(&ok.stdout).starts_with("<mxfile"));
+    let none = run(&[], &text);
+    assert!(!none.status.success() && none.stdout.is_empty());
+    assert!(String::from_utf8_lossy(&none.stderr).contains("--file"), "{}", String::from_utf8_lossy(&none.stderr));
+}
+
+#[test]
+fn agentic_help_prints_the_example_for_the_theme_and_needs_no_input() {
+    let out = run(&["--agentic-help"], "");
+    assert!(out.status.success());
+    let help = run(&["--help"], "");
+    let (help, got) = (String::from_utf8_lossy(&help.stdout).to_string(), String::from_utf8_lossy(&out.stdout).to_string());
+    assert!(help.contains("--agentic-help") && got.starts_with(help.trim_end()), "the output starts with the contents of --help");
+    assert!(got.ends_with(&clarc::example::example_text(Theme::Aws)));
+    let az = run(&["--azure", "--agentic-help"], "");
+    assert!(String::from_utf8_lossy(&az.stdout).ends_with(&clarc::example::example_text(Theme::Azure)));
 }
