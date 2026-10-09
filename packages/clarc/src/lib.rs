@@ -1,6 +1,7 @@
 //! clarc: cloud architecture diagrams (drawio) from a service graph, laid out by c43-layout.
 pub mod catalog;
 pub mod compose;
+pub mod example;
 pub mod input;
 pub mod render;
 
@@ -23,7 +24,7 @@ pub fn lay_out(c: &compose::Composed) -> Result<c43_layout::model::LayoutResult,
 }
 
 pub fn render(input: &Input, theme: Theme) -> Result<Rendered, String> {
-    let c = compose::compose(input);
+    let c = compose::compose(input, theme)?;
     let mut warnings = c.warnings.clone();
     let r = lay_out(&c)?;
     warnings.extend(r.metrics.violations.iter().map(|v| format!("{}: {}", v.rule, v.detail)));

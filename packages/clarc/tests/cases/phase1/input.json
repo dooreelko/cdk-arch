@@ -2,140 +2,37 @@
   "title": "Phase 1: Ghost on a VM",
   "description": "the-well-architected-cloud.com/blog",
   "groups": [
-    {
-      "id": "vpc",
-      "label": "VPC - private subnet (no inbound from internet)",
-      "service": "network"
-    }
+    { "id": "vpc", "label": "VPC - private subnet (no inbound from internet)", "service": "network" }
   ],
   "nodes": [
-    {
-      "id": "viewer",
-      "label": "Viewer (browser)",
-      "service": "client"
-    },
-    {
-      "id": "cf",
-      "label": "CloudFront",
-      "service": "cloudfront"
-    },
-    {
-      "id": "r53",
-      "label": "Route53 hosted zone",
-      "service": "route53"
-    },
-    {
-      "id": "site",
-      "label": "S3 (existing site)",
-      "service": "s3"
-    },
-    {
-      "id": "origin",
-      "label": "VPC origin (private link)",
-      "service": "vpc-origin",
-      "group": "vpc"
-    },
-    {
-      "id": "ec2",
-      "label": "EC2 t3.micro: nginx, Ghost, SQLite",
-      "service": "ec2",
-      "group": "vpc"
-    },
-    {
-      "id": "eip",
-      "label": "Elastic IP (outbound only)",
-      "service": "elastic-ip",
-      "group": "vpc"
-    },
-    {
-      "id": "sg",
-      "label": "Security group: inbound :8000 only from CloudFront VPC-origin SG",
-      "group": "vpc"
-    },
-    {
-      "id": "ssm",
-      "label": "SSM Session Manager (no SSH, no bastion)",
-      "service": "ssm"
-    },
-    {
-      "id": "params",
-      "label": "SSM Parameter Store (SMTP credential)",
-      "service": "ssm-parameter-store"
-    },
-    {
-      "id": "smtp",
-      "label": "Proton SMTP smtp.protonmail.ch:587",
-      "service": "external"
-    }
+    { "id": "viewer", "label": "Viewer (browser)", "service": "client" },
+    { "id": "cf", "label": "CloudFront", "service": "cloudfront" },
+    { "id": "r53", "label": "Route53 hosted zone", "service": "route_53" },
+    { "id": "site", "label": "S3 (existing site)", "service": "s3" },
+    { "id": "origin", "label": "VPC origin (private link)", "service": "endpoints", "group": "vpc" },
+    { "id": "ec2", "label": "EC2 t3.micro: nginx, Ghost, SQLite", "service": "ec2", "group": "vpc" },
+    { "id": "eip", "label": "Elastic IP (outbound only)", "service": "elastic_ip_address", "group": "vpc" },
+    { "id": "sg", "label": "Security group: inbound :8000 only from CloudFront VPC-origin SG", "group": "vpc" },
+    { "id": "ssm", "label": "SSM Session Manager (no SSH, no bastion)", "service": "systems_manager" },
+    { "id": "params", "label": "SSM Parameter Store (SMTP credential)", "service": "parameter_store" },
+    { "id": "smtp", "label": "Proton SMTP smtp.protonmail.ch:587", "service": "traditional_server" }
   ],
   "edges": [
-    {
-      "from": "viewer",
-      "to": "cf",
-      "label": "HTTPS"
-    },
-    {
-      "from": "cf",
-      "to": "site",
-      "label": "/ (default)"
-    },
-    {
-      "from": "cf",
-      "to": "origin",
-      "label": "/blog*"
-    },
-    {
-      "from": "origin",
-      "to": "ec2",
-      "label": "HTTP:8000"
-    },
-    {
-      "from": "r53",
-      "to": "cf",
-      "label": "DNS + mail records"
-    },
-    {
-      "from": "ec2",
-      "to": "ssm",
-      "label": "SSM control-plane"
-    },
-    {
-      "from": "ec2",
-      "to": "params",
-      "label": "GetParameter + Decrypt",
-      "kind": "data",
-      "style": "dashed"
-    },
-    {
-      "from": "ec2",
-      "to": "eip",
-      "kind": "nf",
-      "style": "dashed"
-    },
-    {
-      "from": "eip",
-      "to": "smtp",
-      "label": "SMTP:587",
-      "kind": "data",
-      "style": "dashed"
-    }
+    { "from": "viewer", "to": "cf", "label": "HTTPS" },
+    { "from": "cf", "to": "site", "label": "/ (default)" },
+    { "from": "cf", "to": "origin", "label": "/blog*" },
+    { "from": "origin", "to": "ec2", "label": "HTTP:8000" },
+    { "from": "r53", "to": "cf", "label": "DNS + mail records", "kind": "nf" },
+    { "from": "ec2", "to": "ssm", "label": "SSM control-plane", "kind": "nf" },
+    { "from": "ec2", "to": "params", "label": "GetParameter + Decrypt", "kind": "data", "style": "dashed" },
+    { "from": "ec2", "to": "eip", "kind": "nf", "style": "dashed" },
+    { "from": "eip", "to": "smtp", "label": "SMTP:587", "kind": "data", "style": "dashed" }
   ],
   "hints": {
-    "viewer": {
-      "start": true
-    },
-    "site": {
-      "above": "cf"
-    },
-    "r53": {
-      "below": "cf"
-    },
-    "origin": {
-      "rightOf": "cf",
-      "sameRow": "cf"
-    },
-    "ec2": {
-      "rightOf": "origin"
-    }
+    "viewer": { "start": true },
+    "site": { "above": "cf" },
+    "r53": { "below": "cf" },
+    "origin": { "rightOf": "cf", "sameRow": "cf" },
+    "ec2": { "rightOf": "origin" }
   }
 }

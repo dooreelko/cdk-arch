@@ -1,5 +1,5 @@
 //! Cloud look for the shared drawio exporter: icons with labels below, themed group frames, labelled edges.
-use crate::catalog::{GroupLook, Look, Service, Theme};
+use crate::catalog::{GroupLook, Look, Theme};
 use crate::compose::{Composed, GROUP_ICON_PX, ICON_PX, ICON_TOP_PX, LABEL_GAP_PX};
 use c43::drawio::export::{esc, vertex, EdgeDraw, Styler};
 use c43_layout::js::num;
@@ -15,16 +15,11 @@ const NOTE_BORDER: &str = "#7D8998";
 fn icon_style(theme: Theme, look: Look) -> String {
     let base = "html=1;outlineConnect=0;gradientColor=none;sketch=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;aspect=fixed;";
     match (theme, look) {
-        (_, Look::AwsRes(res, fill)) => format!("{base}shape=mxgraph.aws4.resourceIcon;resIcon={res};fillColor={fill};strokeColor=#ffffff;"),
-        (_, Look::AwsShape(shape, color)) => format!("{base}shape={shape};fillColor={color};strokeColor=none;"),
-        (_, Look::AzureImg(path)) => format!("image;html=1;aspect=fixed;points=[];image={path};"),
+        (_, Look::AwsRes(res, fill)) => format!("{base}shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.{res};fillColor={fill};strokeColor=#ffffff;"),
+        (_, Look::AwsShape(shape, color)) => format!("{base}shape=mxgraph.aws4.{shape};fillColor={color};strokeColor=none;"),
+        (_, Look::AzureImg(path)) => format!("image;html=1;aspect=fixed;points=[];image=img/lib/azure2/{path}.svg;"),
         (_, Look::Note) => String::new(),
     }
-}
-
-/// the look a service has in the theme; unknown and absent services are notes
-fn look_of(theme: Theme, svc: Option<&Service>) -> Look {
-    svc.map_or(Look::Note, |s| if theme == Theme::Aws { s.aws } else { s.azure })
 }
 
 fn text_cell(id: &str, value: &str, x: f64, y: f64, w: f64, h: f64, extra: &str) -> String {
@@ -63,7 +58,7 @@ fn pull(side: Side, own: f64, on_icon: f64, side_px: f64) -> (f64, f64) {
 pub fn styler<'a>(theme: Theme, c: &'a Composed, side_px: f64, cells: IndexMap<String, (i32, i32)>) -> Styler<'a> {
     Styler {
         node: Box::new(move |n, ls, u| {
-            let look = look_of(theme, c.nodes.get(&n.id).copied().flatten());
+            let look = c.nodes.get(&n.id).copied().unwrap_or(Look::Note);
             let id = format!("n-{}", esc(&n.id));
             let (x, y, w) = (n.x * u, n.y * u, n.size * u);
             let label = ls.iter().map(|l| esc(l)).collect::<Vec<_>>().join("&#xa;");
@@ -93,7 +88,7 @@ pub fn styler<'a>(theme: Theme, c: &'a Composed, side_px: f64, cells: IndexMap<S
         }),
         edge: Box::new(move |e| {
             let dashed = if c.dashed(e.from.as_str(), e.to.as_str(), e.kind == Kind::Nf) { "dashed=1;" } else { "" };
-            let icon = |id: &str| c.nodes.get(id).is_some_and(|s| look_of(theme, *s) != Look::Note);
+            let icon = |id: &str| c.nodes.get(id).is_some_and(|l| *l != Look::Note);
             // one port facing a busier one on the same row takes the busier port's height, so the edge runs straight
             let same_row = |a: &str, b: &str| cells.get(a).zip(cells.get(b)).is_some_and(|(x, y)| x.1 == y.1);
             let level = icon(&e.from) && icon(&e.to) && same_row(&e.from, &e.to)
