@@ -1,5 +1,7 @@
 # CDK architecture primitives for API-first event driven solutions
 
+THIS REPO IS NOW AT [https://github.com/well-architected-cloud-clarc/cdk-arch](https://github.com/well-architected-cloud-clarc/cdk-arch)
+
 What if the architecture of your solution was directly reflected in your code? 
 
 What if you could define business logic without tying it to a specific infrastructure approach?
